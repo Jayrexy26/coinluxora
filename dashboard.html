@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard | CoinLuxora</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0f1a;
+      color: #ffffff;
+    }
+
+    header {
+      background: #11162a;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    button {
+      background: #2563eb;
+      border: none;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .card {
+      background: #11162a;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .price {
+      font-size: 18px;
+      margin-top: 6px;
+    }
+
+    .wallet {
+      background: #0b0f1a;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      word-break: break-all;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <strong>CoinLuxora Dashboard</strong>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h3>User</h3>
+    <p id="user-email">Checking login...</p>
+  </div>
+
+  <div class="card">
+    <h3>Live Crypto Prices</h3>
+    <div class="grid">
+      <div>
+        <strong>Bitcoin (BTC)</strong>
+        <div class="price" id="btc">Loading...</div>
+      </div>
+      <div>
+        <strong>Ethereum (ETH)</strong>
+        <div class="price" id="eth">Loading...</div>
+      </div>
+      <div>
+        <strong>Tether (USDT)</strong>
+        <div class="price" id="usdt">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Deposit Crypto</h3>
+
+    <strong>Bitcoin (BTC)</strong>
+    <div class="wallet">bc1qexamplebtcaddressxxxxxxxx</div>
+
+    <strong>Ethereum (ETH)</strong>
+    <div class="wallet">0xExampleEthAddressxxxxxxxxxxxx</div>
+
+    <strong>USDT (TRC20)</strong>
+    <div class="wallet">TExampleUsdtAddressxxxxxxxxxxx</div>
+
+    <small>⚠️ Send only correct network assets.</small>
+  </div>
+
+</div>
+
+<script>
+  const supabase = window.supabase.createClient(
+    "https://xdcscknfomlzwysczegc.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4"
+  );
+
+  async function checkUser() {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) {
+      window.location.href = "login.html";
+    } else {
+      document.getElementById("user-email").innerText =
+        "Logged in as: " + data.user.email;
+    }
+  }
+
+  async function logout() {
+    await supabase.auth.signOut();
+    window.location.href = "login.html";
+  }
+
+  async function loadPrices() {
+    const res = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,tether&vs_currencies=usd"
+    );
+    const data = await res.json();
+
+    document.getElementById("btc").innerText = "$" + data.bitcoin.usd;
+    document.getElementById("eth").innerText = "$" + data.ethereum.usd;
+    document.getElementById("usdt").innerText = "$" + data.tether.usd;
+  }
+
+  checkUser();
+  loadPrices();
+  setInterval(loadPrices, 30000);
+</script>
+
+</body>
+</html>
