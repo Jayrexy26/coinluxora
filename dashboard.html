@@ -8,42 +8,58 @@
   <!-- Supabase CDN (v2) -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(180deg, #020617, #020617);
-      color: #e5e7eb;
-      padding: 24px;
+  <script>
+  const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
+  const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+
+  const client = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+  function copyAddress(address, el) {
+    navigator.clipboard.writeText(address);
+    el.innerText = "Copied!";
+    setTimeout(() => {
+      el.innerText = "Copy Address";
+    }, 1500);
+  }
+
+  async function loadDepositAddresses() {
+    const container = document.getElementById("deposit-list");
+
+    const { data, error } = await client
+      .from("deposit_addresses")
+      .select("*");
+
+    if (error) {
+      container.innerHTML =
+        "<div class='error'>Error: " + error.message + "</div>";
+      return;
     }
 
-    h1 {
-      margin-bottom: 16px;
-    }
+    container.innerHTML = "";
 
-    .loading {
-      color: #38bdf8;
-    }
+    data.forEach(row => {
+      const div = document.createElement("div");
+      div.className = "card";
 
-    .error {
-      color: #f87171;
-    }
+      div.innerHTML = `
+        <div class="badge">${row.network}</div>
+        <div><strong>${row.asset.toUpperCase()}</strong></div>
+        <code>${row.address}</code>
+        <button onclick="copyAddress('${row.address}', this)">
+          Copy Address
+        </button>
+      `;
 
-    .card {
-      background: #020617;
-      border: 1px solid #1e293b;
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 14px;
-    }
+      container.appendChild(div);
+    });
+  }
 
-    code {
-      word-break: break-all;
-      display: block;
-      margin-top: 6px;
-      color: #a5f3fc;
-    }
-  </style>
+  loadDepositAddresses();
+</script>
 </head>
 <body>
 
