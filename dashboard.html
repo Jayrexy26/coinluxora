@@ -2,88 +2,114 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Deposit Addresses</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CoinLuxora Dashboard</title>
 
-  <!-- Supabase CDN (v2) -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script>
-  const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
-  const SUPABASE_ANON_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
-
-  const client = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-
-  function copyAddress(address, el) {
-    navigator.clipboard.writeText(address);
-    el.innerText = "Copied!";
-    setTimeout(() => {
-      el.innerText = "Copy Address";
-    }, 1500);
-  }
-
-  async function loadDepositAddresses() {
-    const container = document.getElementById("deposit-list");
-
-    const { data, error } = await client
-      .from("deposit_addresses")
-      .select("*");
-
-    if (error) {
-      container.innerHTML =
-        "<div class='error'>Error: " + error.message + "</div>";
-      return;
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #020617, #020617);
+      color: #e5e7eb;
+      padding: 24px;
     }
 
-    container.innerHTML = "";
+    h1 {
+      margin-bottom: 16px;
+      font-size: 24px;
+    }
 
-    data.forEach(row => {
-      const div = document.createElement("div");
-      div.className = "card";
+    .loading {
+      color: #38bdf8;
+    }
 
-      div.innerHTML = `
-        <div class="badge">${row.network}</div>
-        <div><strong>${row.asset.toUpperCase()}</strong></div>
-        <code>${row.address}</code>
-        <button onclick="copyAddress('${row.address}', this)">
-          Copy Address
-        </button>
-      `;
+    .error {
+      color: #f87171;
+    }
 
-      container.appendChild(div);
-    });
-  }
+    .card {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
 
-  loadDepositAddresses();
-</script>
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #1e293b;
+      color: #38bdf8;
+      margin-bottom: 8px;
+    }
+
+    .asset {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    code {
+      word-break: break-all;
+      display: block;
+      margin: 10px 0;
+      color: #a5f3fc;
+      background: #020617;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #1e293b;
+    }
+
+    button {
+      background: #38bdf8;
+      border: none;
+      color: #020617;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:active {
+      opacity: 0.7;
+    }
+  </style>
 </head>
 <body>
 
   <h1>Deposit Addresses</h1>
-
   <div id="deposit-list" class="loading">
     Loading deposit addresses...
   </div>
 
   <script>
-    // ✅ Correct Supabase client usage
     const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
     const SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 
-    const client = supabase.createClient(
+    const supabaseClient = supabase.createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY
     );
 
+    function copyAddress(address, btn) {
+      navigator.clipboard.writeText(address);
+      btn.innerText = "Copied!";
+      setTimeout(() => {
+        btn.innerText = "Copy Address";
+      }, 1500);
+    }
+
     async function loadDepositAddresses() {
       const container = document.getElementById("deposit-list");
 
-      const { data, error } = await client
+      const { data, error } = await supabaseClient
         .from("deposit_addresses")
         .select("*");
 
@@ -93,23 +119,22 @@
         return;
       }
 
-      if (!data || data.length === 0) {
-        container.innerHTML = "No deposit addresses found.";
-        return;
-      }
-
       container.innerHTML = "";
 
       data.forEach(row => {
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerHTML = `
-          <strong>Asset:</strong> ${row.asset.toUpperCase()}<br>
-          <strong>Network:</strong> ${row.network}<br>
-          <strong>Address:</strong>
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+          <div class="badge">${row.network}</div>
+          <div class="asset">${row.asset.toUpperCase()}</div>
           <code>${row.address}</code>
+          <button onclick="copyAddress('${row.address}', this)">
+            Copy Address
+          </button>
         `;
-        container.appendChild(div);
+
+        container.appendChild(card);
       });
     }
 
