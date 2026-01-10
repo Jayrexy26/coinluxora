@@ -8,6 +8,9 @@
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <!-- QR Code Generator -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
   <style>
     :root {
       --bg: #020617;
@@ -42,8 +45,8 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
     }
 
     .card {
@@ -51,6 +54,7 @@
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 18px;
+      text-align: center;
     }
 
     .network {
@@ -67,6 +71,12 @@
       font-size: 20px;
       font-weight: 700;
       margin-bottom: 10px;
+    }
+
+    .qr {
+      display: flex;
+      justify-content: center;
+      margin: 12px 0;
     }
 
     .address {
@@ -104,9 +114,11 @@
 <body>
 
   <h1>Deposit Crypto</h1>
-  <p>Select an asset and copy the deposit address</p>
+  <p>Scan the QR code or copy the address to deposit</p>
 
-  <div id="deposit-list" class="loading">Loading deposit addresses…</div>
+  <div id="deposit-list" class="loading">
+    Loading deposit addresses…
+  </div>
 
   <script>
     const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
@@ -119,14 +131,13 @@
     );
 
     function copyAddress(address, button) {
-      // Mobile-safe fallback
-      const tempInput = document.createElement("textarea");
-      tempInput.value = address;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      tempInput.setSelectionRange(0, 99999);
+      const temp = document.createElement("textarea");
+      temp.value = address;
+      document.body.appendChild(temp);
+      temp.select();
+      temp.setSelectionRange(0, 99999);
       document.execCommand("copy");
-      document.body.removeChild(tempInput);
+      document.body.removeChild(temp);
 
       button.innerText = "Copied ✓";
       button.style.background = "#22c55e";
@@ -153,13 +164,16 @@
       container.className = "grid";
       container.innerHTML = "";
 
-      data.forEach(row => {
+      data.forEach((row, index) => {
         const card = document.createElement("div");
         card.className = "card";
+
+        const qrId = "qr-" + index;
 
         card.innerHTML = `
           <div class="network">${row.network}</div>
           <div class="asset">${row.asset.toUpperCase()}</div>
+          <div class="qr" id="${qrId}"></div>
           <div class="address">${row.address}</div>
           <button onclick="copyAddress('${row.address}', this)">
             Copy Address
@@ -167,6 +181,14 @@
         `;
 
         container.appendChild(card);
+
+        new QRCode(document.getElementById(qrId), {
+          text: row.address,
+          width: 160,
+          height: 160,
+          colorDark: "#38bdf8",
+          colorLight: "#020617"
+        });
       });
     }
 
