@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Deposit Approvals</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+  background:#020617;
+  color:#e5e7eb;
+  font-family:system-ui;
+  padding:20px;
+}
+h1{margin-bottom:10px}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+th,td{
+  border:1px solid #1e293b;
+  padding:10px;
+  text-align:left;
+  font-size:13px;
+}
+th{background:#020617}
+.status{
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+}
+.pending{color:#facc15}
+.approved{color:#22c55e}
+.rejected{color:#f87171}
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  font-weight:700;
+  cursor:pointer;
+}
+.approve{background:#22c55e;color:#020617}
+.reject{background:#f87171;color:#020617}
+a{color:#38bdf8}
+</style>
+</head>
+<body>
+
+<h1>Admin Deposit Approvals</h1>
+<p>Review and approve user deposits</p>
+
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Network</th>
+<th>Amount</th>
+<th>Tx Hash</th>
+<th>Proof</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="rows"></tbody>
+</table>
+
+<script>
+const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
+const SUPABASE_ANON_KEY=
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+
+const supabase=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+async function load(){
+  const {data,error}=await supabase
+    .from("deposit_confirmations")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error)return alert("Failed to load");
+
+  const rows=document.getElementById("rows");
+  rows.innerHTML="";
+
+  data.forEach(r=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td>${r.asset}</td>
+      <td>${r.network}</td>
+      <td>${r.amount}</td>
+      <td>${r.tx_hash}</td>
+      <td>
+        <a target="_blank"
+        href="https://xdcscknfomlzwysczegc.supabase.co/storage/v1/object/public/${r.proof_url}">
+        View</a>
+      </td>
+      <td class="status ${r.status}">${r.status}</td>
+      <td>
+        <button class="approve" onclick="update('${r.id}','approved')">Approve</button>
+        <button class="reject" onclick="update('${r.id}','rejected')">Reject</button>
+      </td>
+    `;
+    rows.appendChild(tr);
+  });
+}
+
+async function update(id,status){
+  await supabase
+    .from("deposit_confirmations")
+    .update({status})
+    .eq("id",id);
+  load();
+}
+
+load();
+</script>
+
+</body>
+</html>
