@@ -8,192 +8,187 @@
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- QR Code Generator -->
+  <!-- QR Code -->
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 
   <style>
     :root {
-      --bg: #020617;
-      --card: #020617;
-      --border: #1e293b;
-      --primary: #38bdf8;
-      --text: #e5e7eb;
-      --muted: #94a3b8;
-      --success: #22c55e;
+      --bg:#020617;
+      --card:#020617;
+      --border:#1e293b;
+      --primary:#38bdf8;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --success:#22c55e;
+      --error:#f87171;
     }
 
-    * { box-sizing: border-box; }
+    *{box-sizing:border-box}
 
-    body {
-      margin: 0;
-      background: #020617;
-      color: var(--text);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      padding: 20px;
+    body{
+      margin:0;
+      background:#020617;
+      color:var(--text);
+      font-family:system-ui;
+      padding:20px;
     }
 
-    h1 {
-      font-size: 24px;
-      margin-bottom: 6px;
+    h1{font-size:24px;margin-bottom:6px}
+    p{color:var(--muted);font-size:14px}
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      gap:18px;
+      margin-top:20px;
     }
 
-    p {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 20px;
+    .card{
+      background:#020617;
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:18px;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 18px;
+    .network{
+      color:var(--primary);
+      font-size:12px;
+      border:1px solid var(--border);
+      padding:4px 12px;
+      border-radius:999px;
+      display:inline-block;
+      margin-bottom:8px;
     }
 
-    .card {
-      background: #020617;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 18px;
-      text-align: center;
+    .asset{
+      font-size:20px;
+      font-weight:700;
+      margin-bottom:10px;
     }
 
-    .network {
-      display: inline-block;
-      border: 1px solid var(--border);
-      color: var(--primary);
-      padding: 4px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      margin-bottom: 10px;
+    .qr{
+      display:flex;
+      justify-content:center;
+      margin:12px 0;
     }
 
-    .asset {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 10px;
+    .address{
+      font-family:monospace;
+      font-size:13px;
+      color:#a5f3fc;
+      border:1px dashed var(--border);
+      padding:10px;
+      border-radius:10px;
+      word-break:break-all;
+      margin-bottom:10px;
     }
 
-    .qr {
-      display: flex;
-      justify-content: center;
-      margin: 12px 0;
+    button{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:12px;
+      background:var(--primary);
+      color:#020617;
+      font-weight:700;
+      cursor:pointer;
     }
 
-    .address {
-      background: #020617;
-      border: 1px dashed var(--border);
-      border-radius: 10px;
-      padding: 10px;
-      font-family: monospace;
-      font-size: 13px;
-      word-break: break-all;
-      margin-bottom: 14px;
-      color: #a5f3fc;
+    input,select{
+      width:100%;
+      padding:10px;
+      margin-bottom:10px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#020617;
+      color:var(--text);
     }
 
-    button {
-      width: 100%;
-      background: var(--primary);
-      border: none;
-      color: #020617;
-      padding: 12px;
-      font-weight: 700;
-      border-radius: 12px;
-      cursor: pointer;
-    }
-
-    .loading {
-      color: var(--primary);
-    }
-
-    .error {
-      color: #f87171;
-    }
+    .success{color:var(--success)}
+    .error{color:var(--error)}
   </style>
 </head>
 <body>
 
-  <h1>Deposit Crypto</h1>
-  <p>Scan the QR code or copy the address to deposit</p>
+<h1>Deposit Crypto</h1>
+<p>Send funds, then confirm your deposit below</p>
 
-  <div id="deposit-list" class="loading">
-    Loading deposit addresses…
-  </div>
+<div id="deposit-list">Loading…</div>
 
-  <script>
-    const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
-    const SUPABASE_ANON_KEY =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+<script>
+const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 
-    const supabaseClient = supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    function copyAddress(address, button) {
-      const temp = document.createElement("textarea");
-      temp.value = address;
-      document.body.appendChild(temp);
-      temp.select();
-      temp.setSelectionRange(0, 99999);
-      document.execCommand("copy");
-      document.body.removeChild(temp);
+function copyAddress(address,btn){
+  const t=document.createElement("textarea");
+  t.value=address;
+  document.body.appendChild(t);
+  t.select();
+  document.execCommand("copy");
+  document.body.removeChild(t);
+  btn.innerText="Copied ✓";
+  setTimeout(()=>btn.innerText="Copy Address",1500);
+}
 
-      button.innerText = "Copied ✓";
-      button.style.background = "#22c55e";
+async function loadAddresses(){
+  const c=document.getElementById("deposit-list");
+  const {data,error}=await supabaseClient.from("deposit_addresses").select("*");
+  if(error){c.innerHTML="<p class='error'>Failed</p>";return;}
+  c.className="grid"; c.innerHTML="";
+  data.forEach((r,i)=>{
+    const id="qr"+i;
+    const d=document.createElement("div");
+    d.className="card";
+    d.innerHTML=`
+      <div class="network">${r.network}</div>
+      <div class="asset">${r.asset.toUpperCase()}</div>
+      <div class="qr" id="${id}"></div>
+      <div class="address">${r.address}</div>
+      <button onclick="copyAddress('${r.address}',this)">Copy Address</button>
+      <hr style="border-color:#1e293b;margin:14px 0">
+      <h3>Confirm Deposit</h3>
+      <input placeholder="Amount" id="amt${i}">
+      <input placeholder="Transaction Hash" id="tx${i}">
+      <input type="file" id="file${i}">
+      <button onclick="submitConfirm('${r.asset}','${r.network}',${i})">Submit</button>
+      <p id="msg${i}"></p>
+    `;
+    c.appendChild(d);
+    new QRCode(document.getElementById(id),{text:r.address,width:150,height:150});
+  });
+}
 
-      setTimeout(() => {
-        button.innerText = "Copy Address";
-        button.style.background = "#38bdf8";
-      }, 1500);
-    }
+async function submitConfirm(asset,network,i){
+  const amt=document.getElementById("amt"+i).value;
+  const tx=document.getElementById("tx"+i).value;
+  const file=document.getElementById("file"+i).files[0];
+  const msg=document.getElementById("msg"+i);
 
-    async function loadAddresses() {
-      const container = document.getElementById("deposit-list");
+  if(!amt||!tx||!file){
+    msg.innerHTML="<span class='error'>Fill all fields</span>";
+    return;
+  }
 
-      const { data, error } = await supabaseClient
-        .from("deposit_addresses")
-        .select("*");
+  const filePath=`proofs/${Date.now()}-${file.name}`;
+  const upload=await supabaseClient.storage.from("proofs").upload(filePath,file);
+  if(upload.error){
+    msg.innerHTML="<span class='error'>Upload failed</span>";
+    return;
+  }
 
-      if (error) {
-        container.innerHTML =
-          "<div class='error'>Failed to load addresses</div>";
-        return;
-      }
+  await supabaseClient.from("deposit_confirmations").insert({
+    asset,network,amount:amt,tx_hash:tx,
+    proof_url:filePath
+  });
 
-      container.className = "grid";
-      container.innerHTML = "";
+  msg.innerHTML="<span class='success'>Submitted ✓</span>";
+}
 
-      data.forEach((row, index) => {
-        const card = document.createElement("div");
-        card.className = "card";
-
-        const qrId = "qr-" + index;
-
-        card.innerHTML = `
-          <div class="network">${row.network}</div>
-          <div class="asset">${row.asset.toUpperCase()}</div>
-          <div class="qr" id="${qrId}"></div>
-          <div class="address">${row.address}</div>
-          <button onclick="copyAddress('${row.address}', this)">
-            Copy Address
-          </button>
-        `;
-
-        container.appendChild(card);
-
-        new QRCode(document.getElementById(qrId), {
-          text: row.address,
-          width: 160,
-          height: 160,
-          colorDark: "#38bdf8",
-          colorLight: "#020617"
-        });
-      });
-    }
-
-    loadAddresses();
-  </script>
+loadAddresses();
+</script>
 
 </body>
 </html>
