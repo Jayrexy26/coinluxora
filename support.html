@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Support</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{margin:0;font-family:system-ui;background:#020617;color:#e5e7eb;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #1e293b;margin-bottom:14px}
+button{border:none;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;background:#38bdf8;color:#020617}
+.box{border:1px solid #1e293b;border-radius:12px;padding:14px;background:#020617;margin-bottom:14px}
+h2{margin:0;font-size:18px}
+.small{color:#94a3b8;font-size:12px;margin-top:6px}
+.ok{color:#22c55e}
+.err{color:#f87171}
+input,textarea,select{width:100%;padding:12px;margin-top:10px;border-radius:10px;border:1px solid #1e293b;background:#020617;color:#e5e7eb}
+textarea{min-height:120px;resize:none}
+a{color:#38bdf8;text-decoration:none;font-weight:1000}
+.ticket{border:1px solid #1e293b;border-radius:12px;padding:12px;margin-top:10px}
+.pill{padding:6px 10px;border-radius:999px;font-weight:1000;font-size:12px;display:inline-block}
+.open{background:#facc15;color:#020617}
+.closed{background:#22c55e;color:#020617}
+</style>
+</head>
+
+<body>
+
+<header>
+  <strong>Support Center</strong>
+  <button onclick="goDashboard()">Dashboard</button>
+</header>
+
+<div class="box">
+  <h2>Contact Support</h2>
+  <div class="small">Submit a ticket and our support will respond.</div>
+
+  <input id="subject" placeholder="Subject (example: Deposit not credited)" />
+  <textarea id="message" placeholder="Describe your issue clearly..."></textarea>
+
+  <button style="width:100%;margin-top:12px;background:#22c55e" onclick="submitTicket()">Submit Ticket</button>
+  <div id="msg" class="small"></div>
+</div>
+
+<div class="box">
+  <h2>My Tickets</h2>
+  <div id="ticketMsg" class="small">Loading…</div>
+  <div id="ticketList"></div>
+</div>
+
+<div class="box">
+  <h2>Quick Support</h2>
+  <div class="small">You can also contact us instantly:</div><br>
+  ✅ WhatsApp: <a href="https://wa.me/2340000000000" target="_blank">Chat on WhatsApp</a><br><br>
+  ✅ Telegram: <a href="https://t.me/coinluxora_support" target="_blank">Chat on Telegram</a>
+</div>
+
+<script>
+const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+let currentUserEmail="";
+
+init();
+
+function goDashboard(){
+  window.location.href="user-dashboard.html";
+}
+
+function pill(s){
+  const st=(s||"open").toLowerCase();
+  return `<span class="pill ${st}">${st}</span>`;
+}
+
+async function init(){
+  const { data:userData } = await supabaseClient.auth.getUser();
+  if(!userData.user){
+    document.body.innerHTML="<h2 style='color:white'>You must login first.</h2>";
+    return;
+  }
+  currentUserEmail=userData.user.email;
+
+  loadTickets();
+}
+
+async function submitTicket(){
+  const msg=document.getElementById("msg");
+  msg.innerHTML="Submitting…";
+
+  const subject=document.getElementById("subject").value.trim();
+  const message=document.getElementById("message").value.trim();
+
+  if(subject.length<3 || message.length<10){
+    msg.innerHTML="<span class='err'>Enter a valid subject and message</span>";
+    return;
+  }
+
+  const { error } = await supabaseClient.from("support_tickets").insert([{
+    user_email: currentUserEmail,
+    subject,
+    message,
+    status: "open"
+  }]);
+
+  if(error){
+    msg.innerHTML="<span class='err'>"+error.message+"</span>";
+    return;
+  }
+
+  msg.innerHTML="<span class='ok'>Ticket submitted ✅</span>";
+  document.getElementById("subject").value="";
+  document.getElementById("message").value="";
+
+  loadTickets();
+}
+
+async function loadTickets(){
+  const ticketMsg=document.getElementById("ticketMsg");
+  const ticketList=document.getElementById("ticketList");
+
+  const { data, error } = await supabaseClient
+    .from("support_tickets")
+    .select("*")
+    .eq("user_email", currentUserEmail)
+    .order("created_at",{ascending:false});
+
+  if(error){
+    ticketMsg.innerHTML="<span class='err'>"+error.message+"</span>";
+    return;
+  }
+
+  if(!data || data.length===0){
+    ticketMsg.innerHTML="<span class='err'>No tickets yet.</span>";
+    ticketList.innerHTML="";
+    return;
+  }
+
+  ticketMsg.innerHTML="<span class='ok'>Loaded tickets ✅</span>";
+  ticketList.innerHTML="";
+
+  data.forEach(t=>{
+    ticketList.innerHTML += `
+      <div class="ticket">
+        <strong>${t.subject}</strong> ${pill(t.status)}
+        <div class="small" style="margin-top:8px">${t.message}</div>
+        <div class="small" style="margin-top:10px">Admin reply: <strong>${t.admin_reply || "Not yet replied"}</strong></div>
+        <div class="small" style="margin-top:10px">Date: ${new Date(t.created_at).toLocaleString()}</div>
+      </div>
+    `;
+  });
+}
+</script>
+
+</body>
+</html>
