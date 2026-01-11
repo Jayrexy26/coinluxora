@@ -18,10 +18,15 @@ h2{margin:0;font-size:18px}
 .small{color:#94a3b8;font-size:12px;margin-top:6px}
 .ok{color:#22c55e}
 .err{color:#f87171}
+.neutral{color:#38bdf8}
 input,select{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #1e293b;background:#020617;color:#e5e7eb}
 a{color:#38bdf8;text-decoration:none;font-weight:1000}
 a:hover{text-decoration:underline}
-hr{border:none;border-top:1px solid #1e293b;margin:14px 0}
+.pill{padding:6px 10px;border-radius:999px;font-weight:1000;font-size:12px;display:inline-block}
+.pending{background:#facc15;color:#020617}
+.active{background:#38bdf8;color:#020617}
+.completed{background:#22c55e;color:#020617}
+.rejected{background:#f87171;color:#020617}
 </style>
 </head>
 
@@ -41,6 +46,13 @@ hr{border:none;border-top:1px solid #1e293b;margin:14px 0}
   <h2>Balance</h2>
   <div id="balance" style="font-size:26px;font-weight:1000;margin-top:8px;">--</div>
   <div class="small">Your trading account balance</div>
+</div>
+
+<!-- ACTIVE PLAN BOX -->
+<div class="box">
+  <h2>Active Investment Plan</h2>
+  <div id="planMsg" class="small">Loading…</div>
+  <div id="planBox"></div>
 </div>
 
 <div class="box">
@@ -123,6 +135,20 @@ let depositAddresses=[];
 
 init();
 
+function money(n){
+  return "$" + Number(n||0).toFixed(2);
+}
+function pill(status){
+  const s=(status||"pending").toLowerCase();
+  return `<span class="pill ${s}">${s}</span>`;
+}
+function daysBetween(date1, date2){
+  const d1=new Date(date1);
+  const d2=new Date(date2);
+  const diff=(d2 - d1) / (1000*60*60*24);
+  return Math.max(0, Math.ceil(diff));
+}
+
 async function init(){
   const { data:userData } = await supabaseClient.auth.getUser();
   if(!userData.user){
@@ -134,6 +160,7 @@ async function init(){
   document.getElementById("email").innerHTML=`Logged in as: <span class="ok">${currentUserEmail}</span>`;
 
   await loadBalance();
+  await loadActivePlan();
   await loadDepositAddresses();
   renderDepositAddress();
   fetchPrices();
@@ -147,6 +174,58 @@ async function loadBalance(){
     .single();
 
   document.getElementById("balance").innerHTML = Number(data?.balance || 0).toFixed(2);
+}
+
+async function loadActivePlan(){
+  const planMsg=document.getElementById("planMsg");
+  const planBox=document.getElementById("planBox");
+
+  const { data, error } = await supabaseClient
+    .from("investment_plans")
+    .select("*")
+    .eq("user_email", currentUserEmail)
+    .order("created_at",{ascending:false})
+    .limit(1);
+
+  if(error){
+    planMsg.innerHTML="<span class='err'>"+error.message+"</span>";
+    planBox.innerHTML="";
+    return;
+  }
+
+  if(!data || data.length===0){
+    planMsg.innerHTML="<span class='err'>No investment plan started yet.</span>";
+    planBox.innerHTML=`<div class="small">Go to <a href="plans.html">Investment Plans</a> to start.</div>`;
+    return;
+  }
+
+  const plan=data[0];
+
+  const amount=Number(plan.amount||0);
+  const roi=Number(plan.roi_percent||0);
+  const expected=amount+(amount*(roi/100));
+
+  // countdown
+  let daysLeft="--";
+  if(plan.duration_days && plan.created_at){
+    const start=new Date(plan.created_at);
+    const end=new Date(start);
+    end.setDate(end.getDate()+Number(plan.duration_days||0));
+    daysLeft = daysBetween(new Date(), end);
+  }
+
+  planMsg.innerHTML="<span class='ok'>Plan details loaded ✅</span>";
+  planBox.innerHTML=`
+    <div class="card">
+      <strong>${plan.plan_name} Plan</strong> ${pill(plan.status)}
+      <div class="small" style="margin-top:10px">Amount: <strong>${money(amount)}</strong></div>
+      <div class="small">ROI: <strong>${roi}%</strong></div>
+      <div class="small">Duration: <strong>${plan.duration_days} days</strong></div>
+      <div class="small">Expected Return: <strong>${money(expected)}</strong></div>
+      <div class="small">Days remaining: <strong>${daysLeft}</strong></div>
+      ${plan.admin_note ? `<div class="small">Admin note: <strong>${plan.admin_note}</strong></div>` : ""}
+    </div>
+  `;
 }
 
 async function loadDepositAddresses(){
