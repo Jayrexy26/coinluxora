@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Deposits</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{margin:0;font-family:system-ui;background:#020617;color:#e5e7eb;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #1e293b;margin-bottom:14px}
+button{border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;background:#38bdf8;color:#020617}
+.box{border:1px solid #1e293b;border-radius:12px;padding:14px;background:#020617;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #1e293b;padding:10px;font-size:13px;word-break:break-all}
+th{background:#0b1224}
+.ok{color:#22c55e}
+.err{color:#f87171}
+
+.badge{padding:5px 10px;border-radius:999px;font-weight:800;font-size:12px;display:inline-block}
+.pending{background:#facc15;color:#020617}
+.approved{background:#22c55e;color:#020617}
+.rejected{background:#f87171;color:#020617}
+
+a{color:#38bdf8;font-weight:800;text-decoration:none}
+</style>
+</head>
+
+<body>
+
+<header>
+  <strong>My Deposits</strong>
+  <button onclick="goDashboard()">Dashboard</button>
+</header>
+
+<div class="box">
+  <div id="msg">Loading…</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Asset</th>
+        <th>Network</th>
+        <th>Amount</th>
+        <th>TX Hash</th>
+        <th>Proof</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+
+<script>
+const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+const BUCKET_NAME="proofs"; // ✅ your bucket
+
+loadMyDeposits();
+
+function goDashboard(){
+  window.location.href="user-dashboard.html";
+}
+
+function fmtDate(v){
+  try{
+    const d = new Date(v);
+    return d.toLocaleString();
+  }catch{
+    return v || "-";
+  }
+}
+
+function statusBadge(s){
+  const st=(s||"pending").toLowerCase();
+  return `<span class="badge ${st}">${st}</span>`;
+}
+
+async function loadMyDeposits(){
+  const msg=document.getElementById("msg");
+  const tbody=document.getElementById("rows");
+
+  const { data:userData } = await supabaseClient.auth.getUser();
+  if(!userData.user){
+    msg.innerHTML="<span class='err'>You must be logged in to view deposit history.</span>";
+    return;
+  }
+
+  const email=userData.user.email;
+
+  const { data, error } = await supabaseClient
+    .from("deposit_confirmations")
+    .select("*")
+    .eq("user_email", email)
+    .order("created_at",{ascending:false});
+
+  if(error){
+    msg.innerHTML="<span class='err'>"+error.message+"</span>";
+    return;
+  }
+
+  if(!data || data.length===0){
+    msg.innerHTML="<span class='err'>No deposits yet.</span>";
+    tbody.innerHTML="";
+    return;
+  }
+
+  msg.innerHTML="<span class='ok'>Showing your deposits ✅</span>";
+  tbody.innerHTML="";
+
+  data.forEach(d=>{
+    const proofLink = `${SUPABASE_URL}/storage/v1/object/public/${d.proof_url}`;
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${fmtDate(d.created_at)}</td>
+        <td>${d.asset}</td>
+        <td>${d.network}</td>
+        <td>${d.amount}</td>
+        <td>${d.tx_hash}</td>
+        <td><a href="${proofLink}" target="_blank">View</a></td>
+        <td>${statusBadge(d.status)}</td>
+      </tr>
+    `;
+  });
+}
+</script>
+
+</body>
+</html>
