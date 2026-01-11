@@ -1,197 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Coinluxora Admin Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard – Coinluxora</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<style>
-body{
-  background:#020617;
-  color:#e5e7eb;
-  font-family:system-ui;
-  margin:0;
-}
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px;
-  border-bottom:1px solid #1e293b;
-}
-button{
-  background:#38bdf8;
-  border:none;
-  padding:8px 12px;
-  border-radius:8px;
-  font-weight:700;
-  cursor:pointer;
-}
-.danger{background:#f87171}
-.container{padding:16px}
-input{
-  width:100%;
-  padding:10px;
-  margin-bottom:8px;
-  border-radius:8px;
-  border:1px solid #1e293b;
-  background:#020617;
-  color:#e5e7eb;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:12px;
-}
-th,td{
-  border:1px solid #1e293b;
-  padding:8px;
-  font-size:13px;
-  word-break:break-all;
-}
-.actions button{margin-right:4px}
-form{
-  border:1px solid #1e293b;
-  padding:12px;
-  border-radius:10px;
-  margin-bottom:20px;
-}
-</style>
+  <style>
+    body{
+      margin:0;
+      font-family:system-ui;
+      background:#020617;
+      color:#e5e7eb;
+      padding:16px;
+    }
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 0;
+      border-bottom:1px solid #1e293b;
+      margin-bottom:12px;
+    }
+    button{
+      background:#38bdf8;
+      border:none;
+      padding:10px 14px;
+      border-radius:10px;
+      font-weight:700;
+      cursor:pointer;
+      color:#020617;
+    }
+    .box{
+      border:1px solid #1e293b;
+      border-radius:12px;
+      padding:12px;
+      margin-bottom:12px;
+      background:#020617;
+    }
+    .error{color:#f87171}
+    .ok{color:#22c55e}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+    }
+    th,td{
+      border:1px solid #1e293b;
+      padding:10px;
+      font-size:13px;
+      word-break:break-all;
+    }
+    th{background:#0b1224}
+  </style>
 </head>
 
 <body>
 
 <header>
-  <strong>Coinluxora Admin</strong>
+  <strong>Coinluxora Admin Dashboard</strong>
   <button onclick="logout()">Logout</button>
 </header>
 
-<div class="container">
+<div class="box">
+  <strong>Debug Info</strong><br>
+  <div id="debug">Loading…</div>
+</div>
 
-  <h3>Add / Update Deposit Address</h3>
-  <form onsubmit="saveAddress(event)">
-    <input type="hidden" id="editId">
+<div class="box">
+  <strong>Users</strong>
+  <div id="usersStatus" style="margin-top:8px;">Loading users…</div>
 
-    <input id="network" placeholder="Network (e.g. BTC, ERC20, TRC20)" required>
-    <input id="address" placeholder="Wallet Address" required>
-    <input id="notes" placeholder="Notes (optional)">
-
-    <button type="submit">Save Address</button>
-  </form>
-
-  <h3>Deposit Addresses</h3>
   <table>
     <thead>
       <tr>
-        <th>Network</th>
-        <th>Address</th>
+        <th>Email</th>
+        <th>Balance</th>
         <th>Notes</th>
-        <th>Actions</th>
       </tr>
     </thead>
-    <tbody id="rows"></tbody>
+    <tbody id="userRows"></tbody>
   </table>
-
 </div>
 
 <script>
-const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
-const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+  // ✅ Your REAL Supabase Project
+  const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
+  const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 🔐 Protect dashboard
-checkSession();
+  // ✅ Protect dashboard
+  checkSession();
 
-async function checkSession(){
-  const { data } = await supabaseClient.auth.getSession();
-  if(!data.session){
-    window.location.href="admin.html";
-  }else{
-    load();
-  }
-}
+  async function checkSession(){
+    const { data } = await supabaseClient.auth.getSession();
 
-// 🔄 Load addresses
-async function load(){
-  const { data } = await supabaseClient
-    .from("deposit_addresses")
-    .select("*")
-    .order("created_at",{ascending:false});
+    document.getElementById("debug").innerHTML =
+      `<span class="ok">Connected to Supabase ✅</span><br>
+       URL: ${SUPABASE_URL}<br>
+       Session: ${data.session ? "✅ Active" : "❌ No session"}`;
 
-  const rows=document.getElementById("rows");
-  rows.innerHTML="";
+    if(!data.session){
+      window.location.href = "admin.html";
+      return;
+    }
 
-  data.forEach(d=>{
-    rows.innerHTML+=`
-      <tr>
-        <td>${d.network}</td>
-        <td>${d.address}</td>
-        <td>${d.notes||""}</td>
-        <td class="actions">
-          <button onclick="edit('${d.id}','${d.network}','${d.address}','${d.notes||""}')">Edit</button>
-          <button class="danger" onclick="remove('${d.id}')">Delete</button>
-        </td>
-      </tr>
-    `;
-  });
-}
-
-// ➕ Save / Update
-async function saveAddress(e){
-  e.preventDefault();
-
-  const id=document.getElementById("editId").value;
-  const network=document.getElementById("network").value;
-  const address=document.getElementById("address").value;
-  const notes=document.getElementById("notes").value;
-
-  if(id){
-    await supabaseClient
-      .from("deposit_addresses")
-      .update({network,address,notes})
-      .eq("id",id);
-  }else{
-    await supabaseClient
-      .from("deposit_addresses")
-      .insert({network,address,notes});
+    loadUsers();
   }
 
-  e.target.reset();
-  document.getElementById("editId").value="";
-  load();
-}
+  async function loadUsers(){
+    const status = document.getElementById("usersStatus");
+    const tbody = document.getElementById("userRows");
 
-// ✏️ Edit
-function edit(id,network,address,notes){
-  document.getElementById("editId").value=id;
-  document.getElementById("network").value=network;
-  document.getElementById("address").value=address;
-  document.getElementById("notes").value=notes;
-}
+    status.innerText = "Fetching users from Supabase…";
 
-// 🗑 Delete
-async function remove(id){
-  if(confirm("Delete this address?")){
-    await supabaseClient
-      .from("deposit_addresses")
-      .delete()
-      .eq("id",id);
-    load();
+    const { data, error } = await supabaseClient
+      .from("users")
+      .select("*");
+
+    console.log("USERS DATA:", data);
+    console.log("USERS ERROR:", error);
+
+    if(error){
+      status.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+      return;
+    }
+
+    if(!data || data.length === 0){
+      status.innerHTML = `<span class="error">No users found in users table.</span>`;
+      return;
+    }
+
+    status.innerHTML = `<span class="ok">Loaded ${data.length} user(s) ✅</span>`;
+    tbody.innerHTML = "";
+
+    data.forEach(u=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${u.email || ""}</td>
+        <td>${u.balance ?? 0}</td>
+        <td>${u.notes || ""}</td>
+      `;
+      tbody.appendChild(tr);
+    });
   }
-}
 
-// 🚪 Logout
-async function logout(){
-  await supabaseClient.auth.signOut();
-  window.location.href="admin.html";
-}
+  async function logout(){
+    await supabaseClient.auth.signOut();
+    window.location.href = "admin.html";
+  }
 </script>
 
 </body>
