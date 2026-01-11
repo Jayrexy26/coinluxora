@@ -22,14 +22,12 @@
     .box{border:1px solid #1e293b;border-radius:12px;padding:12px;margin-bottom:16px;background:#020617}
     .ok{color:#22c55e}
     .error{color:#f87171}
+    .small{font-size:12px;color:#94a3b8;margin-top:6px}
     table{width:100%;border-collapse:collapse;margin-top:10px}
     th,td{border:1px solid #1e293b;padding:10px;font-size:13px;word-break:break-word;vertical-align:top}
     th{background:#0b1224}
     input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #1e293b;background:#020617;color:#e5e7eb;font-size:13px;margin-bottom:8px}
     textarea{min-height:70px;resize:none}
-    form{border:1px solid #1e293b;border-radius:12px;padding:12px;margin-top:12px}
-    .small{font-size:12px;color:#94a3b8;margin-top:6px}
-    a{color:#38bdf8;font-weight:900;text-decoration:none}
     .pill{padding:5px 10px;border-radius:999px;font-weight:900;font-size:12px;display:inline-block}
     .pending{background:#facc15;color:#020617}
     .active{background:#38bdf8;color:#020617}
@@ -37,6 +35,8 @@
     .rejected{background:#f87171;color:#020617}
     .open{background:#facc15;color:#020617}
     .closed{background:#22c55e;color:#020617}
+    .errBox{border:1px solid #7f1d1d;background:#1f0a0a;padding:12px;border-radius:12px;margin-bottom:14px}
+    a{color:#38bdf8;font-weight:900;text-decoration:none}
   </style>
 </head>
 
@@ -47,24 +47,11 @@
   <button class="logout" onclick="logout()">Logout</button>
 </header>
 
-<!-- USERS -->
-<div class="box">
-  <strong>Users</strong>
-  <div class="small">Credit or debit balances instantly</div>
-  <div id="usersStatus" style="margin-top:8px;">Loading users…</div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Email</th>
-        <th>Balance</th>
-        <th>Amount</th>
-        <th>Notes</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="userRows"></tbody>
-  </table>
+<!-- ERROR VIEWER -->
+<div class="errBox">
+  <strong>System Status</strong>
+  <div class="small">If any section fails, it will show here 👇</div>
+  <div id="sys" class="small">Checking…</div>
 </div>
 
 <!-- SUPPORT TICKETS -->
@@ -85,6 +72,26 @@
       </tr>
     </thead>
     <tbody id="ticketRows"></tbody>
+  </table>
+</div>
+
+<!-- USERS -->
+<div class="box">
+  <strong>Users</strong>
+  <div class="small">Credit or debit balances instantly</div>
+  <div id="usersStatus" style="margin-top:8px;">Loading users…</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Balance</th>
+        <th>Amount</th>
+        <th>Notes</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="userRows"></tbody>
   </table>
 </div>
 
@@ -160,22 +167,25 @@
 <!-- PORTFOLIO MANAGER -->
 <div class="box">
   <strong>Portfolio Manager</strong>
-  <div class="small">Add / edit holdings with buy price + notes (BTC/ETH/USDT)</div>
+  <div class="small">Add / edit holdings with buy price + notes</div>
   <div id="pfStatus" style="margin-top:8px;">Loading portfolio…</div>
 
-  <input id="pfEmail" placeholder="Search by user email (example@gmail.com)" oninput="loadPortfolios()"/>
+  <input id="pfEmail" placeholder="Search by user email" oninput="loadPortfolios()"/>
 
   <form onsubmit="savePortfolio(event)">
     <input type="hidden" id="pfId">
     <input id="pfUserEmail" placeholder="User Email" required>
+
     <select id="pfAsset" required>
       <option value="btc">BTC</option>
       <option value="eth">ETH</option>
       <option value="usdt">USDT</option>
     </select>
-    <input id="pfAmount" type="number" step="0.00000001" placeholder="Amount (example 0.5)" required>
-    <input id="pfBuyPrice" type="number" step="0.01" placeholder="Buy Price in USD (example 45000)" required>
-    <input id="pfNotes" placeholder="Notes (example: plan bonus / manual credit)">
+
+    <input id="pfAmount" type="number" step="0.00000001" placeholder="Amount" required>
+    <input id="pfBuyPrice" type="number" step="0.01" placeholder="Buy Price in USD" required>
+    <input id="pfNotes" placeholder="Notes">
+
     <button class="save" type="submit">Save Holding</button>
   </form>
 
@@ -202,8 +212,8 @@
 
   <form onsubmit="saveAddress(event)">
     <input type="hidden" id="editId">
-    <input id="asset" placeholder="Asset (btc / eth / usdt)" required>
-    <input id="network" placeholder="Network (BTC / ERC20 / TRC20)" required>
+    <input id="asset" placeholder="Asset (btc/eth/usdt)" required>
+    <input id="network" placeholder="Network (BTC/ERC20/TRC20)" required>
     <input id="address" placeholder="Wallet Address" required>
     <button class="save" type="submit">Save Wallet</button>
   </form>
@@ -225,33 +235,50 @@
 <script>
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
-const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 checkSession();
 
-async function checkSession(){
-  const {data}=await supabaseClient.auth.getSession();
-  if(!data.session){window.location.href="admin.html";return;}
-  loadUsers();loadTickets();loadPlans();loadDeposits();loadWithdrawals();loadPortfolios();loadAddresses();
+function setSys(msg, ok=true){
+  document.getElementById("sys").innerHTML = ok ? `<span class="ok">${msg}</span>` : `<span class="error">${msg}</span>`;
 }
-
 function badgeStatus(status){
   const s=(status||"pending").toLowerCase();
   return `<span class="pill ${s}">${s}</span>`;
 }
 
-/* ---------------- SUPPORT TICKETS ---------------- */
+async function checkSession(){
+  try{
+    const {data}=await supabaseClient.auth.getSession();
+    if(!data.session){window.location.href="admin.html";return;}
+    setSys("Admin authenticated ✅ Loading data...");
+    safeLoad(loadUsers);
+    safeLoad(loadTickets);
+    safeLoad(loadPlans);
+    safeLoad(loadDeposits);
+    safeLoad(loadWithdrawals);
+    safeLoad(loadPortfolios);
+    safeLoad(loadAddresses);
+  }catch(e){
+    setSys("Fatal Error: "+e.message,false);
+  }
+}
+
+async function safeLoad(fn){
+  try{ await fn(); }
+  catch(e){ setSys("Error: "+e.message,false); }
+}
+
+/* SUPPORT */
 async function loadTickets(){
   const status=document.getElementById("ticketStatus");
   const tbody=document.getElementById("ticketRows");
 
   const {data,error}=await supabaseClient.from("support_tickets").select("*").order("created_at",{ascending:false});
-  if(error){status.innerHTML=`<span class="error">${error.message}</span>`;return;}
+  if(error){status.innerHTML=`<span class="error">${error.message}</span>`; setSys("Support tickets error: "+error.message,false); return;}
   if(!data||data.length===0){status.innerHTML=`<span class="error">No tickets yet</span>`;tbody.innerHTML="";return;}
-
   status.innerHTML=`<span class="ok">Loaded ${data.length} ticket(s) ✅</span>`;
   tbody.innerHTML="";
-
   data.forEach(t=>{
     tbody.innerHTML+=`
       <tr>
@@ -259,9 +286,7 @@ async function loadTickets(){
         <td><strong>${t.subject}</strong></td>
         <td>${t.message}</td>
         <td>${badgeStatus(t.status)}</td>
-        <td>
-          <textarea id="reply-${t.id}" placeholder="Write reply...">${t.admin_reply || ""}</textarea>
-        </td>
+        <td><textarea id="reply-${t.id}">${t.admin_reply||""}</textarea></td>
         <td>
           <button class="approve" onclick="replyTicket('${t.id}')">Save Reply</button>
           <button class="save" onclick="closeTicket('${t.id}')">Close</button>
@@ -270,37 +295,30 @@ async function loadTickets(){
     `;
   });
 }
-
 async function replyTicket(ticketId){
   const reply=document.getElementById(`reply-${ticketId}`).value.trim();
-  const res=await supabaseClient.from("support_tickets").update({
-    admin_reply: reply
-  }).eq("id", ticketId);
-
+  const res=await supabaseClient.from("support_tickets").update({admin_reply:reply}).eq("id",ticketId);
   if(res.error){alert("❌ "+res.error.message);return;}
   alert("✅ Reply saved!");
   loadTickets();
 }
-
 async function closeTicket(ticketId){
   const reply=document.getElementById(`reply-${ticketId}`).value.trim();
-  const res=await supabaseClient.from("support_tickets").update({
-    admin_reply: reply,
-    status: "closed"
-  }).eq("id", ticketId);
-
+  const res=await supabaseClient.from("support_tickets").update({admin_reply:reply,status:"closed"}).eq("id",ticketId);
   if(res.error){alert("❌ "+res.error.message);return;}
   alert("✅ Ticket closed!");
   loadTickets();
 }
 
-/* ---------------- USERS ---------------- */
-async function loadUsers(){ /* same as before */
+/* USERS */
+async function loadUsers(){
   const status=document.getElementById("usersStatus");
   const tbody=document.getElementById("userRows");
+
   const {data,error}=await supabaseClient.from("users").select("*").order("created_at",{ascending:false});
-  if(error){status.innerHTML=`<span class="error">${error.message}</span>`;return;}
+  if(error){status.innerHTML=`<span class="error">${error.message}</span>`; setSys("Users error: "+error.message,false); return;}
   if(!data||data.length===0){status.innerHTML=`<span class="error">No users found</span>`;tbody.innerHTML="";return;}
+
   status.innerHTML=`<span class="ok">Loaded ${data.length} user(s) ✅</span>`;
   tbody.innerHTML="";
   data.forEach(u=>{
@@ -308,8 +326,8 @@ async function loadUsers(){ /* same as before */
       <tr>
         <td>${u.email||""}</td>
         <td><strong>${Number(u.balance||0).toFixed(2)}</strong></td>
-        <td><input type="number" step="0.01" placeholder="Amount" id="amt-${u.id}"></td>
-        <td><input placeholder="Notes" id="note-${u.id}" value="${u.notes||""}"></td>
+        <td><input type="number" step="0.01" id="amt-${u.id}"></td>
+        <td><input id="note-${u.id}" value="${u.notes||""}"></td>
         <td>
           <button class="credit" onclick="credit('${u.id}')">Credit</button>
           <button class="debit" onclick="debit('${u.id}')">Debit</button>
@@ -317,7 +335,7 @@ async function loadUsers(){ /* same as before */
       </tr>`;
   });
 }
-async function credit(id){ /* same as before */ 
+async function credit(id){
   const amt=Number(document.getElementById(`amt-${id}`).value||0);
   const notes=document.getElementById(`note-${id}`).value;
   if(amt<=0){alert("Enter amount");return;}
@@ -340,14 +358,308 @@ async function debit(id){
   alert("✅ Debited"); loadUsers();
 }
 
-/* ---------------- BELOW: keep all other sections as already working ---------------- */
-async function loadPlans(){ /* ... */ }
-async function loadDeposits(){ /* ... */ }
-async function loadWithdrawals(){ /* ... */ }
-async function loadPortfolios(){ /* ... */ }
-async function loadAddresses(){ /* ... */ }
+/* PLANS */
+async function loadPlans(){
+  const status=document.getElementById("planStatus");
+  const tbody=document.getElementById("planRows");
 
-/* ---------------- LOGOUT ---------------- */
+  const {data,error}=await supabaseClient.from("investment_plans").select("*").order("created_at",{ascending:false});
+  if(error){status.innerHTML=`<span class="error">${error.message}</span>`; setSys("Plans error: "+error.message,false); return;}
+  if(!data||data.length===0){status.innerHTML=`<span class="error">No plans yet</span>`;tbody.innerHTML="";return;}
+
+  status.innerHTML=`<span class="ok">Loaded ${data.length} plan(s) ✅</span>`;
+  tbody.innerHTML="";
+
+  data.forEach(p=>{
+    tbody.innerHTML+=`
+      <tr>
+        <td>${p.user_email}</td>
+        <td><strong>${p.plan_name}</strong></td>
+        <td>$${Number(p.amount||0).toFixed(2)}</td>
+        <td>${p.roi_percent}%</td>
+        <td>${p.duration_days} days</td>
+        <td>${badgeStatus(p.status)}</td>
+        <td><input id="plan-note-${p.id}" value="${p.admin_note||""}"></td>
+        <td>
+          <button class="approve" onclick="approvePlan('${p.id}')">Approve</button>
+          <button class="approve" onclick="completePlan('${p.id}','${p.user_email}',${p.amount},${p.roi_percent})">Complete</button>
+          <button class="reject" onclick="rejectPlan('${p.id}')">Reject</button>
+        </td>
+      </tr>`;
+  });
+}
+async function approvePlan(planId){
+  const note=document.getElementById(`plan-note-${planId}`).value;
+  const res=await supabaseClient.from("investment_plans").update({status:"active",admin_note:note}).eq("id",planId);
+  if(res.error){alert("❌ "+res.error.message);return;}
+  alert("✅ Approved");
+  loadPlans();
+}
+async function rejectPlan(planId){
+  const note=document.getElementById(`plan-note-${planId}`).value;
+  const res=await supabaseClient.from("investment_plans").update({status:"rejected",admin_note:note}).eq("id",planId);
+  if(res.error){alert("❌ "+res.error.message);return;}
+  alert("✅ Rejected");
+  loadPlans();
+}
+async function completePlan(planId,userEmail,amount,roi){
+  const note=document.getElementById(`plan-note-${planId}`).value;
+  if(!confirm("Complete plan and credit ROI profit?")) return;
+
+  const {data:user,error:userErr}=await supabaseClient.from("users").select("*").eq("email",userEmail).single();
+  if(userErr){alert("❌ User not found");return;}
+
+  const profit = Number(amount||0) * (Number(roi||0)/100);
+  const newBalance = Number(user.balance||0) + profit;
+
+  const {error:balErr}=await supabaseClient.from("users").update({balance:newBalance}).eq("id",user.id);
+  if(balErr){alert("❌ "+balErr.message);return;}
+
+  const {error:planErr}=await supabaseClient.from("investment_plans").update({status:"completed",admin_note:note}).eq("id",planId);
+  if(planErr){alert("❌ "+planErr.message);return;}
+
+  alert("✅ Completed + Profit credited!");
+  loadUsers(); loadPlans();
+}
+
+/* DEPOSITS */
+async function loadDeposits(){
+  const status=document.getElementById("depStatus");
+  const tbody=document.getElementById("depRows");
+
+  const {data,error}=await supabaseClient.from("deposit_confirmations").select("*").order("created_at",{ascending:false});
+  if(error){status.innerHTML=`<span class="error">${error.message}</span>`; setSys("Deposits error: "+error.message,false); return;}
+  if(!data||data.length===0){status.innerHTML=`<span class="error">No deposits</span>`;tbody.innerHTML="";return;}
+
+  status.innerHTML=`<span class="ok">Loaded ${data.length} deposits ✅</span>`;
+  tbody.innerHTML="";
+  data.forEach(d=>{
+    const proofLink=`${SUPABASE_URL}/storage/v1/object/public/${d.proof_url}`;
+    tbody.innerHTML+=`
+      <tr>
+        <td>${d.user_email||"-"}</td>
+        <td>${d.asset}</td>
+        <td>${d.network}</td>
+        <td>${d.amount}</td>
+        <td>${d.tx_hash}</td>
+        <td><a href="${proofLink}" target="_blank">View</a></td>
+        <td><strong>${d.status||"pending"}</strong></td>
+        <td>
+          <button class="approve" onclick="approveAndCredit('${d.id}','${d.user_email}',${d.amount})">Approve</button>
+          <button class="reject" onclick="updateDeposit('${d.id}','rejected')">Reject</button>
+        </td>
+      </tr>`;
+  });
+}
+async function updateDeposit(id,status){
+  const res=await supabaseClient.from("deposit_confirmations").update({status}).eq("id",id);
+  if(res.error){alert(res.error.message);return;}
+  alert("✅ Deposit updated");
+  loadDeposits(); loadUsers();
+}
+async function approveAndCredit(depositId,userEmail,amount){
+  if(!userEmail||userEmail==="-"){alert("No user_email");return;}
+  const {data:user,error:userErr}=await supabaseClient.from("users").select("*").eq("email",userEmail).single();
+  if(userErr){alert("User not found");return;}
+
+  const newBalance=Number(user.balance||0)+Number(amount||0);
+  const {error:balErr}=await supabaseClient.from("users").update({balance:newBalance}).eq("id",user.id);
+  if(balErr){alert(balErr.message);return;}
+
+  const {error:depErr}=await supabaseClient.from("deposit_confirmations").update({status:"approved"}).eq("id",depositId);
+  if(depErr){alert(depErr.message);return;}
+
+  alert("✅ Approved + credited");
+  loadDeposits(); loadUsers();
+}
+
+/* WITHDRAWALS */
+async function loadWithdrawals(){
+  const status=document.getElementById("wdStatus");
+  const tbody=document.getElementById("wdRows");
+
+  const {data,error}=await supabaseClient.from("withdrawals").select("*").order("created_at",{ascending:false});
+  if(error){status.innerHTML=`<span class="error">${error.message}</span>`; setSys("Withdrawals error: "+error.message,false); return;}
+  if(!data||data.length===0){status.innerHTML=`<span class="error">No withdrawals</span>`;tbody.innerHTML="";return;}
+
+  status.innerHTML=`<span class="ok">Loaded ${data.length} withdrawals ✅</span>`;
+  tbody.innerHTML="";
+  data.forEach(w=>{
+    tbody.innerHTML+=`
+      <tr>
+        <td>${w.user_email}</td>
+        <td>${w.asset}</td>
+        <td>${w.network}</td>
+        <td>${w.amount}</td>
+        <td>${w.wallet_address}</td>
+        <td><strong>${w.status||"pending"}</strong></td>
+        <td><input id="note-${w.id}" value="${w.admin_note||""}"></td>
+        <td>
+          <button class="approve" onclick="approveWithdrawal('${w.id}','${w.user_email}',${w.amount})">Approve</button>
+          <button class="reject" onclick="updateWithdrawal('${w.id}','rejected')">Reject</button>
+        </td>
+      </tr>`;
+  });
+}
+async function updateWithdrawal(id,status){
+  const note=document.getElementById(`note-${id}`).value;
+  const res=await supabaseClient.from("withdrawals").update({status,admin_note:note}).eq("id",id);
+  if(res.error){alert(res.error.message);return;}
+  alert("✅ Updated");
+  loadWithdrawals();
+}
+async function approveWithdrawal(withdrawalId,userEmail,amount){
+  const note=document.getElementById(`note-${withdrawalId}`).value;
+  if(!confirm("Approve withdrawal & debit user?")) return;
+
+  const {data:user,error:userErr}=await supabaseClient.from("users").select("*").eq("email",userEmail).single();
+  if(userErr){alert("User not found");return;}
+
+  const currentBalance=Number(user.balance||0);
+  const withdrawAmt=Number(amount||0);
+
+  if(currentBalance < withdrawAmt){alert("❌ Insufficient balance"); return;}
+
+  const newBalance=currentBalance - withdrawAmt;
+  const {error:balErr}=await supabaseClient.from("users").update({balance:newBalance}).eq("id",user.id);
+  if(balErr){alert(balErr.message);return;}
+
+  const {error:wdErr}=await supabaseClient.from("withdrawals").update({status:"approved",admin_note:note}).eq("id",withdrawalId);
+  if(wdErr){alert(wdErr.message);return;}
+
+  alert("✅ Approved + debited");
+  loadUsers(); loadWithdrawals();
+}
+
+/* PORTFOLIO */
+async function loadPortfolios(){
+  const status=document.getElementById("pfStatus");
+  const tbody=document.getElementById("pfRows");
+  const search=document.getElementById("pfEmail").value.trim();
+
+  let query=supabaseClient.from("portfolios").select("*").order("created_at",{ascending:false});
+  if(search.length>2){ query=query.ilike("user_email", `%${search}%`); }
+
+  const {data,error}=await query;
+  if(error){status.innerHTML=`<span class="error">${error.message}</span>`; setSys("Portfolio error: "+error.message,false); return;}
+  if(!data||data.length===0){status.innerHTML=`<span class="error">No holdings found</span>`;tbody.innerHTML="";return;}
+
+  status.innerHTML=`<span class="ok">Loaded ${data.length} holding(s) ✅</span>`;
+  tbody.innerHTML="";
+  data.forEach(p=>{
+    tbody.innerHTML+=`
+      <tr>
+        <td>${p.user_email}</td>
+        <td>${(p.asset||"").toUpperCase()}</td>
+        <td>${p.amount}</td>
+        <td>$${Number(p.buy_price||0).toFixed(2)}</td>
+        <td>${p.notes||"-"}</td>
+        <td>
+          <button class="edit" onclick="editPortfolio('${p.id}','${p.user_email}','${p.asset}','${p.amount}','${p.buy_price}','${(p.notes||"").replace(/'/g,"")}')">Edit</button>
+          <button class="danger" onclick="deletePortfolio('${p.id}')">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+function editPortfolio(id,email,asset,amount,buy,notes){
+  document.getElementById("pfId").value=id;
+  document.getElementById("pfUserEmail").value=email;
+  document.getElementById("pfAsset").value=(asset||"").toLowerCase();
+  document.getElementById("pfAmount").value=amount;
+  document.getElementById("pfBuyPrice").value=buy;
+  document.getElementById("pfNotes").value=notes||"";
+}
+async function savePortfolio(e){
+  e.preventDefault();
+  const id=document.getElementById("pfId").value;
+  const user_email=document.getElementById("pfUserEmail").value.trim();
+  const asset=document.getElementById("pfAsset").value.trim().toLowerCase();
+  const amount=Number(document.getElementById("pfAmount").value||0);
+  const buy_price=Number(document.getElementById("pfBuyPrice").value||0);
+  const notes=document.getElementById("pfNotes").value.trim();
+
+  if(amount<=0||buy_price<=0){alert("Amount and buy price required");return;}
+
+  let res;
+  if(id){
+    res=await supabaseClient.from("portfolios").update({user_email,asset,amount,buy_price,notes}).eq("id",id);
+  }else{
+    res=await supabaseClient.from("portfolios").insert([{user_email,asset,amount,buy_price,notes}]);
+  }
+  if(res.error){alert("❌ "+res.error.message);return;}
+  alert("✅ Holding saved");
+  document.getElementById("pfId").value="";
+  e.target.reset();
+  loadPortfolios();
+}
+async function deletePortfolio(id){
+  if(!confirm("Delete holding?")) return;
+  const res=await supabaseClient.from("portfolios").delete().eq("id",id);
+  if(res.error){alert("❌ "+res.error.message);return;}
+  alert("✅ Deleted");
+  loadPortfolios();
+}
+
+/* WALLETS */
+async function loadAddresses(){
+  const status=document.getElementById("addrStatus");
+  const tbody=document.getElementById("addrRows");
+
+  const {data,error}=await supabaseClient.from("deposit_addresses").select("id,asset,network,address").order("id",{ascending:true});
+  if(error){status.innerHTML=`<span class="error">${error.message}</span>`; setSys("Wallet error: "+error.message,false); return;}
+
+  status.innerHTML=`<span class="ok">Loaded ${data.length} wallet(s) ✅</span>`;
+  tbody.innerHTML="";
+  data.forEach(a=>{
+    tbody.innerHTML+=`
+      <tr>
+        <td>${a.id}</td>
+        <td>${a.asset}</td>
+        <td>${a.network}</td>
+        <td>${a.address}</td>
+        <td>
+          <button class="edit" onclick="editAddress('${a.id}','${a.asset}','${a.network}','${a.address}')">Edit</button>
+          <button class="danger" onclick="deleteAddress('${a.id}')">Delete</button>
+        </td>
+      </tr>`;
+  });
+}
+function editAddress(id,asset,network,address){
+  document.getElementById("editId").value=id;
+  document.getElementById("asset").value=asset;
+  document.getElementById("network").value=network;
+  document.getElementById("address").value=address;
+}
+async function saveAddress(e){
+  e.preventDefault();
+  const id=document.getElementById("editId").value;
+  const asset=document.getElementById("asset").value.trim().toLowerCase();
+  const network=document.getElementById("network").value.trim().toUpperCase();
+  const address=document.getElementById("address").value.trim();
+
+  let res;
+  if(id){
+    res=await supabaseClient.from("deposit_addresses").update({asset,network,address}).eq("id",id);
+  }else{
+    res=await supabaseClient.from("deposit_addresses").insert([{asset,network,address}]);
+  }
+  if(res.error){alert("❌ "+res.error.message);return;}
+
+  alert("✅ Wallet saved");
+  document.getElementById("editId").value="";
+  e.target.reset();
+  loadAddresses();
+}
+async function deleteAddress(id){
+  if(!confirm("Delete wallet?")) return;
+  const res=await supabaseClient.from("deposit_addresses").delete().eq("id",id);
+  if(res.error){alert("❌ "+res.error.message);return;}
+  alert("✅ Deleted");
+  loadAddresses();
+}
+
+/* LOGOUT */
 async function logout(){
   await supabaseClient.auth.signOut();
   window.location.href="admin.html";
