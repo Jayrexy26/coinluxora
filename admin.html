@@ -25,8 +25,8 @@ input{
   color:#e5e7eb;
 }
 button{
-  padding:12px;
   width:100%;
+  padding:12px;
   border:none;
   border-radius:10px;
   background:#38bdf8;
@@ -44,6 +44,7 @@ th,td{
   padding:10px;
   font-size:13px;
 }
+.hidden{display:none}
 .status{padding:4px 10px;border-radius:999px}
 .pending{color:#facc15}
 .approved{color:#22c55e}
@@ -51,29 +52,28 @@ th,td{
 .approve{background:#22c55e}
 .reject{background:#f87171}
 a{color:#38bdf8}
-.hidden{display:none}
+#error{color:#f87171;margin-top:10px}
 </style>
 </head>
 <body>
 
-<div id="login">
+<div id="login-box">
   <h1>Admin Login</h1>
   <input id="email" placeholder="Admin Email">
   <input id="password" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <p id="login-msg"></p>
+  <button onclick="adminLogin()">Login</button>
+  <div id="error"></div>
 </div>
 
-<div id="dashboard" class="hidden">
+<div id="admin-panel" class="hidden">
   <h1>Deposit Approvals</h1>
-
   <table>
     <thead>
       <tr>
         <th>Asset</th>
         <th>Network</th>
         <th>Amount</th>
-        <th>Tx</th>
+        <th>Tx Hash</th>
         <th>Proof</th>
         <th>Status</th>
         <th>Action</th>
@@ -84,47 +84,57 @@ a{color:#38bdf8}
 </div>
 
 <script>
-const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
-const SUPABASE_ANON_KEY=
+const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
+const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 
-const ADMIN_EMAIL="admin@coinluxora.com";
+const ADMIN_EMAIL = "admin@coinluxora.com";
 
-const supabase=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const supabase = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
-async function login(){
-  const email=document.getElementById("email").value;
-  const password=document.getElementById("password").value;
+async function adminLogin(){
+  document.getElementById("error").innerText = "Logging in…";
 
-  const {error}=await supabase.auth.signInWithPassword({email,password});
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { data, error } =
+    await supabase.auth.signInWithPassword({ email, password });
+
   if(error){
-    document.getElementById("login-msg").innerText="Login failed";
+    document.getElementById("error").innerText = error.message;
     return;
   }
-  checkAuth();
-}
 
-async function checkAuth(){
-  const {data}=await supabase.auth.getUser();
-  if(!data.user || data.user.email!==ADMIN_EMAIL){
-    alert("Access denied");
+  if(data.user.email !== ADMIN_EMAIL){
+    document.getElementById("error").innerText = "Not authorized";
     return;
   }
-  document.getElementById("login").classList.add("hidden");
-  document.getElementById("dashboard").classList.remove("hidden");
-  load();
+
+  document.getElementById("login-box").classList.add("hidden");
+  document.getElementById("admin-panel").classList.remove("hidden");
+  loadDeposits();
 }
 
-async function load(){
-  const {data}=await supabase
+async function loadDeposits(){
+  const { data, error } = await supabase
     .from("deposit_confirmations")
     .select("*")
     .order("created_at",{ascending:false});
 
-  const rows=document.getElementById("rows");
-  rows.innerHTML="";
+  if(error){
+    alert("Failed to load deposits");
+    return;
+  }
+
+  const rows = document.getElementById("rows");
+  rows.innerHTML = "";
+
   data.forEach(r=>{
-    rows.innerHTML+=`
+    rows.innerHTML += `
       <tr>
         <td>${r.asset}</td>
         <td>${r.network}</td>
@@ -132,24 +142,26 @@ async function load(){
         <td>${r.tx_hash}</td>
         <td>
           <a target="_blank"
-          href="https://xdcscknfomlzwysczegc.supabase.co/storage/v1/object/public/${r.proof_url}">
+          href="${SUPABASE_URL}/storage/v1/object/public/${r.proof_url}">
           View</a>
         </td>
         <td class="status ${r.status}">${r.status}</td>
         <td>
-          <button class="approve" onclick="update('${r.id}','approved')">Approve</button>
-          <button class="reject" onclick="update('${r.id}','rejected')">Reject</button>
+          <button class="approve" onclick="updateStatus('${r.id}','approved')">Approve</button>
+          <button class="reject" onclick="updateStatus('${r.id}','rejected')">Reject</button>
         </td>
       </tr>`;
   });
 }
 
-async function update(id,status){
-  await supabase.from("deposit_confirmations").update({status}).eq("id",id);
-  load();
-}
+async function updateStatus(id,status){
+  await supabase
+    .from("deposit_confirmations")
+    .update({status})
+    .eq("id",id);
 
-checkAuth();
+  loadDeposits();
+}
 </script>
 
 </body>
