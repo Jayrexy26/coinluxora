@@ -112,7 +112,6 @@ let depositAddresses=[];
 init();
 
 async function init(){
-  // session check
   const { data:userData } = await supabaseClient.auth.getUser();
   if(!userData.user){
     document.body.innerHTML="<h2 style='color:white'>You must login first.</h2>";
@@ -199,16 +198,16 @@ async function submitDeposit(){
     return;
   }
 
-  // Upload to Supabase Storage (bucket must exist named 'proofs')
+  // ✅ Correct bucket name: "proof"
   const filePath = `${Date.now()}-${file.name}`;
-  const upload = await supabaseClient.storage.from("proofs").upload(filePath,file);
+  const upload = await supabaseClient.storage.from("proof").upload(filePath,file);
 
   if(upload.error){
     msg.innerHTML="<span class='err'>Upload failed: "+upload.error.message+"</span>";
     return;
   }
 
-  const proof_url = `proofs/${filePath}`;
+  const proof_url = `proof/${filePath}`;
 
   const res = await supabaseClient.from("deposit_confirmations").insert([{
     user_email: currentUserEmail,
