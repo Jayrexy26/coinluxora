@@ -24,12 +24,22 @@ header{
 button{
   background:#38bdf8;
   border:none;
-  padding:10px 14px;
+  padding:8px 12px;
   border-radius:8px;
   font-weight:700;
   cursor:pointer;
 }
+.danger{background:#f87171}
 .container{padding:16px}
+input{
+  width:100%;
+  padding:10px;
+  margin-bottom:8px;
+  border-radius:8px;
+  border:1px solid #1e293b;
+  background:#020617;
+  color:#e5e7eb;
+}
 table{
   width:100%;
   border-collapse:collapse;
@@ -41,7 +51,13 @@ th,td{
   font-size:13px;
   word-break:break-all;
 }
-.hidden{display:none}
+.actions button{margin-right:4px}
+form{
+  border:1px solid #1e293b;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:20px;
+}
 </style>
 </head>
 
@@ -53,18 +69,31 @@ th,td{
 </header>
 
 <div class="container">
-  <h3>Deposit Addresses</h3>
 
+  <h3>Add / Update Deposit Address</h3>
+  <form onsubmit="saveAddress(event)">
+    <input type="hidden" id="editId">
+
+    <input id="network" placeholder="Network (e.g. BTC, ERC20, TRC20)" required>
+    <input id="address" placeholder="Wallet Address" required>
+    <input id="notes" placeholder="Notes (optional)">
+
+    <button type="submit">Save Address</button>
+  </form>
+
+  <h3>Deposit Addresses</h3>
   <table>
     <thead>
       <tr>
         <th>Network</th>
         <th>Address</th>
         <th>Notes</th>
+        <th>Actions</th>
       </tr>
     </thead>
-    <tbody id="depositRows"></tbody>
+    <tbody id="rows"></tbody>
   </table>
+
 </div>
 
 <script>
@@ -77,37 +106,88 @@ const supabaseClient = supabase.createClient(
   SUPABASE_ANON_KEY
 );
 
-// 🔐 PROTECT DASHBOARD
+// 🔐 Protect dashboard
 checkSession();
 
 async function checkSession(){
   const { data } = await supabaseClient.auth.getSession();
   if(!data.session){
-    window.location.href = "admin.html";
-  } else {
-    loadDeposits();
+    window.location.href="admin.html";
+  }else{
+    load();
   }
 }
 
-async function loadDeposits(){
+// 🔄 Load addresses
+async function load(){
   const { data } = await supabaseClient
     .from("deposit_addresses")
-    .select("*");
+    .select("*")
+    .order("created_at",{ascending:false});
 
-  const tbody = document.getElementById("depositRows");
-  tbody.innerHTML="";
+  const rows=document.getElementById("rows");
+  rows.innerHTML="";
 
   data.forEach(d=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
-      <td>${d.network || ""}</td>
-      <td>${d.address || ""}</td>
-      <td>${d.notes || ""}</td>
+    rows.innerHTML+=`
+      <tr>
+        <td>${d.network}</td>
+        <td>${d.address}</td>
+        <td>${d.notes||""}</td>
+        <td class="actions">
+          <button onclick="edit('${d.id}','${d.network}','${d.address}','${d.notes||""}')">Edit</button>
+          <button class="danger" onclick="remove('${d.id}')">Delete</button>
+        </td>
+      </tr>
     `;
-    tbody.appendChild(tr);
   });
 }
 
+// ➕ Save / Update
+async function saveAddress(e){
+  e.preventDefault();
+
+  const id=document.getElementById("editId").value;
+  const network=document.getElementById("network").value;
+  const address=document.getElementById("address").value;
+  const notes=document.getElementById("notes").value;
+
+  if(id){
+    await supabaseClient
+      .from("deposit_addresses")
+      .update({network,address,notes})
+      .eq("id",id);
+  }else{
+    await supabaseClient
+      .from("deposit_addresses")
+      .insert({network,address,notes});
+  }
+
+  e.target.reset();
+  document.getElementById("editId").value="";
+  load();
+}
+
+// ✏️ Edit
+function edit(id,network,address,notes){
+  document.getElementById("editId").value=id;
+  document.getElementById("network").value=network;
+  document.getElementById("address").value=address;
+  document.getElementById("notes").value=notes;
+}
+
+// 🗑 Delete
+async function remove(id){
+  if(confirm("Delete this address?")){
+    await supabaseClient
+      .from("deposit_addresses")
+      .delete()
+      .eq("id",id);
+    load();
+  }
+}
+
+// 🚪 Logout
 async function logout(){
   await supabaseClient.auth.signOut();
   window.location.href="admin.html";
