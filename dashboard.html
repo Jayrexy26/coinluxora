@@ -85,7 +85,7 @@
 <!-- WITHDRAWALS -->
 <div class="box">
   <strong>Withdrawals</strong>
-  <div class="small">Approve or reject withdrawal requests</div>
+  <div class="small">Approve or reject withdrawals (Approve auto-debits user balance)</div>
   <div id="wdStatus" style="margin-top:8px;">Loading withdrawals…</div>
 
   <table>
@@ -146,6 +146,7 @@ async function checkSession(){
   loadUsers();loadDeposits();loadWithdrawals();loadAddresses();
 }
 
+/* ---------------- USERS ---------------- */
 async function loadUsers(){
   const status=document.getElementById("usersStatus");
   const tbody=document.getElementById("userRows");
@@ -168,7 +169,6 @@ async function loadUsers(){
       </tr>`;
   });
 }
-
 async function credit(id){
   const amt=Number(document.getElementById(`amt-${id}`).value||0);
   const notes=document.getElementById(`note-${id}`).value;
@@ -180,7 +180,6 @@ async function credit(id){
   if(res.error){alert(res.error.message);return;}
   alert("✅ Credited"); loadUsers();
 }
-
 async function debit(id){
   const amt=Number(document.getElementById(`amt-${id}`).value||0);
   const notes=document.getElementById(`note-${id}`).value;
@@ -193,6 +192,7 @@ async function debit(id){
   alert("✅ Debited"); loadUsers();
 }
 
+/* ---------------- DEPOSITS (AUTO CREDIT) ---------------- */
 async function loadDeposits(){
   const status=document.getElementById("depStatus");
   const tbody=document.getElementById("depRows");
@@ -219,13 +219,11 @@ async function loadDeposits(){
       </tr>`;
   });
 }
-
 async function updateDeposit(id,status){
   const res=await supabaseClient.from("deposit_confirmations").update({status}).eq("id",id);
   if(res.error){alert(res.error.message);return;}
   alert("✅ Deposit updated"); loadDeposits(); loadUsers();
 }
-
 async function approveAndCredit(depositId,userEmail,amount){
   if(!userEmail||userEmail==="-"){alert("No user_email");return;}
   const {data:user,error:userErr}=await supabaseClient.from("users").select("*").eq("email",userEmail).single();
@@ -238,6 +236,7 @@ async function approveAndCredit(depositId,userEmail,amount){
   alert("✅ Approved + Credited"); loadDeposits(); loadUsers();
 }
 
+/* ---------------- WITHDRAWALS (AUTO DEBIT) ---------------- */
 async function loadWithdrawals(){
   const status=document.getElementById("wdStatus");
   const tbody=document.getElementById("wdRows");
@@ -257,7 +256,7 @@ async function loadWithdrawals(){
         <td><strong>${w.status||"pending"}</strong></td>
         <td><input id="note-${w.id}" value="${w.admin_note||""}" placeholder="Admin note"></td>
         <td>
-          <button class="approve" onclick="updateWithdrawal('${w.id}','approved')">Approve</button>
+          <button class="approve" onclick="approveWithdrawal('${w.id}','${w.user_email}',${w.amount})">Approve</button>
           <button class="reject" onclick="updateWithdrawal('${w.id}','rejected')">Reject</button>
         </td>
       </tr>`;
@@ -271,6 +270,43 @@ async function updateWithdrawal(id,status){
   alert("✅ Withdrawal updated"); loadWithdrawals();
 }
 
+async function approveWithdrawal(withdrawalId,userEmail,amount){
+  const note=document.getElementById(`note-${withdrawalId}`).value;
+
+  if(!confirm("Approve this withdrawal and debit user balance?")) return;
+
+  // Fetch user
+  const {data:user,error:userErr}=await supabaseClient.from("users").select("*").eq("email",userEmail).single();
+  if(userErr){alert("User not found");return;}
+
+  const currentBalance=Number(user.balance||0);
+  const withdrawAmt=Number(amount||0);
+
+  if(withdrawAmt<=0){alert("Invalid amount");return;}
+  if(currentBalance < withdrawAmt){
+    alert("❌ Insufficient balance. Cannot approve.");
+    return;
+  }
+
+  // Debit user
+  const newBalance=currentBalance - withdrawAmt;
+  const {error:balErr}=await supabaseClient.from("users").update({balance:newBalance}).eq("id",user.id);
+  if(balErr){alert(balErr.message);return;}
+
+  // Approve withdrawal
+  const {error:wdErr}=await supabaseClient.from("withdrawals").update({
+    status:"approved",
+    admin_note:note
+  }).eq("id",withdrawalId);
+
+  if(wdErr){alert(wdErr.message);return;}
+
+  alert("✅ Withdrawal approved + balance debited!");
+  loadUsers();
+  loadWithdrawals();
+}
+
+/* ---------------- ADDRESSES ---------------- */
 async function loadAddresses(){
   const status=document.getElementById("addrStatus");
   const tbody=document.getElementById("addrRows");
@@ -292,14 +328,12 @@ async function loadAddresses(){
       </tr>`;
   });
 }
-
 function editAddress(id,asset,network,address){
   document.getElementById("editId").value=id;
   document.getElementById("asset").value=asset;
   document.getElementById("network").value=network;
   document.getElementById("address").value=address;
 }
-
 async function saveAddress(e){
   e.preventDefault();
   const id=document.getElementById("editId").value;
@@ -316,7 +350,6 @@ async function saveAddress(e){
   if(res.error){alert(res.error.message);return;}
   alert("✅ Wallet saved"); document.getElementById("editId").value=""; e.target.reset(); loadAddresses();
 }
-
 async function deleteAddress(id){
   if(!confirm("Delete this wallet?")) return;
   const res=await supabaseClient.from("deposit_addresses").delete().eq("id",id);
