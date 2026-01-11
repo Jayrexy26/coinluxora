@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body{margin:0;font-family:system-ui;background:#020617;color:#e5e7eb;padding:16px}
+body{margin:0;font-family:system-ui;background:#020617;color:#e5e7eb;padding:16px;padding-bottom:90px}
 header{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #1e293b;margin-bottom:14px}
 button{border:none;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;background:#38bdf8;color:#020617}
 .menuBtn{background:#0b1224;color:#e5e7eb;border:1px solid #1e293b}
@@ -29,70 +29,47 @@ a:hover{text-decoration:underline}
 .rejected{background:#f87171;color:#020617}
 
 /* SIDEBAR */
-.overlay{
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.65);
-  display:none; z-index:999;
-  backdrop-filter: blur(4px);
-}
-.sidebar{
-  position:fixed; top:0; left:-290px;
-  width:270px; height:100vh;
-  background:#020617;
-  border-right:1px solid #1e293b;
-  padding:16px;
-  transition:.28s ease;
-  z-index:1000;
-  box-shadow: 0 20px 80px rgba(0,0,0,.6);
-}
+.overlay{position:fixed; inset:0;background:rgba(0,0,0,.65);display:none; z-index:999;backdrop-filter: blur(4px);}
+.sidebar{position:fixed; top:0; left:-290px;width:270px; height:100vh;background:#020617;border-right:1px solid #1e293b;padding:16px;transition:.28s ease;z-index:1000;box-shadow:0 20px 80px rgba(0,0,0,.6);}
 .sidebar.open{ left:0; }
 .overlay.show{ display:block; }
 
-.brandRow{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-.brand{
-  font-weight:1000;
-  font-size:18px;
-  letter-spacing:.6px;
-}
-.closeBtn{
-  background:#0b1224;
-  border:1px solid #1e293b;
-  color:#e5e7eb;
-  border-radius:10px;
-  padding:8px 12px;
-}
-.userTag{
-  padding:10px;
-  border-radius:12px;
-  border:1px solid #1e293b;
-  background:#0b1224;
-  margin-bottom:12px;
-}
-.sideItem{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  padding:12px;
-  border:1px solid #1e293b;
-  border-radius:12px;
-  margin-bottom:10px;
-  color:#e5e7eb;
-  background:#0b1224;
-}
+.brandRow{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.brand{font-weight:1000;font-size:18px;letter-spacing:.6px;}
+.closeBtn{background:#0b1224;border:1px solid #1e293b;color:#e5e7eb;border-radius:10px;padding:8px 12px;}
+.userTag{padding:10px;border-radius:12px;border:1px solid #1e293b;background:#0b1224;margin-bottom:12px;}
+.sideItem{display:flex;gap:10px;align-items:center;padding:12px;border:1px solid #1e293b;border-radius:12px;margin-bottom:10px;color:#e5e7eb;background:#0b1224;}
 .sideItem:hover{background:#0f1a33}
-.activeLink{
-  border:1px solid #38bdf8;
-  background:rgba(56,189,248,0.12);
+.activeLink{border:1px solid #38bdf8;background:rgba(56,189,248,0.12);}
+.sideLogout{background:#f87171;color:#020617;border:none;width:100%;padding:12px;border-radius:12px;font-weight:1000}
+
+/* BOTTOM NAV */
+.bottomNav{
+  position:fixed;left:0;right:0;bottom:0;
+  height:72px;
+  background:#020617;
+  border-top:1px solid #1e293b;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:1200;
+  padding:6px 10px;
 }
-.sideLogout{
-  background:#f87171;color:#020617;border:none;
-  width:100%;padding:12px;border-radius:12px;font-weight:1000
+.navItem{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:#94a3b8;
+  font-size:12px;
+  font-weight:900;
+  padding:8px 0;
+  border-radius:14px;
+  cursor:pointer;
 }
+.navItem span{font-size:18px;margin-bottom:4px}
+.navActive{color:#38bdf8;background:rgba(56,189,248,0.10)}
 </style>
 </head>
 
@@ -112,7 +89,6 @@ a:hover{text-decoration:underline}
     <div id="sideEmail" style="font-weight:1000;margin-top:6px;">---</div>
   </div>
 
-  <!-- Active highlight on dashboard -->
   <a class="sideItem activeLink" href="user-dashboard.html">🏠 Dashboard</a>
   <a class="sideItem" href="portfolio.html">📊 Portfolio</a>
   <a class="sideItem" href="plans.html">💼 Investment Plans</a>
@@ -155,7 +131,7 @@ a:hover{text-decoration:underline}
   </div>
 </div>
 
-<div class="box">
+<div class="box" id="depositSection">
   <h2>Deposit</h2>
   <div class="small">Select asset/network to see wallet address</div>
 
@@ -202,17 +178,32 @@ a:hover{text-decoration:underline}
   <div id="depMsg" class="small"></div>
 </div>
 
+<!-- BOTTOM NAV -->
+<div class="bottomNav">
+  <div class="navItem navActive" onclick="goHome()"><span>🏠</span>Home</div>
+  <div class="navItem" onclick="goDeposit()"><span>💳</span>Deposit</div>
+  <div class="navItem" onclick="goWithdraw()"><span>➡</span>Withdraw</div>
+  <div class="navItem" onclick="goPlans()"><span>💼</span>Plans</div>
+  <div class="navItem" onclick="goSupport()"><span>🧑‍💻</span>Support</div>
+</div>
+
 <script>
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-
 const BUCKET_NAME="proofs";
 
 let currentUserEmail="";
 let depositAddresses=[];
 
 init();
+
+/* NAV FUNCTIONS */
+function goHome(){ window.scrollTo({top:0,behavior:"smooth"}); }
+function goDeposit(){ document.getElementById("depositSection").scrollIntoView({behavior:"smooth"}); }
+function goWithdraw(){ window.location.href="withdraw.html"; }
+function goPlans(){ window.location.href="plans.html"; }
+function goSupport(){ window.location.href="support.html"; }
 
 function openMenu(){
   document.getElementById("sidebar").classList.add("open");
@@ -243,7 +234,6 @@ async function init(){
   }
 
   currentUserEmail=userData.user.email;
-
   document.getElementById("email").innerHTML=`Logged in as: <span class="ok">${currentUserEmail}</span>`;
   document.getElementById("sideEmail").innerText=currentUserEmail;
 
@@ -317,12 +307,10 @@ async function loadDepositAddresses(){
 function renderDepositAddress(){
   const asset=document.getElementById("depAsset").value.toLowerCase();
   const network=document.getElementById("depNetwork").value.toUpperCase();
-
   const found=depositAddresses.find(d =>
     (d.asset||"").toLowerCase()===asset &&
     (d.network||"").toUpperCase()===network
   );
-
   document.getElementById("depAddress").innerText = found ? found.address : "No address configured";
 }
 
@@ -336,7 +324,6 @@ async function fetchPrices(){
   try{
     const res=await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,tether&vs_currencies=usd");
     const data=await res.json();
-
     document.getElementById("prices").innerHTML=`
       <div class="card"><strong>BTC</strong><br>$${data.bitcoin.usd}</div>
       <div class="card"><strong>ETH</strong><br>$${data.ethereum.usd}</div>
