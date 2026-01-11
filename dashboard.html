@@ -8,29 +8,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    body{
-      margin:0;
-      font-family:system-ui;
-      background:#020617;
-      color:#e5e7eb;
-      padding:16px;
-    }
-    header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:14px 0;
-      border-bottom:1px solid #1e293b;
-      margin-bottom:12px;
-    }
-    button{
-      border:none;
-      padding:10px 14px;
-      border-radius:10px;
-      font-weight:700;
-      cursor:pointer;
-      color:#020617;
-    }
+    body{margin:0;font-family:system-ui;background:#020617;color:#e5e7eb;padding:16px}
+    header{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #1e293b;margin-bottom:12px}
+    button{border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;color:#020617}
     .logout{background:#38bdf8}
     .credit{background:#22c55e;margin-right:8px}
     .debit{background:#f87171}
@@ -39,54 +19,15 @@
     .save{background:#22c55e}
     .danger{background:#f87171}
     .edit{background:#facc15;margin-right:8px}
-
-    .box{
-      border:1px solid #1e293b;
-      border-radius:12px;
-      padding:12px;
-      margin-bottom:16px;
-      background:#020617;
-    }
+    .box{border:1px solid #1e293b;border-radius:12px;padding:12px;margin-bottom:16px;background:#020617}
     .ok{color:#22c55e}
     .error{color:#f87171}
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:10px;
-    }
-    th,td{
-      border:1px solid #1e293b;
-      padding:10px;
-      font-size:13px;
-      word-break:break-all;
-      vertical-align:top;
-    }
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{border:1px solid #1e293b;padding:10px;font-size:13px;word-break:break-all;vertical-align:top}
     th{background:#0b1224}
-
-    input{
-      width:100%;
-      padding:10px;
-      border-radius:10px;
-      border:1px solid #1e293b;
-      background:#020617;
-      color:#e5e7eb;
-      font-size:13px;
-      margin-bottom:8px;
-    }
-
-    form{
-      border:1px solid #1e293b;
-      border-radius:12px;
-      padding:12px;
-      margin-top:12px;
-    }
-
-    .small{
-      font-size:12px;
-      color:#94a3b8;
-      margin-top:6px;
-    }
+    input{width:100%;padding:10px;border-radius:10px;border:1px solid #1e293b;background:#020617;color:#e5e7eb;font-size:13px;margin-bottom:8px}
+    form{border:1px solid #1e293b;border-radius:12px;padding:12px;margin-top:12px}
+    .small{font-size:12px;color:#94a3b8;margin-top:6px}
     a{color:#38bdf8}
   </style>
 </head>
@@ -120,7 +61,7 @@
 
 <!-- DEPOSIT CONFIRMATIONS -->
 <div class="box">
-  <strong>Deposit Confirmations</strong>
+  <strong>Deposits</strong>
   <div class="small">Approve deposit and balance auto-credits</div>
   <div id="depStatus" style="margin-top:8px;">Loading deposits…</div>
 
@@ -138,6 +79,29 @@
       </tr>
     </thead>
     <tbody id="depRows"></tbody>
+  </table>
+</div>
+
+<!-- WITHDRAWALS -->
+<div class="box">
+  <strong>Withdrawals</strong>
+  <div class="small">Approve or reject withdrawal requests</div>
+  <div id="wdStatus" style="margin-top:8px;">Loading withdrawals…</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>User Email</th>
+        <th>Asset</th>
+        <th>Network</th>
+        <th>Amount</th>
+        <th>Wallet Address</th>
+        <th>Status</th>
+        <th>Admin Note</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="wdRows"></tbody>
   </table>
 </div>
 
@@ -170,246 +134,153 @@
 </div>
 
 <script>
-  const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
-  const SUPABASE_ANON_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+checkSession();
 
-  checkSession();
+async function checkSession(){
+  const {data}=await supabaseClient.auth.getSession();
+  if(!data.session){window.location.href="admin.html";return;}
+  loadUsers();loadDeposits();loadWithdrawals();loadAddresses();
+}
 
-  async function checkSession(){
-    const { data } = await supabaseClient.auth.getSession();
-    if(!data.session){
-      window.location.href="admin.html";
-      return;
-    }
-
-    loadUsers();
-    loadDeposits();
-    loadAddresses();
-  }
-
-  // ---------------- USERS ----------------
-  async function loadUsers(){
-    const status = document.getElementById("usersStatus");
-    const tbody = document.getElementById("userRows");
-
-    const { data, error } = await supabaseClient
-      .from("users")
-      .select("*")
-      .order("created_at",{ascending:false});
-
-    if(error){
-      status.innerHTML = `<span class="error">Error: ${error.message}</span>`;
-      return;
-    }
-
-    if(!data || data.length === 0){
-      status.innerHTML = `<span class="error">No users found.</span>`;
-      tbody.innerHTML = "";
-      return;
-    }
-
-    status.innerHTML = `<span class="ok">Loaded ${data.length} user(s) ✅</span>`;
-    tbody.innerHTML = "";
-
-    data.forEach(u=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${u.email || ""}</td>
-        <td><strong>${Number(u.balance || 0).toFixed(2)}</strong></td>
+async function loadUsers(){
+  const status=document.getElementById("usersStatus");
+  const tbody=document.getElementById("userRows");
+  const {data,error}=await supabaseClient.from("users").select("*").order("created_at",{ascending:false});
+  if(error){status.innerHTML=`<span class="error">${error.message}</span>`;return;}
+  if(!data||data.length===0){status.innerHTML=`<span class="error">No users found</span>`;tbody.innerHTML="";return;}
+  status.innerHTML=`<span class="ok">Loaded ${data.length} user(s) ✅</span>`;
+  tbody.innerHTML="";
+  data.forEach(u=>{
+    tbody.innerHTML+=`
+      <tr>
+        <td>${u.email||""}</td>
+        <td><strong>${Number(u.balance||0).toFixed(2)}</strong></td>
         <td><input type="number" step="0.01" placeholder="Amount" id="amt-${u.id}"></td>
-        <td><input placeholder="Notes" id="note-${u.id}" value="${u.notes || ""}"></td>
+        <td><input placeholder="Notes" id="note-${u.id}" value="${u.notes||""}"></td>
         <td>
           <button class="credit" onclick="credit('${u.id}')">Credit</button>
           <button class="debit" onclick="debit('${u.id}')">Debit</button>
         </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
+      </tr>`;
+  });
+}
 
-  async function credit(userId){
-    const amt = Number(document.getElementById(`amt-${userId}`).value || 0);
-    const notes = document.getElementById(`note-${userId}`).value;
+async function credit(id){
+  const amt=Number(document.getElementById(`amt-${id}`).value||0);
+  const notes=document.getElementById(`note-${id}`).value;
+  if(amt<=0){alert("Enter amount");return;}
+  const {data:u,error:e}=await supabaseClient.from("users").select("balance").eq("id",id).single();
+  if(e){alert(e.message);return;}
+  const newBal=Number(u.balance||0)+amt;
+  const res=await supabaseClient.from("users").update({balance:newBal,notes}).eq("id",id);
+  if(res.error){alert(res.error.message);return;}
+  alert("✅ Credited"); loadUsers();
+}
 
-    if(amt <= 0){ alert("Enter amount to credit"); return; }
+async function debit(id){
+  const amt=Number(document.getElementById(`amt-${id}`).value||0);
+  const notes=document.getElementById(`note-${id}`).value;
+  if(amt<=0){alert("Enter amount");return;}
+  const {data:u,error:e}=await supabaseClient.from("users").select("balance").eq("id",id).single();
+  if(e){alert(e.message);return;}
+  const newBal=Math.max(0,Number(u.balance||0)-amt);
+  const res=await supabaseClient.from("users").update({balance:newBal,notes}).eq("id",id);
+  if(res.error){alert(res.error.message);return;}
+  alert("✅ Debited"); loadUsers();
+}
 
-    const { data: user, error: fetchErr } = await supabaseClient
-      .from("users")
-      .select("balance")
-      .eq("id", userId)
-      .single();
-
-    if(fetchErr){ alert(fetchErr.message); return; }
-
-    const newBalance = Number(user.balance || 0) + amt;
-
-    const res = await supabaseClient
-      .from("users")
-      .update({ balance: newBalance, notes })
-      .eq("id", userId);
-
-    if(res.error){ alert("❌ " + res.error.message); return; }
-
-    alert("✅ Balance credited!");
-    loadUsers();
-  }
-
-  async function debit(userId){
-    const amt = Number(document.getElementById(`amt-${userId}`).value || 0);
-    const notes = document.getElementById(`note-${userId}`).value;
-
-    if(amt <= 0){ alert("Enter amount to debit"); return; }
-
-    const { data: user, error: fetchErr } = await supabaseClient
-      .from("users")
-      .select("balance")
-      .eq("id", userId)
-      .single();
-
-    if(fetchErr){ alert(fetchErr.message); return; }
-
-    const current = Number(user.balance || 0);
-    const newBalance = Math.max(0, current - amt);
-
-    const res = await supabaseClient
-      .from("users")
-      .update({ balance: newBalance, notes })
-      .eq("id", userId);
-
-    if(res.error){ alert("❌ " + res.error.message); return; }
-
-    alert("✅ Balance debited!");
-    loadUsers();
-  }
-
-  // ---------------- DEPOSITS (AUTO CREDIT) ----------------
-  async function loadDeposits(){
-    const status = document.getElementById("depStatus");
-    const tbody = document.getElementById("depRows");
-
-    const { data, error } = await supabaseClient
-      .from("deposit_confirmations")
-      .select("*")
-      .order("created_at",{ascending:false});
-
-    if(error){
-      status.innerHTML = `<span class="error">Error: ${error.message}</span>`;
-      return;
-    }
-
-    if(!data || data.length === 0){
-      status.innerHTML = `<span class="error">No deposits yet.</span>`;
-      tbody.innerHTML = "";
-      return;
-    }
-
-    status.innerHTML = `<span class="ok">Loaded ${data.length} deposits ✅</span>`;
-    tbody.innerHTML = "";
-
-    data.forEach(d=>{
-      const proofLink = `${SUPABASE_URL}/storage/v1/object/public/${d.proof_url}`;
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${d.user_email || "-"}</td>
+async function loadDeposits(){
+  const status=document.getElementById("depStatus");
+  const tbody=document.getElementById("depRows");
+  const {data,error}=await supabaseClient.from("deposit_confirmations").select("*").order("created_at",{ascending:false});
+  if(error){status.innerHTML=`<span class="error">${error.message}</span>`;return;}
+  if(!data||data.length===0){status.innerHTML=`<span class="error">No deposits</span>`;tbody.innerHTML="";return;}
+  status.innerHTML=`<span class="ok">Loaded ${data.length} deposits ✅</span>`;
+  tbody.innerHTML="";
+  data.forEach(d=>{
+    const proofLink=`${SUPABASE_URL}/storage/v1/object/public/${d.proof_url}`;
+    tbody.innerHTML+=`
+      <tr>
+        <td>${d.user_email||"-"}</td>
         <td>${d.asset}</td>
         <td>${d.network}</td>
         <td>${d.amount}</td>
         <td>${d.tx_hash}</td>
         <td><a href="${proofLink}" target="_blank">View</a></td>
-        <td><strong>${d.status || "pending"}</strong></td>
+        <td><strong>${d.status||"pending"}</strong></td>
         <td>
           <button class="approve" onclick="approveAndCredit('${d.id}','${d.user_email}',${d.amount})">Approve</button>
           <button class="reject" onclick="updateDeposit('${d.id}','rejected')">Reject</button>
         </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
+      </tr>`;
+  });
+}
 
-  async function updateDeposit(id, status){
-    const res = await supabaseClient
-      .from("deposit_confirmations")
-      .update({ status })
-      .eq("id", id);
+async function updateDeposit(id,status){
+  const res=await supabaseClient.from("deposit_confirmations").update({status}).eq("id",id);
+  if(res.error){alert(res.error.message);return;}
+  alert("✅ Deposit updated"); loadDeposits(); loadUsers();
+}
 
-    if(res.error){ alert("❌ " + res.error.message); return; }
+async function approveAndCredit(depositId,userEmail,amount){
+  if(!userEmail||userEmail==="-"){alert("No user_email");return;}
+  const {data:user,error:userErr}=await supabaseClient.from("users").select("*").eq("email",userEmail).single();
+  if(userErr){alert("User not found");return;}
+  const newBalance=Number(user.balance||0)+Number(amount||0);
+  const {error:balErr}=await supabaseClient.from("users").update({balance:newBalance}).eq("id",user.id);
+  if(balErr){alert(balErr.message);return;}
+  const {error:depErr}=await supabaseClient.from("deposit_confirmations").update({status:"approved"}).eq("id",depositId);
+  if(depErr){alert(depErr.message);return;}
+  alert("✅ Approved + Credited"); loadDeposits(); loadUsers();
+}
 
-    alert("✅ Deposit updated!");
-    loadDeposits();
-  }
+async function loadWithdrawals(){
+  const status=document.getElementById("wdStatus");
+  const tbody=document.getElementById("wdRows");
+  const {data,error}=await supabaseClient.from("withdrawals").select("*").order("created_at",{ascending:false});
+  if(error){status.innerHTML=`<span class="error">${error.message}</span>`;return;}
+  if(!data||data.length===0){status.innerHTML=`<span class="error">No withdrawals yet</span>`;tbody.innerHTML="";return;}
+  status.innerHTML=`<span class="ok">Loaded ${data.length} withdrawals ✅</span>`;
+  tbody.innerHTML="";
+  data.forEach(w=>{
+    tbody.innerHTML+=`
+      <tr>
+        <td>${w.user_email}</td>
+        <td>${w.asset}</td>
+        <td>${w.network}</td>
+        <td>${w.amount}</td>
+        <td>${w.wallet_address}</td>
+        <td><strong>${w.status||"pending"}</strong></td>
+        <td><input id="note-${w.id}" value="${w.admin_note||""}" placeholder="Admin note"></td>
+        <td>
+          <button class="approve" onclick="updateWithdrawal('${w.id}','approved')">Approve</button>
+          <button class="reject" onclick="updateWithdrawal('${w.id}','rejected')">Reject</button>
+        </td>
+      </tr>`;
+  });
+}
 
-  async function approveAndCredit(depositId, userEmail, amount){
-    if(!userEmail || userEmail === "-"){
-      alert("❌ No user_email found for this deposit.");
-      return;
-    }
+async function updateWithdrawal(id,status){
+  const note=document.getElementById(`note-${id}`).value;
+  const res=await supabaseClient.from("withdrawals").update({status,admin_note:note}).eq("id",id);
+  if(res.error){alert(res.error.message);return;}
+  alert("✅ Withdrawal updated"); loadWithdrawals();
+}
 
-    // 1) Fetch user by email
-    const { data: user, error: userErr } = await supabaseClient
-      .from("users")
-      .select("*")
-      .eq("email", userEmail)
-      .single();
-
-    if(userErr){
-      alert("❌ User not found: " + userErr.message);
-      return;
-    }
-
-    // 2) Update user balance
-    const newBalance = Number(user.balance || 0) + Number(amount || 0);
-
-    const { error: balErr } = await supabaseClient
-      .from("users")
-      .update({ balance: newBalance })
-      .eq("id", user.id);
-
-    if(balErr){
-      alert("❌ Balance update failed: " + balErr.message);
-      return;
-    }
-
-    // 3) Approve deposit
-    const { error: depErr } = await supabaseClient
-      .from("deposit_confirmations")
-      .update({ status: "approved" })
-      .eq("id", depositId);
-
-    if(depErr){
-      alert("❌ Deposit approve failed: " + depErr.message);
-      return;
-    }
-
-    alert("✅ Deposit approved + balance credited!");
-    loadUsers();
-    loadDeposits();
-  }
-
-  // ---------------- ADDRESSES ----------------
-  async function loadAddresses(){
-    const status = document.getElementById("addrStatus");
-    const tbody = document.getElementById("addrRows");
-
-    const { data, error } = await supabaseClient
-      .from("deposit_addresses")
-      .select("id, asset, network, address")
-      .order("id", { ascending: true });
-
-    if(error){
-      status.innerHTML = `<span class="error">Error: ${error.message}</span>`;
-      return;
-    }
-
-    status.innerHTML = `<span class="ok">Loaded ${data.length} wallet(s) ✅</span>`;
-    tbody.innerHTML = "";
-
-    data.forEach(a=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
+async function loadAddresses(){
+  const status=document.getElementById("addrStatus");
+  const tbody=document.getElementById("addrRows");
+  const {data,error}=await supabaseClient.from("deposit_addresses").select("id,asset,network,address").order("id",{ascending:true});
+  if(error){status.innerHTML=`<span class="error">${error.message}</span>`;return;}
+  status.innerHTML=`<span class="ok">Loaded ${data.length} wallet(s) ✅</span>`;
+  tbody.innerHTML="";
+  data.forEach(a=>{
+    tbody.innerHTML+=`
+      <tr>
         <td>${a.id}</td>
         <td>${a.asset}</td>
         <td>${a.network}</td>
@@ -418,71 +289,45 @@
           <button class="edit" onclick="editAddress('${a.id}','${a.asset}','${a.network}','${a.address}')">Edit</button>
           <button class="danger" onclick="deleteAddress('${a.id}')">Delete</button>
         </td>
-      `;
-      tbody.appendChild(tr);
-    });
+      </tr>`;
+  });
+}
+
+function editAddress(id,asset,network,address){
+  document.getElementById("editId").value=id;
+  document.getElementById("asset").value=asset;
+  document.getElementById("network").value=network;
+  document.getElementById("address").value=address;
+}
+
+async function saveAddress(e){
+  e.preventDefault();
+  const id=document.getElementById("editId").value;
+  const asset=document.getElementById("asset").value.trim().toLowerCase();
+  const network=document.getElementById("network").value.trim().toUpperCase();
+  const address=document.getElementById("address").value.trim();
+
+  let res;
+  if(id){
+    res=await supabaseClient.from("deposit_addresses").update({asset,network,address}).eq("id",id);
+  }else{
+    res=await supabaseClient.from("deposit_addresses").insert([{asset,network,address}]);
   }
+  if(res.error){alert(res.error.message);return;}
+  alert("✅ Wallet saved"); document.getElementById("editId").value=""; e.target.reset(); loadAddresses();
+}
 
-  function editAddress(id, asset, network, address){
-    document.getElementById("editId").value = id;
-    document.getElementById("asset").value = asset;
-    document.getElementById("network").value = network;
-    document.getElementById("address").value = address;
-  }
+async function deleteAddress(id){
+  if(!confirm("Delete this wallet?")) return;
+  const res=await supabaseClient.from("deposit_addresses").delete().eq("id",id);
+  if(res.error){alert(res.error.message);return;}
+  alert("✅ Deleted"); loadAddresses();
+}
 
-  async function saveAddress(e){
-    e.preventDefault();
-
-    const id = document.getElementById("editId").value;
-    const asset = document.getElementById("asset").value.trim().toLowerCase();
-    const network = document.getElementById("network").value.trim().toUpperCase();
-    const address = document.getElementById("address").value.trim();
-
-    let res;
-
-    if(id){
-      res = await supabaseClient
-        .from("deposit_addresses")
-        .update({ asset, network, address })
-        .eq("id", id);
-    }else{
-      res = await supabaseClient
-        .from("deposit_addresses")
-        .insert([{ asset, network, address }]);
-    }
-
-    if(res.error){
-      alert("❌ Save failed: " + res.error.message);
-      return;
-    }
-
-    alert("✅ Wallet saved successfully!");
-    document.getElementById("editId").value = "";
-    e.target.reset();
-    loadAddresses();
-  }
-
-  async function deleteAddress(id){
-    if(!confirm("Delete this wallet address?")) return;
-
-    const res = await supabaseClient
-      .from("deposit_addresses")
-      .delete()
-      .eq("id", id);
-
-    if(res.error){
-      alert("❌ Delete failed: " + res.error.message);
-      return;
-    }
-
-    alert("✅ Wallet deleted!");
-    loadAddresses();
-  }
-
-  async function logout(){
-    await supabaseClient.auth.signOut();
-    window.location.href="admin.html";
-  }
+async function logout(){
+  await supabaseClient.auth.signOut();
+  window.location.href="admin.html";
+}
 </script>
 
 </body>
