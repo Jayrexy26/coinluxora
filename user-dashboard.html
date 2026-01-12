@@ -1,409 +1,548 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Coinluxora User Dashboard</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Coinluxora User Dashboard</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    body{
-      margin:0;
-      font-family: Arial, sans-serif;
-      background:#0b1220;
-      color:#fff;
-    }
+<style>
+body{margin:0;font-family:system-ui;background:#020617;color:#e5e7eb;padding:16px;padding-bottom:92px}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #1e293b;margin-bottom:14px}
+button{border:none;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;background:#38bdf8;color:#020617}
+.menuBtn{background:#0b1224;color:#e5e7eb;border:1px solid #1e293b}
 
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:14px 16px;
-      background:#0f172a;
-      border-bottom:1px solid rgba(255,255,255,.06);
-      position:sticky;
-      top:0;
-      z-index:10;
-      gap:12px;
-      flex-wrap:wrap;
-    }
+.box{border:1px solid #1e293b;border-radius:12px;padding:14px;background:#020617;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.card{border:1px solid #1e293b;border-radius:12px;padding:10px}
+h2{margin:0;font-size:18px}
+.small{color:#94a3b8;font-size:12px;margin-top:6px}
+.ok{color:#22c55e}
+.err{color:#f87171}
+input,select{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #1e293b;background:#020617;color:#e5e7eb}
 
-    .brand{
-      font-weight:900;
-      letter-spacing:.5px;
-      font-size:18px;
-    }
+a{color:#38bdf8;text-decoration:none;font-weight:1000}
+a:hover{text-decoration:underline}
 
-    .dash-badges{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
+.pill{padding:6px 10px;border-radius:999px;font-weight:1000;font-size:12px;display:inline-block}
+.pending{background:#facc15;color:#020617}
+.active{background:#38bdf8;color:#020617}
+.completed{background:#22c55e;color:#020617}
+.rejected{background:#f87171;color:#020617}
 
-    .badge-btn{
-      background:#101827;
-      color:#fff;
-      border:1px solid rgba(255,255,255,.08);
-      padding:10px 12px;
-      border-radius:12px;
-      font-weight:700;
-      display:flex;
-      gap:8px;
-      align-items:center;
-      cursor:pointer;
-      user-select:none;
-      transition: transform .08s ease;
-    }
+/* SIDEBAR */
+.overlay{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.65);
+  display:none; z-index:999;
+  backdrop-filter: blur(4px);
+}
+.sidebar{
+  position:fixed; top:0; left:-290px;
+  width:270px; height:100vh;
+  background:#020617;
+  border-right:1px solid #1e293b;
+  padding:16px;
+  transition:.28s ease;
+  z-index:1000;
+  box-shadow:0 20px 80px rgba(0,0,0,.6);
+}
+.sidebar.open{ left:0; }
+.overlay.show{ display:block; }
 
-    .badge-btn:active{
-      transform: scale(.99);
-    }
+.brandRow{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.brand{font-weight:1000;font-size:18px;letter-spacing:.6px;}
+.closeBtn{background:#0b1224;border:1px solid #1e293b;color:#e5e7eb;border-radius:10px;padding:8px 12px;}
+.userTag{padding:10px;border-radius:12px;border:1px solid #1e293b;background:#0b1224;margin-bottom:12px;}
+.sideItem{
+  display:flex;gap:10px;align-items:center;
+  padding:12px;border:1px solid #1e293b;border-radius:12px;margin-bottom:10px;
+  color:#e5e7eb;background:#0b1224;
+}
+.sideItem:hover{background:#0f1a33}
+.activeLink{border:1px solid #38bdf8;background:rgba(56,189,248,0.12);}
+.sideLogout{background:#f87171;color:#020617;border:none;width:100%;padding:12px;border-radius:12px;font-weight:1000}
 
-    .badge{
-      min-width:22px;
-      height:22px;
-      padding:0 7px;
-      border-radius:999px;
-      background:#ff3b30;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:12px;
-      font-weight:900;
-      line-height:1;
-    }
+/* BOTTOM NAV */
+.bottomNav{
+  position:fixed;left:0;right:0;bottom:0;
+  height:74px;background:#020617;
+  border-top:1px solid #1e293b;
+  display:flex;justify-content:space-around;align-items:center;
+  z-index:1200;padding:6px 10px;
+}
+.navItem{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  color:#94a3b8;font-size:12px;font-weight:1000;
+  padding:10px 0;border-radius:14px;cursor:pointer;
+  position:relative;
+}
+.navItem span{font-size:18px;margin-bottom:4px}
+.navActive{color:#38bdf8;background:rgba(56,189,248,0.10)}
 
-    .badge.hidden{
-      display:none;
-    }
-
-    .container{
-      padding:18px 16px;
-      max-width:900px;
-      margin:auto;
-    }
-
-    .card{
-      background:#0f172a;
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:16px;
-      padding:16px;
-      margin-bottom:14px;
-      box-shadow:0 10px 25px rgba(0,0,0,.18);
-    }
-
-    .muted{
-      opacity:.75;
-      font-size:13px;
-    }
-
-    .uid-box{
-      margin-top:10px;
-      font-size:12px;
-      opacity:.95;
-      word-break:break-all;
-      background:#0b1020;
-      padding:10px;
-      border-radius:12px;
-      border:1px dashed rgba(255,255,255,.12);
-      line-height:1.4;
-    }
-
-    .btn{
-      background:#2563eb;
-      border:none;
-      color:#fff;
-      padding:10px 14px;
-      border-radius:12px;
-      font-weight:900;
-      cursor:pointer;
-      margin-top:10px;
-    }
-
-    .btn:active{
-      transform:scale(.99);
-    }
-
-    .toast{
-      position:fixed;
-      bottom:18px;
-      left:50%;
-      transform:translateX(-50%);
-      background:rgba(20,30,55,.95);
-      border:1px solid rgba(255,255,255,.10);
-      padding:10px 12px;
-      border-radius:14px;
-      font-weight:900;
-      display:none;
-      z-index:999;
-      max-width:92vw;
-      text-align:center;
-      white-space:pre-wrap;
-      line-height:1.35;
-    }
-
-    code{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size:12px;
-    }
-  </style>
+/* BADGE */
+.badge{
+  position:absolute;
+  top:6px;
+  right:22%;
+  min-width:18px;
+  height:18px;
+  padding:0 6px;
+  border-radius:999px;
+  background:#f87171;
+  color:#020617;
+  font-weight:1000;
+  font-size:11px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+</style>
 </head>
 
 <body>
 
-  <!-- TOP BAR -->
-  <div class="topbar">
-    <div class="brand">Coinluxora</div>
+<!-- OVERLAY + SIDEBAR -->
+<div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
-    <!-- BADGES -->
-    <div class="dash-badges">
-      <button class="badge-btn" id="btn-notifications" type="button">
-        Notifications <span class="badge hidden" id="badge-notifications">0</span>
-      </button>
-
-      <button class="badge-btn" id="btn-withdrawals" type="button">
-        Withdrawals <span class="badge hidden" id="badge-withdrawals">0</span>
-      </button>
-
-      <button class="badge-btn" id="btn-deposits" type="button">
-        Deposits <span class="badge hidden" id="badge-deposits">0</span>
-      </button>
-    </div>
+<div id="sidebar" class="sidebar">
+  <div class="brandRow">
+    <div class="brand">COINLUXORA</div>
+    <button class="closeBtn" onclick="closeMenu()">✕</button>
   </div>
 
-  <div class="container">
-
-    <div class="card">
-      <h2 style="margin:0 0 8px 0;">User Dashboard</h2>
-      <div class="muted">
-        ✅ Realtime Badges connected. Tap a badge button to clear it securely.
-      </div>
-
-      <div class="uid-box" id="uidBox">Loading user session...</div>
-
-      <button class="btn" id="btn-refresh" type="button">
-        Refresh Badges
-      </button>
-      <div class="muted" style="margin-top:8px;">
-        If you ever suspect connection issues, tap “Refresh Badges”.
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 style="margin-top:0;">Realtime Test</h3>
-      <div class="muted">
-        Keep this dashboard open. Then go to Supabase SQL editor and run:
-        <br/><br/>
-        <code style="display:block;white-space:pre-wrap;background:#0b1020;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.06);">
-update public.user_badges
-set badge_value = badge_value + 1,
-    updated_at = now()
-where user_id = 'bd215840-d2cb-4d41-b7f2-cd5c9e6ce592'
-  and badge_key = 'notifications';
-        </code>
-        <br/>
-        Badge should update instantly without refresh.
-      </div>
-    </div>
-
+  <div class="userTag">
+    <div class="small">Logged in as</div>
+    <div id="sideEmail" style="font-weight:1000;margin-top:6px;">---</div>
   </div>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
+  <a class="sideItem activeLink" href="user-dashboard.html">🏠 Dashboard</a>
+  <a class="sideItem" href="portfolio.html">📊 Portfolio</a>
+  <a class="sideItem" href="plans.html">💼 Investment Plans</a>
+  <a class="sideItem" href="support.html">🧑‍💻 Support / Contact</a>
+  <a class="sideItem" href="deposits.html">📌 Deposits History</a>
+  <a class="sideItem" href="withdraw.html">➡ Withdraw Funds</a>
+  <a class="sideItem" href="withdrawals.html">📌 Withdrawals History</a>
+
+  <div style="height:12px"></div>
+  <button class="sideLogout" onclick="logout()">Logout</button>
+</div>
+
+<header>
+  <button class="menuBtn" onclick="openMenu()">☰</button>
+  <strong>User Dashboard</strong>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="box">
+  <h2>Welcome</h2>
+  <div id="email" class="small">Loading…</div>
+</div>
+
+<div class="box">
+  <h2>Balance</h2>
+  <div id="balance" style="font-size:26px;font-weight:1000;margin-top:8px;">--</div>
+  <div class="small">Your trading account balance</div>
+</div>
+
+<div class="box">
+  <h2>Active Investment Plan</h2>
+  <div id="planMsg" class="small">Loading…</div>
+  <div id="planBox"></div>
+</div>
+
+<div class="box">
+  <h2>Live Crypto Prices</h2>
+  <div class="grid" id="prices"><div class="card">Loading…</div></div>
+</div>
+
+<div class="box" id="depositSection">
+  <h2>Deposit</h2>
+  <div class="small">Select asset/network to see wallet address</div>
+
+  <select id="depAsset" onchange="renderDepositAddress()">
+    <option value="btc">BTC</option>
+    <option value="eth">ETH</option>
+    <option value="usdt">USDT</option>
+  </select>
+
+  <select id="depNetwork" onchange="renderDepositAddress()">
+    <option value="BTC">BTC</option>
+    <option value="ERC20">ERC20</option>
+    <option value="TRC20">TRC20</option>
+  </select>
+
+  <div class="card">
+    <div class="small">Deposit Address</div>
+    <div id="depAddress" style="margin-top:8px;font-weight:1000;">--</div>
+    <button style="margin-top:10px;width:100%;background:#22c55e" onclick="copyAddress()">Copy Address</button>
+  </div>
+</div>
+
+<div class="box">
+  <h2>Submit Deposit Proof</h2>
+  <div class="small">After depositing, submit confirmation</div>
+
+  <select id="confAsset">
+    <option value="btc">BTC</option>
+    <option value="eth">ETH</option>
+    <option value="usdt">USDT</option>
+  </select>
+
+  <select id="confNetwork">
+    <option value="BTC">BTC</option>
+    <option value="ERC20">ERC20</option>
+    <option value="TRC20">TRC20</option>
+  </select>
+
+  <input id="confAmount" type="number" step="0.01" placeholder="Amount deposited"/>
+  <input id="confTx" placeholder="Transaction hash"/>
+  <input id="confProof" type="file" accept="image/*,.pdf"/>
+
+  <button style="width:100%;background:#22c55e" onclick="submitDeposit()">Submit Deposit</button>
+  <div id="depMsg" class="small"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottomNav">
+  <div class="navItem navActive" onclick="goHome()"><span>🏠</span>Home</div>
+
+  <div class="navItem" onclick="goDepositAndClear()">
+    <div id="badgeDeposit" class="badge">0</div>
+    <span>💳</span>Deposit
+  </div>
+
+  <div class="navItem" onclick="goWithdrawAndClear()">
+    <div id="badgeWithdraw" class="badge">0</div>
+    <span>➡</span>Withdraw
+  </div>
+
+  <div class="navItem" onclick="goPlans()"><span>💼</span>Plans</div>
+
+  <div class="navItem" onclick="goSupportAndClear()">
+    <div id="badgeSupport" class="badge">0</div>
+    <span>🧑‍💻</span>Support
+  </div>
+</div>
 
 <script>
-  // ======================================================
-  // SUPABASE CONFIG (YOUR VALUES)
-  // ======================================================
-  const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
-  const EDGE_CLEAR_BADGE_URL = `${SUPABASE_URL}/functions/v1/clear_badge`;
+const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+const EDGE_CLEAR_BADGE_URL = `${SUPABASE_URL}/functions/v1/clear_badge`;
 
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const BUCKET_NAME="proofs";
 
-  // Badge keys shown in UI
-  const BADGE_KEYS = ["notifications", "withdrawals", "deposits"];
+let currentUserEmail="";
+let currentUserId="";
+let depositAddresses=[];
+let badgeChannel=null;
 
-  let currentUser = null;
-  let badgeChannel = null;
+init();
 
-  // ======================================================
-  // TOAST
-  // ======================================================
-  const toastEl = document.getElementById("toast");
-  let toastTimer = null;
+/* NAV */
+function goHome(){ window.scrollTo({top:0,behavior:"smooth"}); }
 
-  function toast(msg) {
-    toastEl.textContent = msg;
-    toastEl.style.display = "block";
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      toastEl.style.display = "none";
-    }, 3500);
+// Updated: Deposit/Withdraw/Support now clear their badge via Edge Function
+function goDepositAndClear(){
+  clearBadge("deposits");  // maps to Deposit badge
+  document.getElementById("depositSection").scrollIntoView({behavior:"smooth"});
+}
+function goWithdrawAndClear(){
+  clearBadge("withdrawals"); // maps to Withdraw badge
+  window.location.href="withdraw.html";
+}
+function goPlans(){ window.location.href="plans.html"; }
+function goSupportAndClear(){
+  clearBadge("notifications"); // maps to Support badge
+  window.location.href="support.html";
+}
+
+function openMenu(){
+  document.getElementById("sidebar").classList.add("open");
+  document.getElementById("overlay").classList.add("show");
+}
+function closeMenu(){
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("overlay").classList.remove("show");
+}
+
+function money(n){ return "$" + Number(n||0).toFixed(2); }
+function pill(status){
+  const s=(status||"pending").toLowerCase();
+  return `<span class="pill ${s}">${s}</span>`;
+}
+function daysBetween(date1, date2){
+  const d1=new Date(date1);
+  const d2=new Date(date2);
+  const diff=(d2 - d1) / (1000*60*60*24);
+  return Math.max(0, Math.ceil(diff));
+}
+
+function setBadge(id, count){
+  const el=document.getElementById(id);
+  if(!el) return;
+  const n=Number(count||0);
+  if(n<=0){
+    el.style.display="none";
+  }else{
+    el.style.display="flex";
+    el.innerText = n > 99 ? "99+" : String(n);
+  }
+}
+
+/* ✅ Map user_badges keys to your bottom nav badge ids */
+function setBadgeFromKey(badge_key, badge_value){
+  if(badge_key === "deposits"){
+    setBadge("badgeDeposit", badge_value);
+  } else if(badge_key === "withdrawals"){
+    setBadge("badgeWithdraw", badge_value);
+  } else if(badge_key === "notifications"){
+    setBadge("badgeSupport", badge_value);
+  }
+}
+
+/* ✅ Load badges from user_badges table (initial load) */
+async function loadRealtimeBadgesOnce(){
+  if(!currentUserId) return;
+
+  // reset
+  setBadge("badgeDeposit", 0);
+  setBadge("badgeWithdraw", 0);
+  setBadge("badgeSupport", 0);
+
+  const { data, error } = await supabaseClient
+    .from("user_badges")
+    .select("badge_key, badge_value")
+    .eq("user_id", currentUserId);
+
+  if(error){
+    console.log("Badge load error:", error.message);
+    return;
   }
 
-  // ======================================================
-  // UI: SET BADGE
-  // ======================================================
-  function setBadge(key, value) {
-    const el = document.getElementById(`badge-${key}`);
-    if (!el) return;
-
-    const v = parseInt(value || 0, 10);
-    el.textContent = v;
-
-    if (v <= 0) el.classList.add("hidden");
-    else el.classList.remove("hidden");
-  }
-
-  // ======================================================
-  // LOAD BADGES ONCE
-  // ======================================================
-  async function loadBadgesOnce(userId) {
-    BADGE_KEYS.forEach(k => setBadge(k, 0));
-
-    const { data, error } = await supabaseClient
-      .from("user_badges")
-      .select("badge_key, badge_value")
-      .eq("user_id", userId);
-
-    if (error) {
-      console.error("Badge load error:", error);
-      toast("Failed to load badges:\n" + error.message);
-      return;
-    }
-
-    (data || []).forEach(row => {
-      if (BADGE_KEYS.includes(row.badge_key)) {
-        setBadge(row.badge_key, row.badge_value);
-      }
-    });
-  }
-
-  // ======================================================
-  // REALTIME SUBSCRIBE
-  // ======================================================
-  function subscribeToBadgeChanges(userId) {
-    if (badgeChannel) {
-      supabaseClient.removeChannel(badgeChannel);
-      badgeChannel = null;
-    }
-
-    badgeChannel = supabaseClient
-      .channel("realtime-user-badges")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "user_badges",
-          filter: `user_id=eq.${userId}`
-        },
-        payload => {
-          const row = payload.new;
-          if (!row) return;
-
-          if (BADGE_KEYS.includes(row.badge_key)) {
-            setBadge(row.badge_key, row.badge_value);
-          }
-        }
-      )
-      .subscribe(status => {
-        console.log("Badge realtime status:", status);
-        if (status === "SUBSCRIBED") toast("Realtime connected ✅");
-      });
-  }
-
-  // ======================================================
-  // CLEAR BADGE VIA EDGE FUNCTION
-  // ======================================================
-  async function clearBadge(badge_key) {
-    try {
-      // Get fresh access token
-      const { data: sessionData, error: sessErr } = await supabaseClient.auth.getSession();
-      if (sessErr) {
-        toast("Session error:\n" + sessErr.message);
-        return;
-      }
-
-      const accessToken = sessionData?.session?.access_token;
-
-      if (!accessToken) {
-        toast("No access token.\nPlease login again.");
-        return;
-      }
-
-      // Call Edge Function
-      const res = await fetch(EDGE_CLEAR_BADGE_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${accessToken}`,
-          "apikey": SUPABASE_ANON_KEY
-        },
-        body: JSON.stringify({ badge_key })
-      });
-
-      let json = null;
-      try { json = await res.json(); } catch(e) {}
-
-      if (!res.ok) {
-        const msg = json?.error || json?.details || json?.message || ("HTTP " + res.status);
-        console.error("clear_badge failed:", msg, json);
-        toast("Clear failed:\n" + msg);
-        return;
-      }
-
-      toast(`Cleared ${badge_key} ✅`);
-      // No need to manually setBadge; realtime updates it
-    } catch (err) {
-      console.error(err);
-      toast("Error:\n" + String(err));
-    }
-  }
-
-  // ======================================================
-  // INIT
-  // ======================================================
-  async function initBadges() {
-    const uidBox = document.getElementById("uidBox");
-
-    const { data, error } = await supabaseClient.auth.getUser();
-
-    if (error || !data?.user) {
-      uidBox.innerHTML =
-        "❌ No logged-in user detected.<br><br>" +
-        "Please login first before opening this dashboard page.";
-      toast("Please login");
-      return;
-    }
-
-    currentUser = data.user;
-
-    uidBox.innerHTML =
-      "✅ Logged in User UID:<br>" +
-      `<b>${currentUser.id}</b>` +
-      "<br><br><span class='muted'>Tap badges to clear via Edge Function.</span>";
-
-    await loadBadgesOnce(currentUser.id);
-    subscribeToBadgeChanges(currentUser.id);
-  }
-
-  // ======================================================
-  // BUTTON HANDLERS
-  // ======================================================
-  document.getElementById("btn-notifications").addEventListener("click", () => clearBadge("notifications"));
-  document.getElementById("btn-withdrawals").addEventListener("click", () => clearBadge("withdrawals"));
-  document.getElementById("btn-deposits").addEventListener("click", () => clearBadge("deposits"));
-
-  document.getElementById("btn-refresh").addEventListener("click", async () => {
-    if (!currentUser?.id) return;
-    toast("Refreshing badges...");
-    await loadBadgesOnce(currentUser.id);
+  (data || []).forEach(row => {
+    setBadgeFromKey(row.badge_key, row.badge_value);
   });
+}
 
-  window.addEventListener("DOMContentLoaded", initBadges);
+/* ✅ Subscribe realtime to user_badges updates */
+function subscribeToRealtimeBadges(){
+  if(!currentUserId) return;
+
+  if(badgeChannel){
+    supabaseClient.removeChannel(badgeChannel);
+    badgeChannel=null;
+  }
+
+  badgeChannel = supabaseClient
+    .channel("realtime-user-badges-dashboard")
+    .on("postgres_changes", {
+      event: "*",
+      schema: "public",
+      table: "user_badges",
+      filter: `user_id=eq.${currentUserId}`
+    }, payload => {
+      const row = payload.new;
+      if(!row) return;
+      setBadgeFromKey(row.badge_key, row.badge_value);
+    })
+    .subscribe(status => {
+      console.log("Badge realtime status:", status);
+    });
+}
+
+/* ✅ Clear badge via Edge Function */
+async function clearBadge(badge_key){
+  try{
+    const { data: sessionData, error: sessErr } = await supabaseClient.auth.getSession();
+    if(sessErr) return;
+
+    const accessToken = sessionData?.session?.access_token;
+    if(!accessToken) return;
+
+    await fetch(EDGE_CLEAR_BADGE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${accessToken}`,
+        "apikey": SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify({ badge_key })
+    });
+    // Realtime will update automatically.
+  }catch(e){
+    console.log("clearBadge error:", e);
+  }
+}
+
+async function init(){
+  const { data:userData } = await supabaseClient.auth.getUser();
+  if(!userData.user){
+    document.body.innerHTML="<h2 style='color:white'>You must login first.</h2>";
+    return;
+  }
+
+  currentUserEmail=userData.user.email;
+  currentUserId=userData.user.id;
+
+  document.getElementById("email").innerHTML=`Logged in as: <span class="ok">${currentUserEmail}</span>`;
+  document.getElementById("sideEmail").innerText=currentUserEmail;
+
+  await loadBalance();
+  await loadActivePlan();
+  await loadDepositAddresses();
+  renderDepositAddress();
+  fetchPrices();
+
+  // ✅ NEW: realtime badge system
+  await loadRealtimeBadgesOnce();
+  subscribeToRealtimeBadges();
+}
+
+async function loadBalance(){
+  const { data } = await supabaseClient.from("users").select("*").eq("email", currentUserEmail).single();
+  document.getElementById("balance").innerHTML = Number(data?.balance || 0).toFixed(2);
+}
+
+async function loadActivePlan(){
+  const planMsg=document.getElementById("planMsg");
+  const planBox=document.getElementById("planBox");
+
+  const { data, error } = await supabaseClient
+    .from("investment_plans")
+    .select("*")
+    .eq("user_email", currentUserEmail)
+    .order("created_at",{ascending:false})
+    .limit(1);
+
+  if(error){
+    planMsg.innerHTML="<span class='err'>"+error.message+"</span>";
+    planBox.innerHTML="";
+    return;
+  }
+
+  if(!data || data.length===0){
+    planMsg.innerHTML="<span class='err'>No investment plan started yet.</span>";
+    planBox.innerHTML=`<div class="small">Go to <a href="plans.html">Investment Plans</a> to start.</div>`;
+    return;
+  }
+
+  const plan=data[0];
+  const amount=Number(plan.amount||0);
+  const roi=Number(plan.roi_percent||0);
+  const expected=amount+(amount*(roi/100));
+
+  let daysLeft="--";
+  if(plan.duration_days && plan.created_at){
+    const start=new Date(plan.created_at);
+    const end=new Date(start);
+    end.setDate(end.getDate()+Number(plan.duration_days||0));
+    daysLeft = daysBetween(new Date(), end);
+  }
+
+  planMsg.innerHTML="<span class='ok'>Plan details loaded ✅</span>";
+  planBox.innerHTML=`
+    <div class="card">
+      <strong>${plan.plan_name} Plan</strong> ${pill(plan.status)}
+      <div class="small" style="margin-top:10px">Amount: <strong>${money(amount)}</strong></div>
+      <div class="small">ROI: <strong>${roi}%</strong></div>
+      <div class="small">Duration: <strong>${plan.duration_days} days</strong></div>
+      <div class="small">Expected Return: <strong>${money(expected)}</strong></div>
+      <div class="small">Days remaining: <strong>${daysLeft}</strong></div>
+      ${plan.admin_note ? `<div class="small">Admin note: <strong>${plan.admin_note}</strong></div>` : ""}
+    </div>
+  `;
+}
+
+async function loadDepositAddresses(){
+  const { data } = await supabaseClient.from("deposit_addresses").select("asset,network,address");
+  depositAddresses = data || [];
+}
+
+function renderDepositAddress(){
+  const asset=document.getElementById("depAsset").value.toLowerCase();
+  const network=document.getElementById("depNetwork").value.toUpperCase();
+  const found=depositAddresses.find(d =>
+    (d.asset||"").toLowerCase()===asset &&
+    (d.network||"").toUpperCase()===network
+  );
+  document.getElementById("depAddress").innerText = found ? found.address : "No address configured";
+}
+
+function copyAddress(){
+  const addr=document.getElementById("depAddress").innerText;
+  navigator.clipboard.writeText(addr);
+  alert("Copied ✅");
+}
+
+async function fetchPrices(){
+  try{
+    const res=await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,tether&vs_currencies=usd");
+    const data=await res.json();
+    document.getElementById("prices").innerHTML=`
+      <div class="card"><strong>BTC</strong><br>$${data.bitcoin.usd}</div>
+      <div class="card"><strong>ETH</strong><br>$${data.ethereum.usd}</div>
+      <div class="card"><strong>USDT</strong><br>$${data.tether.usd}</div>
+    `;
+  }catch{
+    document.getElementById("prices").innerHTML="<div class='card err'>Failed to load prices</div>";
+  }
+}
+
+async function submitDeposit(){
+  const msg=document.getElementById("depMsg");
+  msg.innerHTML="Submitting…";
+
+  const asset=document.getElementById("confAsset").value;
+  const network=document.getElementById("confNetwork").value;
+  const amount=Number(document.getElementById("confAmount").value||0);
+  const tx_hash=document.getElementById("confTx").value.trim();
+  const file=document.getElementById("confProof").files[0];
+
+  if(amount<=0 || tx_hash.length<5 || !file){
+    msg.innerHTML="<span class='err'>Fill all fields + upload proof</span>";
+    return;
+  }
+
+  const filePath = `${currentUserEmail}/${Date.now()}-${file.name}`;
+  const upload = await supabaseClient.storage.from(BUCKET_NAME).upload(filePath,file);
+
+  if(upload.error){
+    msg.innerHTML="<span class='err'>Upload failed: "+upload.error.message+"</span>";
+    return;
+  }
+
+  const proof_url = `${BUCKET_NAME}/${filePath}`;
+
+  const res = await supabaseClient.from("deposit_confirmations").insert([{
+    user_email: currentUserEmail,
+    asset, network, amount, tx_hash,
+    proof_url,
+    status: "pending"
+  }]);
+
+  if(res.error){
+    msg.innerHTML="<span class='err'>"+res.error.message+"</span>";
+    return;
+  }
+
+  msg.innerHTML="<span class='ok'>Deposit submitted ✅</span>";
+  document.getElementById("confAmount").value="";
+  document.getElementById("confTx").value="";
+  document.getElementById("confProof").value="";
+
+  // ✅ After deposit proof submitted: raise deposits badge + refresh display
+  // If you want automatic increment, we can do it using trigger/edge function later.
+  await loadRealtimeBadgesOnce();
+}
+
+async function logout(){
+  await supabaseClient.auth.signOut();
+  window.location.href="login.html";
+}
 </script>
 
 </body>
