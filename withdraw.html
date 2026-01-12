@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Withdraw - Coinluxora</title>
 
+  <!-- Load supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -13,311 +14,128 @@
       font-family: Arial, sans-serif;
       background: #0b0f19;
       color: #fff;
-    }
-
-    .layout { display: flex; min-height: 100vh; }
-
-    .sidebar {
-      width: 240px;
-      background: #0f172a;
-      padding: 18px;
-      box-sizing: border-box;
-      border-right: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .brand { font-size: 20px; font-weight: 800; margin-bottom: 22px; letter-spacing: 0.5px; }
-
-    .nav a {
-      display: block;
-      padding: 12px 12px;
-      margin: 6px 0;
-      border-radius: 10px;
-      color: rgba(255,255,255,0.88);
-      text-decoration: none;
-      font-weight: 600;
-      background: rgba(255,255,255,0.03);
-    }
-
-    .nav a:hover { background: rgba(255,255,255,0.07); }
-
-    .nav a.active {
-      background: rgba(99,102,241,0.25);
-      border: 1px solid rgba(99,102,241,0.35);
-    }
-
-    .main { flex: 1; padding: 20px; box-sizing: border-box; }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 18px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.07);
-      margin-bottom: 18px;
-    }
-
-    .topbar h2 { margin: 0; font-size: 18px; font-weight: 800; }
-
-    .card {
-      max-width: 650px;
-      margin: 0 auto;
       padding: 20px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
     }
-
-    .card h3 { margin: 0 0 18px 0; font-size: 22px; font-weight: 900; }
-
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: rgba(255,255,255,0.88);
+    .box{
+      max-width:700px;
+      margin:auto;
+      padding:20px;
+      border-radius:16px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.08);
     }
-
-    input, select {
-      width: 100%;
-      padding: 13px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(0,0,0,0.25);
-      color: #fff;
-      outline: none;
-      box-sizing: border-box;
+    input, select, button{
+      width:100%;
+      padding:14px;
+      margin-top:10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.12);
+      background:rgba(0,0,0,0.25);
+      color:white;
+      box-sizing:border-box;
+      outline:none;
     }
-
-    input::placeholder { color: rgba(255,255,255,0.35); }
-
-    .full { grid-column: 1 / -1; }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      border: 0;
-      border-radius: 12px;
-      background: linear-gradient(90deg, #6366f1, #22c55e);
-      color: #fff;
-      font-weight: 900;
-      cursor: pointer;
-      margin-top: 8px;
-      font-size: 15px;
+    button{
+      cursor:pointer;
+      font-weight:900;
+      border:0;
+      background:linear-gradient(90deg,#6366f1,#22c55e);
     }
-
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    .msg {
-      margin-top: 14px;
-      padding: 12px;
-      border-radius: 12px;
-      background: rgba(0,0,0,0.25);
-      border: 1px solid rgba(255,255,255,0.08);
-      font-weight: 700;
-      font-size: 14px;
-      display: none;
-      white-space: pre-wrap;
-    }
-
-    .msg.ok { color: #4ade80; display: block; }
-    .msg.err { color: #fb7185; display: block; }
-
-    .debug {
-      margin-top: 12px;
-      font-size: 12px;
-      opacity: 0.75;
-      padding: 10px;
-      border-radius: 12px;
-      border: 1px dashed rgba(255,255,255,0.1);
-      background: rgba(0,0,0,0.2);
-      display: none;
-      white-space: pre-wrap;
-    }
-
-    @media (max-width: 900px) {
-      .sidebar { display: none; }
-      .grid { grid-template-columns: 1fr; }
-      .main { padding: 14px; }
+    .msg{
+      margin-top:14px;
+      padding:12px;
+      border-radius:12px;
+      background:rgba(0,0,0,0.25);
+      border:1px solid rgba(255,255,255,0.1);
+      white-space:pre-wrap;
+      font-weight:700;
     }
   </style>
 </head>
-
 <body>
 
-<div class="layout">
-  <aside class="sidebar">
-    <div class="brand">COINLUXORA</div>
-    <div class="nav">
-      <a href="user_dashboard.html">Dashboard</a>
-      <a href="deposit.html">Deposit</a>
-      <a class="active" href="withdraw.html">Withdraw</a>
-      <a href="account.html">Account</a>
-      <a href="#" id="logoutBtn">Logout</a>
-    </div>
-  </aside>
+<div class="box">
+  <h2>Withdraw (Debug Mode)</h2>
 
-  <main class="main">
-    <div class="topbar">
-      <h2>Withdrawals</h2>
-      <div id="userEmail" style="opacity:0.85;font-weight:800;"></div>
-    </div>
+  <label>Amount</label>
+  <input type="number" id="amount" placeholder="Enter amount"/>
 
-    <div class="card">
-      <h3>Request Withdrawal</h3>
+  <label>Asset</label>
+  <select id="asset">
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+    <option value="ETH">ETH</option>
+    <option value="BTC">BTC</option>
+    <option value="USDT">USDT</option>
+  </select>
 
-      <!-- ✅ Not using <form> prevents refresh issues -->
-      <div class="grid">
-        <div>
-          <label>Amount</label>
-          <input type="number" id="amount" placeholder="Enter amount"/>
-        </div>
+  <label>Network</label>
+  <select id="network">
+    <option value="TRC20">TRC20</option>
+    <option value="ERC20">ERC20</option>
+    <option value="BEP20">BEP20</option>
+    <option value="BTC">BTC</option>
+  </select>
 
-        <div>
-          <label>Asset</label>
-          <select id="asset">
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-            <option value="ETH">ETH</option>
-            <option value="BTC">BTC</option>
-            <option value="USDT">USDT</option>
-          </select>
-        </div>
+  <label>Wallet Address</label>
+  <input type="text" id="wallet_address" placeholder="Enter wallet address"/>
 
-        <div class="full">
-          <label>Network</label>
-          <select id="network">
-            <option value="TRC20">TRC20</option>
-            <option value="ERC20">ERC20</option>
-            <option value="BEP20">BEP20</option>
-            <option value="BTC">BTC</option>
-          </select>
-        </div>
+  <button id="submitBtn" type="button">Submit Withdrawal</button>
 
-        <div class="full">
-          <label>Wallet Address</label>
-          <input type="text" id="wallet_address" placeholder="Enter your wallet address"/>
-        </div>
-
-        <div class="full">
-          <button id="submitBtn" type="button">Submit Withdrawal</button>
-          <div id="msg" class="msg"></div>
-          <div id="debug" class="debug"></div>
-        </div>
-      </div>
-    </div>
-  </main>
+  <div id="msg" class="msg">Waiting...</div>
 </div>
 
 <script>
-  // ✅ Supabase setup
+  // ✅ If you don't see this alert, then your JS is NOT executing OR wrong file is opened
+  alert("Withdraw JS Loaded ✅");
+
+  const msg = document.getElementById("msg");
+  const btn = document.getElementById("submitBtn");
+
+  function log(x){
+    msg.textContent = (typeof x === "string") ? x : JSON.stringify(x, null, 2);
+  }
+
+  // ✅ check supabase lib
+  if (!window.supabase) {
+    log("ERROR: Supabase script did not load (window.supabase is undefined).");
+    throw new Error("Supabase not loaded");
+  }
+
   const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
   const SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const msg = document.getElementById("msg");
-  const debugBox = document.getElementById("debug");
-  const submitBtn = document.getElementById("submitBtn");
-  const userEmailDiv = document.getElementById("userEmail");
+  log("Supabase loaded ✅ Ready.");
 
-  function showMessage(text, ok=false) {
-    msg.textContent = text;
-    msg.className = "msg " + (ok ? "ok" : "err");
-  }
-
-  function debugLog(obj) {
-    debugBox.style.display = "block";
-    debugBox.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
-  }
-
-  async function loadUser() {
-    const { data, error } = await supabase.auth.getUser();
-    if (error) {
-      showMessage("Auth error: " + error.message);
-      debugLog(error);
-      return;
-    }
-
-    if (!data?.user) {
-      window.location.href = "login.html";
-      return;
-    }
-
-    userEmailDiv.textContent = data.user.email || "";
-  }
-
-  document.getElementById("logoutBtn").addEventListener("click", async (e) => {
-    e.preventDefault();
-    await supabase.auth.signOut();
-    window.location.href = "login.html";
-  });
-
-  submitBtn.addEventListener("click", async () => {
+  btn.addEventListener("click", async () => {
     try {
-      msg.style.display = "none";
-      debugBox.style.display = "none";
+      log("Button clicked ✅ Submitting...");
 
-      // ✅ confirm click works
-      debugLog("Button clicked ✅");
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Submitting...";
-
-      const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
+      const { data: sessionData, error: sessionErr } = await supabaseClient.auth.getSession();
       if (sessionErr) {
-        showMessage("Session error: " + sessionErr.message);
-        debugLog(sessionErr);
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit Withdrawal";
+        log({ sessionErr });
         return;
       }
 
       const session = sessionData?.session;
       if (!session) {
-        showMessage("You are not logged in. Please login again.");
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit Withdrawal";
+        log("NO SESSION: user not logged in.");
         return;
       }
 
-      const amount = Number(document.getElementById("amount").value);
-      const asset = document.getElementById("asset").value;
-      const network = document.getElementById("network").value;
-      const wallet_address = document.getElementById("wallet_address").value.trim();
-
       const payload = {
-        amount,
-        asset,
-        network,
-        wallet_address,
+        amount: Number(document.getElementById("amount").value),
+        asset: document.getElementById("asset").value,
+        network: document.getElementById("network").value,
+        wallet_address: document.getElementById("wallet_address").value.trim(),
         method: "crypto"
       };
 
-      debugLog({
-        info: "Submitting payload...",
-        payload
-      });
-
-      if (!amount || amount <= 0) {
-        showMessage("Enter a valid amount.");
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit Withdrawal";
-        return;
-      }
-
-      if (!wallet_address) {
-        showMessage("Wallet address is required.");
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit Withdrawal";
-        return;
-      }
+      log({ sending: payload });
 
       const res = await fetch(`${SUPABASE_URL}/functions/v1/request_withdrawal`, {
         method: "POST",
@@ -328,40 +146,13 @@
         body: JSON.stringify(payload)
       });
 
-      const text = await res.text();
-      let data;
-      try { data = JSON.parse(text); } catch { data = { raw: text }; }
+      const txt = await res.text();
+      log({ status: res.status, body: txt });
 
-      debugLog({
-        status: res.status,
-        response: data
-      });
-
-      if (!res.ok || data?.error) {
-        showMessage(data?.details || data?.error || "Withdrawal failed.");
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit Withdrawal";
-        return;
-      }
-
-      showMessage("Withdrawal submitted successfully ✅", true);
-
-      document.getElementById("amount").value = "";
-      document.getElementById("wallet_address").value = "";
-
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Submit Withdrawal";
-
-    } catch (err) {
-      console.error(err);
-      showMessage("Unexpected error occurred.");
-      debugLog(err);
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Submit Withdrawal";
+    } catch (e) {
+      log({ error: e.message || String(e) });
     }
   });
-
-  loadUser();
 </script>
 
 </body>
