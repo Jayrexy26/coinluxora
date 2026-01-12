@@ -3,51 +3,275 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Investment Plans</title>
+<title>Investment Plans - Coinluxora</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body{margin:0;font-family:system-ui;background:#020617;color:#e5e7eb;padding:16px}
-header{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #1e293b;margin-bottom:14px}
-button{border:none;padding:10px 14px;border-radius:10px;font-weight:900;cursor:pointer;background:#38bdf8;color:#020617}
-.box{border:1px solid #1e293b;border-radius:12px;padding:14px;background:#020617;margin-bottom:16px}
-h2{margin:0;font-size:18px}
-.small{color:#94a3b8;font-size:12px;margin-top:6px}
-.ok{color:#22c55e}
-.err{color:#f87171}
-.grid{display:grid;grid-template-columns:repeat(1,1fr);gap:12px}
-.plan{border:1px solid #1e293b;border-radius:14px;padding:14px;background:#020617}
-.planTitle{font-size:18px;font-weight:1000}
-.row{display:flex;justify-content:space-between;gap:10px;margin-top:10px}
-.tag{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:900;font-size:12px;background:#0b1224;border:1px solid #1e293b}
-input{width:100%;padding:12px;margin-top:10px;border-radius:10px;border:1px solid #1e293b;background:#020617;color:#e5e7eb}
-.start{width:100%;margin-top:12px;background:#22c55e}
-.card{border:1px solid #1e293b;border-radius:12px;padding:12px;margin-top:12px}
-a{color:#38bdf8;text-decoration:none;font-weight:900}
+:root{
+  --bg:#050a18;
+  --card:rgba(255,255,255,.06);
+  --card2:rgba(255,255,255,.04);
+  --border:rgba(255,255,255,.12);
+  --text:#eaf0ff;
+  --muted:rgba(234,240,255,.65);
+  --muted2:rgba(234,240,255,.40);
+
+  --ok:#34d399;
+  --err:#f87171;
+  --warn:#facc15;
+
+  --blue:#5b6cff;
+  --purple:#7c4dff;
+  --green:#34d399;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(900px 420px at 10% 0%, rgba(83,113,255,.22), transparent 55%),
+    radial-gradient(900px 420px at 90% 0%, rgba(52,211,153,.18), transparent 55%),
+    var(--bg);
+  color:var(--text);
+  padding:16px;
+  padding-bottom:34px;
+}
+
+.container{max-width:980px;margin:0 auto}
+
+/* Top bar (matches deposits/withdraw) */
+.topBar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 16px;
+  border:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  border-radius:18px;
+  box-shadow:0 20px 80px rgba(0,0,0,.55);
+  backdrop-filter: blur(10px);
+  margin-bottom:14px;
+}
+.topBar .title{font-weight:1000;letter-spacing:.2px}
+.topBar .email{
+  font-weight:900;color:rgba(255,255,255,.8);
+  font-size:13px;max-width:58%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+
+.btnRow{display:flex;gap:10px;align-items:center}
+.btn{
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.25);
+  color:white;
+  font-weight:1000;
+  cursor:pointer;
+}
+.btn:hover{background:rgba(255,255,255,.08)}
+.gradBtn{
+  border:none;
+  padding:12px 16px;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:1000;
+  color:white;
+  background:linear-gradient(90deg, #5b6cff, #34d399);
+  box-shadow:0 18px 60px rgba(0,0,0,.45);
+}
+.gradBtn:active{transform:translateY(1px)}
+
+/* Sections */
+.section{
+  border:1px solid var(--border);
+  border-radius:22px;
+  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+  box-shadow:0 26px 90px rgba(0,0,0,.55);
+  backdrop-filter: blur(12px);
+  padding:18px;
+  margin-bottom:14px;
+}
+.section h2{margin:0;font-size:26px;font-weight:1000}
+.small{color:var(--muted);font-size:13px;margin-top:8px}
+.ok{color:var(--ok);font-weight:1000}
+.err{color:var(--err);font-weight:1000}
+.warn{color:var(--warn);font-weight:1000}
+
+/* Active plan summary card */
+.summaryCard{
+  margin-top:14px;
+  border-radius:22px;
+  padding:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background:
+    radial-gradient(900px 400px at 15% 20%, rgba(0,0,0,0.55), transparent 55%),
+    radial-gradient(900px 400px at 80% 20%, rgba(52,211,153,0.18), transparent 55%),
+    linear-gradient(135deg, rgba(3,7,18,0.85), rgba(15,23,42,0.85));
+  box-shadow:0 28px 90px rgba(0,0,0,.55);
+}
+.summaryTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.summaryTitle{font-size:16px;font-weight:1000}
+.summaryAmt{font-size:34px;font-weight:1000;margin-top:10px;letter-spacing:.4px}
+.summaryMeta{margin-top:8px;color:rgba(255,255,255,.75);font-weight:900;font-size:13px}
+
+/* Plan grid */
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  margin-top:14px;
+}
+@media(min-width:860px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+}
+
+.planCard{
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:22px;
+  padding:16px;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  box-shadow:0 20px 80px rgba(0,0,0,.55);
+  backdrop-filter: blur(10px);
+  position:relative;
+  overflow:hidden;
+}
+.planGlow{
+  position:absolute;inset:-40px;
+  background:radial-gradient(circle at 30% 0%, rgba(91,108,255,.18), transparent 55%),
+             radial-gradient(circle at 90% 0%, rgba(52,211,153,.15), transparent 55%);
+  pointer-events:none;
+}
+.planInner{position:relative;z-index:2}
+
+.planTitle{
+  font-size:20px;
+  font-weight:1000;
+  letter-spacing:.2px;
+}
+.planSub{
+  margin-top:6px;
+  color:rgba(255,255,255,.65);
+  font-size:13px;
+  font-weight:900;
+}
+
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+}
+.chip{
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:1000;
+  font-size:12px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.22);
+  color:white;
+}
+.chip.blue{background:rgba(91,108,255,.18);border-color:rgba(91,108,255,.40)}
+.chip.green{background:rgba(34,197,94,.16);border-color:rgba(34,197,94,.38)}
+.chip.orange{background:rgba(250,204,21,.14);border-color:rgba(250,204,21,.35)}
+.chip.red{background:rgba(248,113,113,.14);border-color:rgba(248,113,113,.35)}
+
+input{
+  width:100%;
+  padding:16px 14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(0,0,0,.32);
+  color:var(--text);
+  outline:none;
+  font-size:15px;
+  margin-top:14px;
+}
+input::placeholder{color:rgba(255,255,255,.35)}
+input:focus{border-color:rgba(99,102,241,.55);box-shadow:0 0 0 4px rgba(99,102,241,.18)}
+
+.startBtn{
+  width:100%;
+  margin-top:12px;
+  padding:16px 14px;
+  border:none;
+  border-radius:16px;
+  cursor:pointer;
+  font-weight:1000;
+  font-size:15px;
+  color:white;
+  background:linear-gradient(90deg, #5b6cff, #34d399);
+  box-shadow:0 18px 60px rgba(0,0,0,.45);
+}
+.startBtn:active{transform:translateY(1px)}
+
+/* Status pill */
+.pill{
+  display:inline-block;
+  padding:8px 12px;border-radius:999px;
+  font-weight:1000;font-size:12px;
+  border:1px solid rgba(255,255,255,.14);
+}
+.pPending{background:rgba(250,204,21,.16);border-color:rgba(250,204,21,.38);color:#facc15}
+.pActive{background:rgba(56,189,248,.14);border-color:rgba(56,189,248,.35);color:#38bdf8}
+.pCompleted{background:rgba(34,197,94,.16);border-color:rgba(34,197,94,.38);color:#22c55e}
+.pRejected{background:rgba(248,113,113,.14);border-color:rgba(248,113,113,.35);color:#f87171}
+
+.hr{
+  height:1px;background:rgba(255,255,255,.10);
+  margin:14px 0;
+}
+
+.line{
+  display:flex;justify-content:space-between;gap:12px;
+  margin-top:10px;
+  font-size:14px;
+}
+.line span{opacity:.65}
+
+a{color:#9bdcff;text-decoration:none;font-weight:1000}
+a:hover{text-decoration:underline}
 </style>
 </head>
 
 <body>
+<div class="container">
 
-<header>
-  <strong>Investment Plans</strong>
-  <button onclick="goDashboard()">Dashboard</button>
-</header>
+  <!-- TOP BAR -->
+  <div class="topBar">
+    <div>
+      <div class="title">Investment Plans</div>
+      <div class="small" style="margin-top:4px;color:rgba(255,255,255,.55)">Choose a plan, start investing & earn ROI.</div>
+    </div>
 
-<div class="box">
-  <h2>My Active Plan</h2>
-  <div id="activeMsg" class="small">Loading…</div>
-  <div id="activePlan"></div>
-</div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:210px">
+      <div class="email" id="topEmail">Loading…</div>
+      <div class="btnRow">
+        <button class="btn" onclick="goDashboard()">← Dashboard</button>
+        <button class="gradBtn" onclick="scrollToPlans()">Choose Plan</button>
+      </div>
+    </div>
+  </div>
 
-<div class="box">
-  <h2>Choose a Plan</h2>
-  <div class="small">Start an investment plan with defined ROI and duration</div>
+  <!-- ACTIVE PLAN -->
+  <div class="section">
+    <h2>My Active Plan</h2>
+    <div id="activeMsg" class="small">Loading…</div>
+    <div id="activePlan"></div>
+  </div>
 
-  <div class="grid" id="plansList"></div>
+  <!-- PLANS -->
+  <div class="section" id="plansSection">
+    <h2>Choose a Plan</h2>
+    <div class="small">Start an investment plan with defined ROI, duration and investment range.</div>
 
-  <div id="msg" class="small"></div>
+    <div class="grid" id="plansList"></div>
+
+    <div id="msg" class="small" style="margin-top:14px"></div>
+  </div>
+
 </div>
 
 <script>
@@ -58,19 +282,27 @@ const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 let currentUserEmail="";
 
 const PLANS = [
-  {name:"Silver", roi:15, duration:7, min:100, max:999},
-  {name:"Gold", roi:35, duration:14, min:1000, max:4999},
-  {name:"Platinum", roi:70, duration:30, min:5000, max:100000}
+  {name:"Silver", roi:15, duration:7,  min:100,  max:999,   desc:"Entry plan for steady ROI."},
+  {name:"Gold", roi:35, duration:14, min:1000, max:4999,  desc:"Mid-tier growth strategy."},
+  {name:"Platinum", roi:70, duration:30, min:5000, max:100000, desc:"High yield premium plan."}
 ];
 
 init();
 
-function goDashboard(){
-  window.location.href="user-dashboard.html";
+function goDashboard(){ window.location.href="user-dashboard.html"; }
+function scrollToPlans(){
+  document.getElementById("plansSection").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
-function money(n){
-  return "$" + Number(n||0).toFixed(2);
+function money(n){ return "$" + Number(n||0).toFixed(2); }
+
+function statusPill(status){
+  const s=(status||"pending").toLowerCase();
+  if(s==="approved") return `<span class="pill pActive">APPROVED</span>`;
+  if(s==="active") return `<span class="pill pActive">ACTIVE</span>`;
+  if(s==="completed") return `<span class="pill pCompleted">COMPLETED</span>`;
+  if(s==="rejected") return `<span class="pill pRejected">REJECTED</span>`;
+  return `<span class="pill pPending">PENDING</span>`;
 }
 
 async function init(){
@@ -81,6 +313,7 @@ async function init(){
   }
 
   currentUserEmail=userData.user.email;
+  document.getElementById("topEmail").innerText=currentUserEmail;
 
   renderPlans();
   loadActivePlan();
@@ -92,22 +325,26 @@ function renderPlans(){
 
   PLANS.forEach((p,i)=>{
     wrapper.innerHTML += `
-      <div class="plan">
-        <div class="planTitle">${p.name} Plan</div>
+      <div class="planCard">
+        <div class="planGlow"></div>
+        <div class="planInner">
+          <div class="planTitle">${p.name} Plan</div>
+          <div class="planSub">${p.desc}</div>
 
-        <div class="row">
-          <span class="tag">ROI: ${p.roi}%</span>
-          <span class="tag">Duration: ${p.duration} days</span>
+          <div class="chips">
+            <span class="chip blue">ROI: ${p.roi}%</span>
+            <span class="chip green">Duration: ${p.duration} days</span>
+          </div>
+
+          <div class="chips" style="margin-top:10px">
+            <span class="chip orange">Min: ${money(p.min)}</span>
+            <span class="chip red">Max: ${money(p.max)}</span>
+          </div>
+
+          <input type="number" id="amount-${i}" placeholder="Enter amount (${p.min} - ${p.max})"/>
+
+          <button class="startBtn" onclick="startPlan(${i})">Start ${p.name}</button>
         </div>
-
-        <div class="row">
-          <span class="tag">Min: ${money(p.min)}</span>
-          <span class="tag">Max: ${money(p.max)}</span>
-        </div>
-
-        <input type="number" id="amount-${i}" placeholder="Enter amount to invest (${p.min} - ${p.max})"/>
-
-        <button class="start" onclick="startPlan(${i})">Start ${p.name}</button>
       </div>
     `;
   });
@@ -127,29 +364,46 @@ async function loadActivePlan(){
 
   if(error){
     activeMsg.innerHTML="<span class='err'>"+error.message+"</span>";
+    activePlan.innerHTML="";
     return;
   }
 
   if(!data || data.length===0){
-    activeMsg.innerHTML="<span class='err'>No active plan.</span>";
+    activeMsg.innerHTML="<span class='warn'>No active plan yet.</span> <span class='small'>Choose a plan below to start.</span>";
     activePlan.innerHTML="";
     return;
   }
 
   const plan=data[0];
+  activeMsg.innerHTML="<span class='ok'>Active plan loaded ✅</span>";
 
-  activeMsg.innerHTML="<span class='ok'>Active plan found ✅</span>";
-
-  const expectedReturn = Number(plan.amount||0) + (Number(plan.amount||0) * (Number(plan.roi_percent||0)/100));
+  const amount = Number(plan.amount||0);
+  const roi = Number(plan.roi_percent||0);
+  const expectedReturn = amount + (amount * (roi/100));
 
   activePlan.innerHTML=`
-    <div class="card">
-      <strong>${plan.plan_name}</strong><br><br>
-      <div class="small">Amount: <strong>${money(plan.amount)}</strong></div>
-      <div class="small">ROI: <strong>${plan.roi_percent}%</strong></div>
-      <div class="small">Duration: <strong>${plan.duration_days} days</strong></div>
-      <div class="small">Status: <strong class="ok">${plan.status}</strong></div>
-      <div class="small" style="margin-top:10px">Expected Return: <strong>${money(expectedReturn)}</strong></div>
+    <div class="summaryCard">
+      <div class="summaryTop">
+        <div>
+          <div class="summaryTitle">${plan.plan_name} Plan</div>
+          <div class="summaryMeta">${statusPill(plan.status)}</div>
+        </div>
+        <div class="small" style="margin:0;color:rgba(255,255,255,.65);font-weight:900">
+          Started: ${new Date(plan.created_at).toLocaleString()}
+        </div>
+      </div>
+
+      <div class="summaryAmt">${money(amount)}</div>
+      <div class="summaryMeta">Expected Return: <span class="ok" style="font-weight:1000">${money(expectedReturn)}</span></div>
+
+      <div class="hr"></div>
+
+      <div class="line"><span>ROI</span><strong>${roi}%</strong></div>
+      <div class="line"><span>Duration</span><strong>${plan.duration_days} days</strong></div>
+      ${plan.admin_note ? `<div class="line"><span>Admin Note</span><strong>${plan.admin_note}</strong></div>` : ""}
+      <div class="small" style="margin-top:12px;color:rgba(255,255,255,.55)">
+        For upgrades or plan changes, contact <a href="support.html">Support</a>.
+      </div>
     </div>
   `;
 }
@@ -169,7 +423,7 @@ async function startPlan(index){
   // check if user has existing active plan
   const { data:existing } = await supabaseClient
     .from("investment_plans")
-    .select("*")
+    .select("id,status")
     .eq("user_email", currentUserEmail)
     .in("status", ["active","pending"]);
 
@@ -178,7 +432,6 @@ async function startPlan(index){
     return;
   }
 
-  // create plan record
   const { error } = await supabaseClient.from("investment_plans").insert([{
     user_email: currentUserEmail,
     plan_name: plan.name,
