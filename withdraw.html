@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Withdraw - Coinluxora</title>
 
-  <!-- ✅ Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -16,10 +15,7 @@
       color: #fff;
     }
 
-    .layout {
-      display: flex;
-      min-height: 100vh;
-    }
+    .layout { display: flex; min-height: 100vh; }
 
     .sidebar {
       width: 240px;
@@ -29,12 +25,7 @@
       border-right: 1px solid rgba(255,255,255,0.08);
     }
 
-    .brand {
-      font-size: 20px;
-      font-weight: 800;
-      margin-bottom: 22px;
-      letter-spacing: 0.5px;
-    }
+    .brand { font-size: 20px; font-weight: 800; margin-bottom: 22px; letter-spacing: 0.5px; }
 
     .nav a {
       display: block;
@@ -47,20 +38,14 @@
       background: rgba(255,255,255,0.03);
     }
 
-    .nav a:hover {
-      background: rgba(255,255,255,0.07);
-    }
+    .nav a:hover { background: rgba(255,255,255,0.07); }
 
     .nav a.active {
       background: rgba(99,102,241,0.25);
       border: 1px solid rgba(99,102,241,0.35);
     }
 
-    .main {
-      flex: 1;
-      padding: 20px;
-      box-sizing: border-box;
-    }
+    .main { flex: 1; padding: 20px; box-sizing: border-box; }
 
     .topbar {
       display: flex;
@@ -73,11 +58,7 @@
       margin-bottom: 18px;
     }
 
-    .topbar h2 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 800;
-    }
+    .topbar h2 { margin: 0; font-size: 18px; font-weight: 800; }
 
     .card {
       max-width: 650px;
@@ -89,17 +70,9 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.35);
     }
 
-    .card h3 {
-      margin: 0 0 18px 0;
-      font-size: 22px;
-      font-weight: 900;
-    }
+    .card h3 { margin: 0 0 18px 0; font-size: 22px; font-weight: 900; }
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
     label {
       display: block;
@@ -120,13 +93,9 @@
       box-sizing: border-box;
     }
 
-    input::placeholder {
-      color: rgba(255,255,255,0.35);
-    }
+    input::placeholder { color: rgba(255,255,255,0.35); }
 
-    .full {
-      grid-column: 1 / -1;
-    }
+    .full { grid-column: 1 / -1; }
 
     button {
       width: 100%;
@@ -141,10 +110,7 @@
       font-size: 15px;
     }
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .msg {
       margin-top: 14px;
@@ -155,10 +121,23 @@
       font-weight: 700;
       font-size: 14px;
       display: none;
+      white-space: pre-wrap;
     }
 
     .msg.ok { color: #4ade80; display: block; }
     .msg.err { color: #fb7185; display: block; }
+
+    .debug {
+      margin-top: 12px;
+      font-size: 12px;
+      opacity: 0.75;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px dashed rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.2);
+      display: none;
+      white-space: pre-wrap;
+    }
 
     @media (max-width: 900px) {
       .sidebar { display: none; }
@@ -171,7 +150,6 @@
 <body>
 
 <div class="layout">
-
   <aside class="sidebar">
     <div class="brand">COINLUXORA</div>
     <div class="nav">
@@ -192,6 +170,7 @@
     <div class="card">
       <h3>Request Withdrawal</h3>
 
+      <!-- ✅ Not using <form> prevents refresh issues -->
       <div class="grid">
         <div>
           <label>Amount</label>
@@ -204,20 +183,19 @@
             <option value="USD">USD</option>
             <option value="EUR">EUR</option>
             <option value="GBP">GBP</option>
-            <option value="ETH">ETH</option> <!-- ✅ changed NGN -> ETH -->
+            <option value="ETH">ETH</option>
             <option value="BTC">BTC</option>
             <option value="USDT">USDT</option>
           </select>
         </div>
 
-        <!-- ✅ Network is now SELECT -->
         <div class="full">
           <label>Network</label>
           <select id="network">
             <option value="TRC20">TRC20</option>
             <option value="ERC20">ERC20</option>
-            <option value="BTC">BTC</option>
             <option value="BEP20">BEP20</option>
+            <option value="BTC">BTC</option>
           </select>
         </div>
 
@@ -227,25 +205,25 @@
         </div>
 
         <div class="full">
-          <button id="submitBtn">Submit Withdrawal</button>
+          <button id="submitBtn" type="button">Submit Withdrawal</button>
           <div id="msg" class="msg"></div>
+          <div id="debug" class="debug"></div>
         </div>
       </div>
-
     </div>
   </main>
 </div>
 
 <script>
+  // ✅ Supabase setup
   const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
-
-  // ✅ Your ANON key
   const SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const msg = document.getElementById("msg");
+  const debugBox = document.getElementById("debug");
   const submitBtn = document.getElementById("submitBtn");
   const userEmailDiv = document.getElementById("userEmail");
 
@@ -254,12 +232,24 @@
     msg.className = "msg " + (ok ? "ok" : "err");
   }
 
+  function debugLog(obj) {
+    debugBox.style.display = "block";
+    debugBox.textContent = typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+  }
+
   async function loadUser() {
-    const { data } = await supabase.auth.getUser();
+    const { data, error } = await supabase.auth.getUser();
+    if (error) {
+      showMessage("Auth error: " + error.message);
+      debugLog(error);
+      return;
+    }
+
     if (!data?.user) {
       window.location.href = "login.html";
       return;
     }
+
     userEmailDiv.textContent = data.user.email || "";
   }
 
@@ -272,12 +262,24 @@
   submitBtn.addEventListener("click", async () => {
     try {
       msg.style.display = "none";
+      debugBox.style.display = "none";
+
+      // ✅ confirm click works
+      debugLog("Button clicked ✅");
+
       submitBtn.disabled = true;
       submitBtn.textContent = "Submitting...";
 
-      const { data: sessionData } = await supabase.auth.getSession();
-      const session = sessionData?.session;
+      const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
+      if (sessionErr) {
+        showMessage("Session error: " + sessionErr.message);
+        debugLog(sessionErr);
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Withdrawal";
+        return;
+      }
 
+      const session = sessionData?.session;
       if (!session) {
         showMessage("You are not logged in. Please login again.");
         submitBtn.disabled = false;
@@ -287,8 +289,21 @@
 
       const amount = Number(document.getElementById("amount").value);
       const asset = document.getElementById("asset").value;
-      const network = document.getElementById("network").value; // ✅ from select
+      const network = document.getElementById("network").value;
       const wallet_address = document.getElementById("wallet_address").value.trim();
+
+      const payload = {
+        amount,
+        asset,
+        network,
+        wallet_address,
+        method: "crypto"
+      };
+
+      debugLog({
+        info: "Submitting payload...",
+        payload
+      });
 
       if (!amount || amount <= 0) {
         showMessage("Enter a valid amount.");
@@ -304,14 +319,6 @@
         return;
       }
 
-      const payload = {
-        amount,
-        asset,
-        network,
-        wallet_address,
-        method: "crypto"
-      };
-
       const res = await fetch(`${SUPABASE_URL}/functions/v1/request_withdrawal`, {
         method: "POST",
         headers: {
@@ -321,10 +328,16 @@
         body: JSON.stringify(payload)
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch { data = { raw: text }; }
+
+      debugLog({
+        status: res.status,
+        response: data
+      });
 
       if (!res.ok || data?.error) {
-        console.error("Withdraw error:", data);
         showMessage(data?.details || data?.error || "Withdrawal failed.");
         submitBtn.disabled = false;
         submitBtn.textContent = "Submit Withdrawal";
@@ -338,9 +351,11 @@
 
       submitBtn.disabled = false;
       submitBtn.textContent = "Submit Withdrawal";
+
     } catch (err) {
       console.error(err);
       showMessage("Unexpected error occurred.");
+      debugLog(err);
       submitBtn.disabled = false;
       submitBtn.textContent = "Submit Withdrawal";
     }
