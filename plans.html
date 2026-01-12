@@ -6,6 +6,7 @@
 <title>Investment Plans - Coinluxora</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 :root{
@@ -24,6 +25,10 @@
   --blue:#5b6cff;
   --purple:#7c4dff;
   --green:#34d399;
+
+  --pending:#9e6816;
+  --rejected:#783122;
+  --forexGreen:#0bd07c;
 }
 
 *{box-sizing:border-box}
@@ -41,7 +46,7 @@ body{
 
 .container{max-width:980px;margin:0 auto}
 
-/* Top bar (matches deposits/withdraw) */
+/* Top bar */
 .topBar{
   display:flex;
   justify-content:space-between;
@@ -61,7 +66,7 @@ body{
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap
 }
 
-.btnRow{display:flex;gap:10px;align-items:center}
+.btnRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .btn{
   padding:12px 14px;
   border-radius:14px;
@@ -84,6 +89,38 @@ body{
 }
 .gradBtn:active{transform:translateY(1px)}
 
+/* ✅ Stats */
+.statsGrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-bottom:14px;
+}
+@media(min-width:720px){
+  .statsGrid{grid-template-columns:repeat(4,1fr)}
+}
+.statCard{
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:18px;
+  padding:14px;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  box-shadow:0 20px 80px rgba(0,0,0,.50);
+  backdrop-filter: blur(10px);
+}
+.statLabel{color:rgba(255,255,255,.70);font-size:12px;font-weight:900}
+.statValue{margin-top:8px;font-size:22px;font-weight:1000;letter-spacing:.2px}
+.statHint{margin-top:6px;color:rgba(255,255,255,.45);font-size:12px}
+.statBar{
+  height:8px;border-radius:999px;margin-top:10px;
+  background:rgba(255,255,255,.08);
+  overflow:hidden;border:1px solid rgba(255,255,255,.12);
+}
+.statFill{height:100%;width:35%}
+.fillTotal{background:linear-gradient(90deg, rgba(91,108,255,1), rgba(52,211,153,1))}
+.fillPending{background:linear-gradient(90deg, var(--pending), rgba(250,204,21,.65))}
+.fillActive{background:linear-gradient(90deg, var(--forexGreen), rgba(34,197,94,.60))}
+.fillCompleted{background:linear-gradient(90deg, rgba(56,189,248,1), rgba(91,108,255,1))}
+
 /* Sections */
 .section{
   border:1px solid var(--border);
@@ -99,23 +136,6 @@ body{
 .ok{color:var(--ok);font-weight:1000}
 .err{color:var(--err);font-weight:1000}
 .warn{color:var(--warn);font-weight:1000}
-
-/* Active plan summary card */
-.summaryCard{
-  margin-top:14px;
-  border-radius:22px;
-  padding:16px;
-  border:1px solid rgba(255,255,255,.12);
-  background:
-    radial-gradient(900px 400px at 15% 20%, rgba(0,0,0,0.55), transparent 55%),
-    radial-gradient(900px 400px at 80% 20%, rgba(52,211,153,0.18), transparent 55%),
-    linear-gradient(135deg, rgba(3,7,18,0.85), rgba(15,23,42,0.85));
-  box-shadow:0 28px 90px rgba(0,0,0,.55);
-}
-.summaryTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
-.summaryTitle{font-size:16px;font-weight:1000}
-.summaryAmt{font-size:34px;font-weight:1000;margin-top:10px;letter-spacing:.4px}
-.summaryMeta{margin-top:8px;color:rgba(255,255,255,.75);font-weight:900;font-size:13px}
 
 /* Plan grid */
 .grid{
@@ -158,6 +178,7 @@ body{
   font-weight:900;
 }
 
+/* Chips */
 .chips{
   display:flex;
   flex-wrap:wrap;
@@ -207,6 +228,37 @@ input:focus{border-color:rgba(99,102,241,.55);box-shadow:0 0 0 4px rgba(99,102,2
 }
 .startBtn:active{transform:translateY(1px)}
 
+/* Summary */
+.summaryCard{
+  margin-top:14px;
+  border-radius:22px;
+  padding:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background:
+    radial-gradient(900px 400px at 15% 20%, rgba(0,0,0,0.55), transparent 55%),
+    radial-gradient(900px 400px at 80% 20%, rgba(52,211,153,0.18), transparent 55%),
+    linear-gradient(135deg, rgba(3,7,18,0.85), rgba(15,23,42,0.85));
+  box-shadow:0 28px 90px rgba(0,0,0,.55);
+}
+.summaryTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.summaryTitle{font-size:16px;font-weight:1000}
+.summaryAmt{font-size:34px;font-weight:1000;margin-top:10px;letter-spacing:.4px}
+.summaryMeta{margin-top:8px;color:rgba(255,255,255,.75);font-weight:900;font-size:13px}
+.hr{height:1px;background:rgba(255,255,255,.10);margin:14px 0}
+.line{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:14px}
+.line span{opacity:.65}
+.actionsRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.actionBtn{
+  padding:12px 14px;
+  border-radius:14px;
+  font-weight:1000;
+  cursor:pointer;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);
+  color:white;
+}
+.actionBtn:hover{background:rgba(255,255,255,.10)}
+
 /* Status pill */
 .pill{
   display:inline-block;
@@ -215,21 +267,37 @@ input:focus{border-color:rgba(99,102,241,.55);box-shadow:0 0 0 4px rgba(99,102,2
   border:1px solid rgba(255,255,255,.14);
 }
 .pPending{background:rgba(250,204,21,.16);border-color:rgba(250,204,21,.38);color:#facc15}
-.pActive{background:rgba(56,189,248,.14);border-color:rgba(56,189,248,.35);color:#38bdf8}
-.pCompleted{background:rgba(34,197,94,.16);border-color:rgba(34,197,94,.38);color:#22c55e}
+.pActive{background:rgba(11,208,124,.16);border-color:rgba(11,208,124,.38);color:var(--forexGreen)}
+.pCompleted{background:rgba(56,189,248,.14);border-color:rgba(56,189,248,.35);color:#38bdf8}
 .pRejected{background:rgba(248,113,113,.14);border-color:rgba(248,113,113,.35);color:#f87171}
 
-.hr{
-  height:1px;background:rgba(255,255,255,.10);
-  margin:14px 0;
+/* Modal */
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);
+  display:none;align-items:center;justify-content:center;z-index:9999;
 }
-
-.line{
-  display:flex;justify-content:space-between;gap:12px;
-  margin-top:10px;
-  font-size:14px;
+.modalBox{
+  width:95%;max-width:560px;border-radius:22px;
+  border:1px solid rgba(255,255,255,.16);
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  box-shadow:0 26px 90px rgba(0,0,0,.65);
+  backdrop-filter: blur(12px);
+  padding:18px;
 }
-.line span{opacity:.65}
+.modalTitle{margin:0 0 12px 0;font-size:20px;font-weight:1000}
+.modalRow{margin-bottom:10px;font-size:14px}
+.modalRow span{opacity:.65}
+.closeBtn{
+  width:100%;margin-top:10px;padding:14px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.28);
+  color:white;font-weight:1000;cursor:pointer;
+}
+.pdfBtn{
+  width:100%;margin-top:10px;padding:14px;border-radius:16px;border:none;
+  background:linear-gradient(90deg, #5b6cff, #34d399);
+  color:white;font-weight:1000;cursor:pointer;
+}
 
 a{color:#9bdcff;text-decoration:none;font-weight:1000}
 a:hover{text-decoration:underline}
@@ -239,14 +307,16 @@ a:hover{text-decoration:underline}
 <body>
 <div class="container">
 
-  <!-- TOP BAR -->
+  <!-- TOP -->
   <div class="topBar">
     <div>
       <div class="title">Investment Plans</div>
-      <div class="small" style="margin-top:4px;color:rgba(255,255,255,.55)">Choose a plan, start investing & earn ROI.</div>
+      <div class="small" style="margin-top:4px;color:rgba(255,255,255,.55)">
+        Start a plan and earn fixed ROI with premium confirmation.
+      </div>
     </div>
 
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:210px">
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:220px">
       <div class="email" id="topEmail">Loading…</div>
       <div class="btnRow">
         <button class="btn" onclick="goDashboard()">← Dashboard</button>
@@ -255,14 +325,42 @@ a:hover{text-decoration:underline}
     </div>
   </div>
 
-  <!-- ACTIVE PLAN -->
+  <!-- ✅ STATS -->
+  <div class="statsGrid">
+    <div class="statCard">
+      <div class="statLabel">Total Plans</div>
+      <div class="statValue" id="statTotal">0</div>
+      <div class="statHint">All plans</div>
+      <div class="statBar"><div class="statFill fillTotal" id="barTotal"></div></div>
+    </div>
+    <div class="statCard">
+      <div class="statLabel">Pending</div>
+      <div class="statValue" id="statPending">0</div>
+      <div class="statHint">Awaiting approval</div>
+      <div class="statBar"><div class="statFill fillPending" id="barPending"></div></div>
+    </div>
+    <div class="statCard">
+      <div class="statLabel">Active</div>
+      <div class="statValue" id="statActive">0</div>
+      <div class="statHint">Running plans</div>
+      <div class="statBar"><div class="statFill fillActive" id="barActive"></div></div>
+    </div>
+    <div class="statCard">
+      <div class="statLabel">Completed</div>
+      <div class="statValue" id="statCompleted">0</div>
+      <div class="statHint">Finished ROI</div>
+      <div class="statBar"><div class="statFill fillCompleted" id="barCompleted"></div></div>
+    </div>
+  </div>
+
+  <!-- ACTIVE -->
   <div class="section">
     <h2>My Active Plan</h2>
     <div id="activeMsg" class="small">Loading…</div>
     <div id="activePlan"></div>
   </div>
 
-  <!-- PLANS -->
+  <!-- CHOOSE -->
   <div class="section" id="plansSection">
     <h2>Choose a Plan</h2>
     <div class="small">Start an investment plan with defined ROI, duration and investment range.</div>
@@ -274,12 +372,26 @@ a:hover{text-decoration:underline}
 
 </div>
 
+<!-- Modal -->
+<div class="modal" id="planModal">
+  <div class="modalBox">
+    <h3 class="modalTitle">Plan Details</h3>
+    <div id="planModalBody"></div>
+
+    <button class="pdfBtn" id="downloadPlanPdfBtn">Download Plan Receipt (PDF)</button>
+    <button class="closeBtn" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 let currentUserEmail="";
+let plansCache=[];
+let currentPlanDetails=null;
+let plansChannel=null;
 
 const PLANS = [
   {name:"Silver", roi:15, duration:7,  min:100,  max:999,   desc:"Entry plan for steady ROI."},
@@ -290,35 +402,38 @@ const PLANS = [
 init();
 
 function goDashboard(){ window.location.href="user-dashboard.html"; }
-function scrollToPlans(){
-  document.getElementById("plansSection").scrollIntoView({behavior:"smooth", block:"start"});
-}
-
+function scrollToPlans(){ document.getElementById("plansSection").scrollIntoView({behavior:"smooth", block:"start"}); }
 function money(n){ return "$" + Number(n||0).toFixed(2); }
 
 function statusPill(status){
   const s=(status||"pending").toLowerCase();
-  if(s==="approved") return `<span class="pill pActive">APPROVED</span>`;
   if(s==="active") return `<span class="pill pActive">ACTIVE</span>`;
   if(s==="completed") return `<span class="pill pCompleted">COMPLETED</span>`;
   if(s==="rejected") return `<span class="pill pRejected">REJECTED</span>`;
   return `<span class="pill pPending">PENDING</span>`;
 }
 
-async function init(){
-  const { data:userData } = await supabaseClient.auth.getUser();
-  if(!userData.user){
-    document.body.innerHTML="<h2 style='color:white'>You must login first.</h2>";
-    return;
-  }
+/* ✅ Stats update */
+function updateStats(){
+  const total = plansCache.length;
+  const pending = plansCache.filter(x => (x.status||"").toLowerCase()==="pending").length;
+  const active = plansCache.filter(x => (x.status||"").toLowerCase()==="active").length;
+  const completed = plansCache.filter(x => (x.status||"").toLowerCase()==="completed").length;
 
-  currentUserEmail=userData.user.email;
-  document.getElementById("topEmail").innerText=currentUserEmail;
+  document.getElementById("statTotal").innerText = total;
+  document.getElementById("statPending").innerText = pending;
+  document.getElementById("statActive").innerText = active;
+  document.getElementById("statCompleted").innerText = completed;
 
-  renderPlans();
-  loadActivePlan();
+  const pct = (n)=> total ? Math.max(8, Math.round((n/total)*100)) : 15;
+
+  document.getElementById("barTotal").style.width = total ? "100%" : "25%";
+  document.getElementById("barPending").style.width = pct(pending) + "%";
+  document.getElementById("barActive").style.width = pct(active) + "%";
+  document.getElementById("barCompleted").style.width = pct(completed) + "%";
 }
 
+/* render plan cards */
 function renderPlans(){
   const wrapper=document.getElementById("plansList");
   wrapper.innerHTML="";
@@ -342,7 +457,6 @@ function renderPlans(){
           </div>
 
           <input type="number" id="amount-${i}" placeholder="Enter amount (${p.min} - ${p.max})"/>
-
           <button class="startBtn" onclick="startPlan(${i})">Start ${p.name}</button>
         </div>
       </div>
@@ -350,6 +464,24 @@ function renderPlans(){
   });
 }
 
+/* load all plans for stats */
+async function loadPlansForStats(){
+  const { data, error } = await supabaseClient
+    .from("investment_plans")
+    .select("id,plan_name,status,amount,roi_percent,duration_days,created_at,admin_note")
+    .eq("user_email", currentUserEmail)
+    .order("created_at", {ascending:false});
+
+  if(error){
+    console.log("plans load error:", error.message);
+    plansCache=[];
+  }else{
+    plansCache = data || [];
+  }
+  updateStats();
+}
+
+/* load active plan summary */
 async function loadActivePlan(){
   const activeMsg=document.getElementById("activeMsg");
   const activePlan=document.getElementById("activePlan");
@@ -400,7 +532,14 @@ async function loadActivePlan(){
 
       <div class="line"><span>ROI</span><strong>${roi}%</strong></div>
       <div class="line"><span>Duration</span><strong>${plan.duration_days} days</strong></div>
+      <div class="line"><span>Status</span><strong>${(plan.status||"").toUpperCase()}</strong></div>
       ${plan.admin_note ? `<div class="line"><span>Admin Note</span><strong>${plan.admin_note}</strong></div>` : ""}
+
+      <div class="actionsRow">
+        <button class="actionBtn" onclick='openModal(${JSON.stringify(plan)})'>View Details</button>
+        <button class="actionBtn" onclick="scrollToPlans()">Start New Plan</button>
+      </div>
+
       <div class="small" style="margin-top:12px;color:rgba(255,255,255,.55)">
         For upgrades or plan changes, contact <a href="support.html">Support</a>.
       </div>
@@ -408,6 +547,7 @@ async function loadActivePlan(){
   `;
 }
 
+/* start plan */
 async function startPlan(index){
   const msg=document.getElementById("msg");
   msg.innerHTML="Starting plan…";
@@ -420,7 +560,7 @@ async function startPlan(index){
     return;
   }
 
-  // check if user has existing active plan
+  // check existing active/pending
   const { data:existing } = await supabaseClient
     .from("investment_plans")
     .select("id,status")
@@ -447,7 +587,99 @@ async function startPlan(index){
   }
 
   msg.innerHTML="<span class='ok'>Plan started ✅ Waiting for admin approval</span>";
+  await loadPlansForStats();
   loadActivePlan();
+}
+
+/* ✅ Realtime */
+function initRealtimePlans(){
+  if(plansChannel){
+    supabaseClient.removeChannel(plansChannel);
+    plansChannel=null;
+  }
+
+  plansChannel = supabaseClient
+    .channel("realtime-investment-plans-user")
+    .on("postgres_changes", {
+      event: "*",
+      schema: "public",
+      table: "investment_plans",
+      filter: `user_email=eq.${currentUserEmail}`
+    }, () => {
+      loadPlansForStats();
+      loadActivePlan();
+    })
+    .subscribe();
+}
+
+/* Modal */
+function openModal(plan){
+  currentPlanDetails=plan;
+  document.getElementById("planModalBody").innerHTML = `
+    <div class="modalRow"><span>Plan ID:</span> ${plan.id}</div>
+    <div class="modalRow"><span>Plan:</span> ${plan.plan_name}</div>
+    <div class="modalRow"><span>Amount:</span> ${money(plan.amount)}</div>
+    <div class="modalRow"><span>ROI:</span> ${plan.roi_percent}%</div>
+    <div class="modalRow"><span>Duration:</span> ${plan.duration_days} days</div>
+    <div class="modalRow"><span>Status:</span> ${statusPill(plan.status)}</div>
+    <div class="modalRow"><span>Date:</span> ${new Date(plan.created_at).toLocaleString()}</div>
+    ${plan.admin_note ? `<div class="modalRow"><span>Admin Note:</span> ${plan.admin_note}</div>` : ""}
+  `;
+  document.getElementById("planModal").style.display="flex";
+}
+function closeModal(){ document.getElementById("planModal").style.display="none"; }
+window.openModal=openModal;
+window.closeModal=closeModal;
+
+/* PDF */
+document.getElementById("downloadPlanPdfBtn").addEventListener("click", ()=>{
+  if(!currentPlanDetails) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.setFontSize(16);
+  doc.text("Coinluxora Investment Plan Receipt", 14, 18);
+  doc.setFontSize(11);
+
+  const amount = Number(currentPlanDetails.amount||0);
+  const roi = Number(currentPlanDetails.roi_percent||0);
+  const expectedReturn = amount + (amount * (roi/100));
+
+  const lines = [
+    `Receipt ID: ${currentPlanDetails.id}`,
+    `User Email: ${currentUserEmail}`,
+    `Plan: ${currentPlanDetails.plan_name}`,
+    `Amount: ${money(amount)}`,
+    `ROI: ${roi}%`,
+    `Duration: ${currentPlanDetails.duration_days} days`,
+    `Expected Return: ${money(expectedReturn)}`,
+    `Status: ${currentPlanDetails.status}`,
+    `Date: ${new Date(currentPlanDetails.created_at).toLocaleString()}`,
+    currentPlanDetails.admin_note ? `Admin Note: ${currentPlanDetails.admin_note}` : ""
+  ].filter(Boolean);
+
+  let y=30;
+  for(const line of lines){ doc.text(String(line), 14, y); y+=8; }
+  doc.text("Thank you for choosing Coinluxora.", 14, y+12);
+
+  doc.save(`coinluxora-plan-${currentPlanDetails.id}.pdf`);
+});
+
+/* Init */
+async function init(){
+  const { data:userData } = await supabaseClient.auth.getUser();
+  if(!userData.user){
+    document.body.innerHTML="<h2 style='color:white'>You must login first.</h2>";
+    return;
+  }
+
+  currentUserEmail=userData.user.email;
+  document.getElementById("topEmail").innerText=currentUserEmail;
+
+  renderPlans();
+  await loadPlansForStats();
+  await loadActivePlan();
+  initRealtimePlans();
 }
 </script>
 
