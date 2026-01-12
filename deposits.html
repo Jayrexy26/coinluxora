@@ -57,6 +57,8 @@ body{
 @media(min-width:720px){
   .statsGrid{grid-template-columns:repeat(4,1fr)}
 }
+
+/* base stat card */
 .statCard{
   border:1px solid rgba(255,255,255,.14);
   border-radius:18px;
@@ -64,10 +66,35 @@ body{
   background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
   box-shadow:0 20px 80px rgba(0,0,0,.50);
   backdrop-filter: blur(10px);
+  position:relative;
+  overflow:hidden;
 }
-.statLabel{color:rgba(255,255,255,.70);font-size:12px;font-weight:900}
+
+/* ✅ NEW: colored stat variants */
+.statCard.approved{
+  border-color: rgba(34,197,94,.30);
+  background:
+    radial-gradient(700px 220px at 20% 0%, rgba(34,197,94,.22), transparent 55%),
+    linear-gradient(180deg, rgba(34,197,94,.16), rgba(0,0,0,.18));
+}
+
+.statCard.pending{
+  border-color: rgba(158,104,22,.38);
+  background:
+    radial-gradient(700px 220px at 20% 0%, rgba(158,104,22,.25), transparent 55%),
+    linear-gradient(180deg, rgba(158,104,22,.17), rgba(0,0,0,.20));
+}
+
+.statCard.rejected{
+  border-color: rgba(120,49,34,.42);
+  background:
+    radial-gradient(700px 220px at 20% 0%, rgba(120,49,34,.25), transparent 55%),
+    linear-gradient(180deg, rgba(120,49,34,.18), rgba(0,0,0,.22));
+}
+
+.statLabel{color:rgba(255,255,255,.75);font-size:12px;font-weight:1000}
 .statValue{margin-top:8px;font-size:22px;font-weight:1000;letter-spacing:.2px}
-.statHint{margin-top:6px;color:rgba(255,255,255,.45);font-size:12px}
+.statHint{margin-top:6px;color:rgba(255,255,255,.52);font-size:12px}
 
 /* Sections */
 .section{
@@ -227,17 +254,20 @@ th{color:rgba(255,255,255,.65);font-weight:1000;font-size:13px}
       <div class="statValue" id="statTotal">0</div>
       <div class="statHint">All confirmations</div>
     </div>
-    <div class="statCard">
+
+    <div class="statCard pending">
       <div class="statLabel">Pending</div>
       <div class="statValue" id="statPending">0</div>
       <div class="statHint">Awaiting verification</div>
     </div>
-    <div class="statCard">
+
+    <div class="statCard approved">
       <div class="statLabel">Approved</div>
       <div class="statValue" id="statApproved">0</div>
       <div class="statHint">Verified deposits</div>
     </div>
-    <div class="statCard">
+
+    <div class="statCard rejected">
       <div class="statLabel">Rejected</div>
       <div class="statValue" id="statRejected">0</div>
       <div class="statHint">Declined confirmations</div>
@@ -274,8 +304,6 @@ th{color:rgba(255,255,255,.65);font-weight:1000;font-size:13px}
 
         <div class="btnRow">
           <button class="btn" onclick="goDashboard()">← Dashboard</button>
-
-          <!-- ✅ Copy button now has an ID so we can animate it -->
           <button class="btn rightBtn" id="copyBtn" onclick="copyAddress()">Copy Address</button>
         </div>
       </div>
@@ -457,11 +485,9 @@ async function copyAddress(){
     return;
   }
 
-  // Clipboard
   try{
     await navigator.clipboard.writeText(addr);
   }catch(e){
-    // fallback
     const temp=document.createElement("textarea");
     temp.value=addr;
     document.body.appendChild(temp);
@@ -470,7 +496,6 @@ async function copyAddress(){
     temp.remove();
   }
 
-  // ✅ Green feedback
   if(copyBtn){
     const oldText = copyBtn.innerText;
     copyBtn.innerText = "Copied ✔️";
