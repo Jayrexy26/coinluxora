@@ -277,6 +277,14 @@
 
   window.addEventListener("DOMContentLoaded", initBadges);
 </script>
-
+<script>
+(async () => {
+  const { data } = await supabaseClient.auth.getSession();
+  const token = data?.session?.access_token;
+  console.log("ACCESS TOKEN:", token);
+  alert("ACCESS TOKEN copied to console.\nOpen browser console to copy it.");
+})();
+</script>
+  
 </body>
 </html>
