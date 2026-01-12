@@ -123,10 +123,9 @@ a:hover{text-decoration:underline}
   <a class="sideItem" href="plans.html">💼 Investment Plans</a>
   <a class="sideItem" href="support.html">🧑‍💻 Support / Contact</a>
 
-  <!-- ✅ Deposit is now a separate page -->
-  <a class="sideItem" href="deposit.html">💳 Deposit</a>
+  <!-- ✅ FIXED: Deposit link now points to deposits.html -->
+  <a class="sideItem" href="deposits.html">💳 Deposit</a>
 
-  <!-- ✅ Withdraw is separate page (contains history below) -->
   <a class="sideItem" href="withdraw.html">➡ Withdraw Funds</a>
 
   <div style="height:12px"></div>
@@ -165,6 +164,7 @@ a:hover{text-decoration:underline}
 <div class="bottomNav">
   <div class="navItem navActive" onclick="goHome()"><span>🏠</span>Home</div>
 
+  <!-- ✅ FIXED: deposit now points to deposits.html -->
   <div class="navItem" onclick="goDepositAndClear()">
     <div id="badgeDeposit" class="badge">0</div>
     <span>💳</span>Deposit
@@ -200,7 +200,10 @@ init();
 /* NAV */
 function goHome(){ window.scrollTo({top:0,behavior:"smooth"}); }
 function goPlans(){ window.location.href="plans.html"; }
-function goDepositAndClear(){ clearBadge("deposits"); window.location.href="deposit.html"; }
+
+/* ✅ FIXED */
+function goDepositAndClear(){ clearBadge("deposits"); window.location.href="deposits.html"; }
+
 function goWithdrawAndClear(){ clearBadge("withdrawals"); window.location.href="withdraw.html"; }
 function goSupportAndClear(){ clearBadge("notifications"); window.location.href="support.html"; }
 
@@ -211,18 +214,6 @@ function openMenu(){
 function closeMenu(){
   document.getElementById("sidebar").classList.remove("open");
   document.getElementById("overlay").classList.remove("show");
-}
-
-function money(n){ return "$" + Number(n||0).toFixed(2); }
-function pill(status){
-  const s=(status||"pending").toLowerCase();
-  return `<span class="pill ${s}">${s}</span>`;
-}
-function daysBetween(date1, date2){
-  const d1=new Date(date1);
-  const d2=new Date(date2);
-  const diff=(d2 - d1) / (1000*60*60*24);
-  return Math.max(0, Math.ceil(diff));
 }
 
 function setBadge(id, count){
@@ -334,6 +325,18 @@ async function init(){
 async function loadBalance(){
   const { data } = await supabaseClient.from("users").select("*").eq("email", currentUserEmail).single();
   document.getElementById("balance").innerHTML = Number(data?.balance || 0).toFixed(2);
+}
+
+function money(n){ return "$" + Number(n||0).toFixed(2); }
+function pill(status){
+  const s=(status||"pending").toLowerCase();
+  return `<span class="pill ${s}">${s}</span>`;
+}
+function daysBetween(date1, date2){
+  const d1=new Date(date1);
+  const d2=new Date(date2);
+  const diff=(d2 - d1) / (1000*60*60*24);
+  return Math.max(0, Math.ceil(diff));
 }
 
 async function loadActivePlan(){
