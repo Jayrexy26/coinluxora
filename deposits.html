@@ -1,253 +1,285 @@
-<!-- =========================
-     WALLET ADDRESS (COPY UI)
-========================== -->
-<div class="walletBox glass">
-  <div class="walletTop">
-    <div>
-      <div class="walletLabel">Deposit Address</div>
-      <div class="walletHint">Send only the selected asset to this address.</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CoinLuxora - Create Account</title>
+
+  <!-- Optional: Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- reCAPTCHA v2 -->
+  <!-- IMPORTANT: replace YOUR_SITE_KEY with your real key -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+  <style>
+    :root{
+      --bg1:#020617;
+      --bg2:#0b1633;
+      --card:rgba(255,255,255,0.06);
+      --stroke:rgba(255,255,255,0.12);
+      --text:#e5e7eb;
+      --muted:rgba(229,231,235,0.7);
+      --input:rgba(255,255,255,0.07);
+      --inputStroke:rgba(255,255,255,0.14);
+      --blue1:#3b82f6;
+      --blue2:#2563eb;
+      --danger:#ef4444;
+      --ok:#22c55e;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body { height:100%; }
+
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 600px at 10% 10%, rgba(59,130,246,0.28), transparent 60%),
+        radial-gradient(900px 600px at 90% 30%, rgba(168,85,247,0.18), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      display:flex;
+      justify-content:center;
+      align-items:center;
+
+      /* ✅ IMPORTANT: allow mobile scroll so errors are not hidden */
+      overflow:auto;
+      padding:24px 14px;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:520px;
+    }
+
+    .card{
+      width:100%;
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.05));
+      border:1px solid var(--stroke);
+      box-shadow:0 30px 80px rgba(0,0,0,0.45);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding:28px 22px;
+      position:relative;
+    }
+
+    /* ✅ Mobile: make card scroll-friendly */
+    @media (max-height: 820px){
+      .card{
+        max-height: calc(100vh - 40px);
+        overflow: auto;
+      }
+    }
+
+    .logo{
+      display:flex;
+      justify-content:center;
+      margin-bottom:8px;
+    }
+
+    .logo svg{ width:42px; height:42px; opacity:0.95; }
+
+    h1{
+      font-size:32px;
+      margin:6px 0 6px;
+      text-align:center;
+      letter-spacing:-0.02em;
+      background:linear-gradient(90deg, #60a5fa, #8b5cf6);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .subtitle{
+      text-align:center;
+      color:var(--muted);
+      margin:0 0 20px;
+      font-size:14px;
+    }
+
+    .field{
+      margin:14px 0;
+    }
+
+    label{
+      display:block;
+      font-size:13px;
+      color:rgba(229,231,235,0.85);
+      margin:0 0 8px;
+      font-weight:600;
+    }
+
+    .input, select{
+      width:100%;
+      padding:13px 14px;
+      border-radius:10px;
+      border:1px solid var(--inputStroke);
+      background:var(--input);
+      color:var(--text);
+      outline:none;
+      transition: all .2s ease;
+    }
+
+    .input::placeholder{ color:rgba(229,231,235,0.45); }
+
+    .input:focus, select:focus{
+      border-color:rgba(59,130,246,0.55);
+      box-shadow:0 0 0 4px rgba(59,130,246,0.16);
+    }
+
+    .helper{
+      font-size:12px;
+      color:rgba(229,231,235,0.55);
+      margin-top:8px;
+    }
+
+    .captchaWrap{
+      margin:18px 0 18px;
+      display:flex;
+      justify-content:center;
+    }
+
+    .btn{
+      width:100%;
+      border:none;
+      border-radius:12px;
+      padding:14px 16px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      color:white;
+      background:linear-gradient(180deg, var(--blue1), var(--blue2));
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
+      transition: transform .14s ease, opacity .14s ease;
+    }
+
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0px); opacity:0.92; }
+    .btn:disabled{ cursor:not-allowed; opacity:0.6; transform:none; }
+
+    .footer{
+      margin-top:16px;
+      text-align:center;
+      color:rgba(229,231,235,0.7);
+      font-size:14px;
+    }
+
+    .footer a{
+      color:#60a5fa;
+      text-decoration:none;
+      font-weight:700;
+    }
+
+    /* ✅ Error box always visible */
+    .msg{
+      margin-top:14px;
+      border-radius:12px;
+      padding:12px 14px;
+      border:1px solid rgba(255,255,255,0.12);
+      background:rgba(0,0,0,0.20);
+      display:none;
+    }
+
+    .msg.show{ display:block; }
+    .msg.error{
+      border-color: rgba(239,68,68,0.55);
+      background: rgba(239,68,68,0.13);
+      color:#fecaca;
+    }
+
+    .msg.success{
+      border-color: rgba(34,197,94,0.55);
+      background: rgba(34,197,94,0.13);
+      color:#bbf7d0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+
+      <div class="logo">
+        <!-- simple icon -->
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M5 12.5c4.5-5.5 9.5-5.5 14 0" stroke="white" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+          <path d="M8 15c3-3.5 5-3.5 8 0" stroke="white" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+          <path d="M11.2 17.5c.6-.7 1-.7 1.6 0" stroke="white" stroke-width="2" stroke-linecap="round" opacity=".95"/>
+        </svg>
+      </div>
+
+      <h1>Create Account</h1>
+      <p class="subtitle">Join CoinLuxora today</p>
+
+      <form id="signupForm">
+        <div class="field">
+          <label>Full Name *</label>
+          <input class="input" id="full_name" type="text" placeholder="Enter your full name" required />
+        </div>
+
+        <div class="field">
+          <label>Email Address *</label>
+          <input class="input" id="email" type="email" placeholder="Enter your email address" required />
+        </div>
+
+        <div class="field">
+          <label>Country *</label>
+          <select id="country" required>
+            <option value="">Select your country</option>
+            <option>Nigeria</option>
+            <option>Ghana</option>
+            <option>South Africa</option>
+            <option>United Kingdom</option>
+            <option>United States</option>
+            <option>Canada</option>
+            <option>Germany</option>
+            <option>France</option>
+            <option>Spain</option>
+            <option>Italy</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Phone Number</label>
+          <input class="input" id="phone" type="tel" placeholder="Enter your phone number" />
+        </div>
+
+        <div class="field">
+          <label>Password *</label>
+          <input class="input" id="password" type="password" placeholder="Enter your password" minlength="8" required />
+          <div class="helper">Password must be at least 8 characters long</div>
+        </div>
+
+        <div class="field">
+          <label>Confirm Password *</label>
+          <input class="input" id="confirm_password" type="password" placeholder="Confirm your password" minlength="8" required />
+        </div>
+
+        <div class="captchaWrap">
+          <!-- ✅ Replace YOUR_SITE_KEY -->
+          <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div>
+        </div>
+
+        <button class="btn" id="createBtn" type="submit">Create Account</button>
+
+        <!-- ✅ Error message box (will never hide now) -->
+        <div class="msg" id="formMsg"></div>
+
+        <div class="footer">
+          Already have an account? <a href="signin.html">Sign in</a>
+        </div>
+      </form>
+
     </div>
-
-    <button id="copyAddressBtn" class="copyBtn" type="button" aria-label="Copy address">
-      <span class="copyIcon">📋</span>
-      <span id="copyBtnText">Copy Address</span>
-    </button>
   </div>
 
-  <div class="walletAddrWrap">
-    <input id="walletAddressInput" class="walletAddrInput" type="text" readonly value="--" />
-  </div>
-</div>
-
-<!-- 🚀 rocket container (used for animation) -->
-<div id="rocketLayer" class="rocketLayer"></div>
-
-<style>
-  /* ===== PREMIUM COPY ADDRESS UI ===== */
-
-  .walletBox{
-    border-radius:18px;
-    border:1px solid rgba(255,255,255,0.10);
-    background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
-    padding:16px;
-    margin:14px 0 18px;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 14px 50px rgba(0,0,0,0.35);
-  }
-
-  .walletTop{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    margin-bottom:12px;
-  }
-
-  .walletLabel{
-    font-weight:800;
-    font-size:14px;
-    color:rgba(255,255,255,0.92);
-    letter-spacing:.2px;
-  }
-
-  .walletHint{
-    font-size:12px;
-    color:rgba(255,255,255,0.55);
-    margin-top:3px;
-  }
-
-  .walletAddrWrap{
-    display:flex;
-    gap:10px;
-  }
-
-  .walletAddrInput{
-    width:100%;
-    border-radius:14px;
-    padding:14px 14px;
-    border:1px solid rgba(255,255,255,0.10);
-    background: rgba(0,0,0,0.26);
-    color: rgba(255,255,255,0.88);
-    outline:none;
-    font-size:13px;
-  }
-
-  .copyBtn{
-    border:none;
-    cursor:pointer;
-    border-radius:14px;
-    padding:10px 14px;
-    font-weight:800;
-    font-size:13px;
-    color:white;
-    display:flex;
-    align-items:center;
-    gap:8px;
-
-    background: linear-gradient(90deg, rgba(59,130,246,0.95), rgba(168,85,247,0.90));
-    box-shadow: 0 12px 30px rgba(59,130,246,0.20);
-    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
-    min-width:140px;
-    justify-content:center;
-  }
-
-  .copyBtn:hover{
-    transform: translateY(-1px);
-    filter: brightness(1.02);
-    box-shadow: 0 16px 40px rgba(59,130,246,0.24);
-  }
-
-  .copyBtn:active{
-    transform: translateY(0px);
-    filter: brightness(0.98);
-  }
-
-  .copyIcon{
-    font-size:16px;
-    line-height:1;
-  }
-
-  /* ✅ Copied state (green) */
-  .copyBtn.copied{
-    background: linear-gradient(90deg, rgba(34,197,94,1), rgba(16,185,129,1));
-    box-shadow: 0 14px 34px rgba(34,197,94,0.25);
-  }
-
-  /* ===== Rocket animation layer ===== */
-  .rocketLayer{
-    position:fixed;
-    left:0;
-    top:0;
-    width:100%;
-    height:100%;
-    pointer-events:none;
-    z-index:999999;
-    overflow:hidden;
-  }
-
-  .rocket{
-    position:absolute;
-    font-size:22px;
-    animation: rocketFly 1.2s ease-out forwards;
-    filter: drop-shadow(0 12px 14px rgba(0,0,0,0.35));
-    user-select:none;
-  }
-
-  @keyframes rocketFly{
-    0%{
-      transform: translate(0, 0) scale(0.85) rotate(-10deg);
-      opacity:0.95;
-    }
-    25%{
-      transform: translate(-6px, -80px) scale(1.0) rotate(-5deg);
-      opacity:1;
-    }
-    60%{
-      transform: translate(10px, -220px) scale(1.1) rotate(2deg);
-      opacity:1;
-    }
-    100%{
-      transform: translate(18px, -420px) scale(1.15) rotate(10deg);
-      opacity:0;
-    }
-  }
-</style>
-
-<script>
-  // ============================================================
-  // COPY ADDRESS PREMIUM UX (NO ALERT, GREEN BUTTON + 🚀 FLY OUT)
-  // ============================================================
-
-  (function initCopyAddressUX(){
-    const copyBtn = document.getElementById("copyAddressBtn");
-    const copyBtnText = document.getElementById("copyBtnText");
-    const walletAddressInput = document.getElementById("walletAddressInput");
-    const rocketLayer = document.getElementById("rocketLayer");
-
-    if (!copyBtn || !copyBtnText || !walletAddressInput || !rocketLayer) return;
-
-    let resetTimer = null;
-
-    function spawnRocketFromButton(btn){
-      const rect = btn.getBoundingClientRect();
-      const rocket = document.createElement("div");
-      rocket.className = "rocket";
-      rocket.textContent = "🚀";
-
-      // Start position: center of the button
-      const startX = rect.left + rect.width / 2 - 10;
-      const startY = rect.top + rect.height / 2 - 10;
-
-      rocket.style.left = `${startX}px`;
-      rocket.style.top = `${startY}px`;
-
-      rocketLayer.appendChild(rocket);
-
-      // remove after animation
-      setTimeout(() => {
-        rocket.remove();
-      }, 1400);
-    }
-
-    async function copyText(text){
-      // Try modern clipboard first
-      try{
-        await navigator.clipboard.writeText(text);
-        return true;
-      }catch(err){
-        // fallback method
-        try{
-          walletAddressInput.select();
-          walletAddressInput.setSelectionRange(0, 999999);
-          const ok = document.execCommand("copy");
-          window.getSelection()?.removeAllRanges();
-          return ok;
-        }catch(e){
-          return false;
-        }
-      }
-    }
-
-    copyBtn.addEventListener("click", async () => {
-      const address = (walletAddressInput.value || "").trim();
-
-      if (!address || address === "--"){
-        // Soft feedback without alert
-        copyBtnText.textContent = "No address";
-        copyBtn.classList.add("copied");
-        spawnRocketFromButton(copyBtn);
-
-        clearTimeout(resetTimer);
-        resetTimer = setTimeout(() => {
-          copyBtnText.textContent = "Copy Address";
-          copyBtn.classList.remove("copied");
-        }, 1400);
-        return;
-      }
-
-      const ok = await copyText(address);
-
-      if (ok){
-        // ✅ green state + rocket fly
-        copyBtn.classList.add("copied");
-        copyBtnText.textContent = "Copied ✅";
-        spawnRocketFromButton(copyBtn);
-
-        clearTimeout(resetTimer);
-        resetTimer = setTimeout(() => {
-          copyBtnText.textContent = "Copy Address";
-          copyBtn.classList.remove("copied");
-        }, 2000);
-      } else {
-        // Fallback feedback (still no alert)
-        copyBtnText.textContent = "Copy failed";
-        clearTimeout(resetTimer);
-        resetTimer = setTimeout(() => {
-          copyBtnText.textContent = "Copy Address";
-        }, 1600);
-      }
-    });
-
-  })();
-</script>
+  <script>
+    // ✅ CHANGE THESE TO YOUR REAL SUPABASE DETAILS
+    const SUPABASE
