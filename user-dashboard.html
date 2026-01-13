@@ -4,37 +4,1178 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Coinluxora User Dashboard</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- NOTE: File preserved. Order Book refresh button removed and Ask/Bid titles removed. -->
+
+<style>
+:root{
+  --bg:#050a18;
+  --stroke:rgba(255,255,255,.12);
+  --text:#eaf0ff;
+  --muted:rgba(234,240,255,.65);
+
+  --ok:#22c55e;
+  --err:#f87171;
+
+  --blue:#5b6cff;
+  --purple:#7c4dff;
+  --green:#34d399;
+  --cyan:#38bdf8;
+  --pink:#ff4da6;
+
+  --shadow: 0 26px 90px rgba(0,0,0,.55);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+  padding:16px;
+  padding-bottom:140px;
+  overflow-x:hidden;
+  background: var(--bg);
+}
+
+/* ===== UPPER ECHELON BACKGROUND ===== */
+.bgFlow{
+  position:fixed; inset:0; z-index:-4;
+  background:
+    radial-gradient(900px 520px at 10% 10%, rgba(83,113,255,.30), transparent 55%),
+    radial-gradient(900px 520px at 90% 20%, rgba(52,211,153,.20), transparent 55%),
+    radial-gradient(900px 520px at 40% 92%, rgba(255,77,166,.16), transparent 60%),
+    linear-gradient(180deg, rgba(5,10,24,1), rgba(2,6,23,1));
+}
+.blob{
+  position:fixed;
+  width:520px;height:520px;border-radius:999px;
+  filter: blur(72px);
+  opacity:.60;
+  z-index:-3;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+.blob.b1{ background: rgba(91,108,255,.92); left:-150px; top:-160px; animation: drift1 10s ease-in-out infinite; }
+.blob.b2{ background: rgba(124,77,255,.82); right:-220px; top:5%; animation: drift2 12s ease-in-out infinite; }
+.blob.b3{ background: rgba(52,211,153,.55); left:10%; bottom:-250px; animation: drift3 14s ease-in-out infinite; }
+.blob.b4{ background: rgba(255,77,166,.58); right:10%; bottom:-260px; animation: drift4 11s ease-in-out infinite; }
+@keyframes drift1{0%{transform:translate(0,0) scale(1)}50%{transform:translate(250px,140px) scale(1.10)}100%{transform:translate(0,0) scale(1)}}
+@keyframes drift2{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-280px,170px) scale(1.14)}100%{transform:translate(0,0) scale(1)}}
+@keyframes drift3{0%{transform:translate(0,0) scale(1)}50%{transform:translate(210px,-210px) scale(1.10)}100%{transform:translate(0,0) scale(1)}}
+@keyframes drift4{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-180px,-130px) scale(1.09)}100%{transform:translate(0,0) scale(1)}}
+
+.shimmer{
+  position:fixed; inset:-30px; z-index:-2;
+  opacity:.28;
+  background:
+    radial-gradient(600px 280px at 30% 10%, rgba(255,255,255,.10), transparent 60%),
+    radial-gradient(700px 320px at 80% 60%, rgba(255,255,255,.07), transparent 60%),
+    linear-gradient(120deg, transparent, rgba(255,255,255,.05), transparent);
+  animation: shimmerMove 6s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes shimmerMove{from{transform:translateY(0px) translateX(0px)}to{transform:translateY(42px) translateX(22px)}}
+
+.container{max-width:920px;margin:0 auto}
+
+/* ===== Loading Gate ===== */
+#authGate{
+  position:fixed; inset:0; z-index:99999;
+  display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(900px 420px at 10% 0%, rgba(83,113,255,.22), transparent 55%),
+    radial-gradient(900px 420px at 90% 0%, rgba(52,211,153,.18), transparent 55%),
+    var(--bg);
+}
+.gateCard{
+  width:min(520px,92vw);
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.25);
+  border-radius:22px;
+  padding:18px;
+  box-shadow:0 26px 90px rgba(0,0,0,.55);
+  backdrop-filter: blur(14px);
+  text-align:center;
+}
+.gateLogo{
+  width:62px;height:62px;border-radius:18px;
+  margin:0 auto 10px;
+  display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg, rgba(109,87,255,1), rgba(124,77,255,1));
+  box-shadow:0 18px 50px rgba(109,87,255,.28);
+  font-size:28px;font-weight:1000;
+}
+.gateTxt{font-weight:1000}
+.gateSub{margin-top:6px;color:rgba(234,240,255,.70);font-weight:900;font-size:13px}
+.spinner{
+  width:46px;height:46px;margin:14px auto 0;
+  border-radius:999px;
+  border:3px solid rgba(255,255,255,.18);
+  border-top-color:#9bdcff;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== TOP BAR ===== */
+.topRow{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; margin-bottom:14px;
+}
+.brand{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(90deg, rgba(109,87,255,1), rgba(135,116,255,0.86));
+  color:white;font-weight:1000;letter-spacing:.6px;
+  box-shadow:0 18px 50px rgba(109,87,255,.25);
+  min-width:140px;
+}
+.brandIcon{
+  width:34px;height:34px;border-radius:12px;
+  background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.22);
+  display:grid;place-items:center;
+  font-weight:1000;
+}
+.headerActions{display:flex;gap:10px;align-items:center}
+
+/* ✅ Avatar */
+.avatarBtn{
+  width:46px;height:46px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg, rgba(124,77,255,1), rgba(109,87,255,1));
+  cursor:pointer;
+  box-shadow:0 16px 40px rgba(124,77,255,.32);
+  display:grid;place-items:center;
+  position:relative;overflow:hidden;
+}
+.avatarBtn:hover{filter:brightness(1.05)}
+.avatarFallback{font-size:18px;line-height:1;z-index:2;}
+.avatarImgBtn{position:absolute; inset:0;width:100%; height:100%;object-fit:cover;display:none;z-index:3;}
+
+.iconBtn{
+  width:46px;height:46px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.18);
+  color:white;font-weight:1000;
+  cursor:pointer;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+  backdrop-filter: blur(10px);
+}
+.iconBtn:hover{background:rgba(255,255,255,.08)}
+
+/* ===== HELLO CARD ===== */
+.helloCard{
+  border-radius:20px;
+  padding:16px 16px;
+  overflow:hidden;
+  background:
+    radial-gradient(800px 220px at 20% 20%, rgba(255,255,255,.18), transparent 60%),
+    linear-gradient(90deg, rgba(109,87,255,1), rgba(255,77,166,0.98));
+  color:white;
+  box-shadow:0 22px 70px rgba(109,87,255,.22);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.helloLeft{display:flex;align-items:center;gap:12px;}
+.helloLogo{
+  width:48px;height:48px;border-radius:18px;
+  background:rgba(255,255,255,.20);
+  border:1px solid rgba(255,255,255,.22);
+  display:grid;place-items:center;
+  font-weight:1000;
+}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.miniChip{
+  font-size:12px;font-weight:1000;
+  padding:6px 10px;border-radius:999px;
+  background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.22);
+  display:flex;gap:6px;align-items:center;
+}
+.helloTitle{font-weight:1000;font-size:18px}
+.helloSub{font-size:12px;font-weight:900;opacity:.92}
+.helloRight{
+  display:flex;flex-direction:column;align-items:flex-end;gap:8px;
+}
+.helloRightTop{display:flex;align-items:center;gap:10px}
+.idChip{
+  padding:8px 12px;border-radius:999px;
+  background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.22);
+  font-weight:1000;font-size:12px;
+}
+.logoutBtn{
+  width:46px;height:46px;border-radius:999px;border:none;
+  cursor:pointer;
+  background:rgba(239,68,68,0.95);
+  color:#fff;
+  font-weight:1000;
+  box-shadow:0 16px 40px rgba(239,68,68,.22);
+}
+.datetimeChip{
+  padding:6px 10px;border-radius:999px;
+  background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.20);
+  font-weight:1000;font-size:12px;
+  color:#fff;
+  white-space:nowrap;
+}
+
+/* ===== BOX ===== */
+.box{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:24px;
+  padding:16px;
+  background:
+    radial-gradient(700px 220px at 12% 10%, rgba(56,189,248,.14), transparent 62%),
+    radial-gradient(700px 220px at 88% 18%, rgba(255,77,166,.10), transparent 62%),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  box-shadow:0 26px 90px rgba(0,0,0,.55);
+  backdrop-filter: blur(12px);
+  margin-top:14px;
+}
+.box h2{margin:0;font-size:20px;font-weight:1000}
+.small{color:var(--muted);font-size:13px;margin-top:8px}
+.ok{color:var(--ok);font-weight:1000}
+.err{color:var(--err);font-weight:1000}
+.card{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:18px;
+  padding:12px;
+  background:rgba(0,0,0,.22);
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+
+.balanceCard{
+  margin-top:14px;
+  border-radius:24px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);
+  background:
+    radial-gradient(900px 400px at 15% 20%, rgba(0,0,0,0.55), transparent 55%),
+    radial-gradient(900px 400px at 70% 20%, rgba(52,211,153,.24), transparent 55%),
+    linear-gradient(135deg, rgba(3,7,18,0.92), rgba(15,23,42,0.84));
+  color:white;
+  box-shadow: 0 26px 60px rgba(0,0,0,0.25);
+  padding:16px;
+}
+.bTitle{font-size:13px;font-weight:1000;opacity:.85}
+.bValue{font-size:34px;font-weight:1000;margin-top:8px}
+.bHint{margin-top:6px;font-size:13px;font-weight:900;opacity:.88;display:flex;gap:10px;align-items:center}
+.dot{width:10px;height:10px;border-radius:999px;background:var(--green)}
+.actionGrid{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+.action{
+  border-radius:18px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  padding:12px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:8px;
+  cursor:pointer;
+  transition:.18s ease;
+}
+.action:hover{transform: translateY(-2px);background:rgba(255,255,255,.10)}
+.aIcon{
+  width:48px;height:48px;border-radius:999px;
+  display:grid;place-items:center;
+  font-size:20px;
+  font-weight:1000;color:#fff;
+}
+.aSend{background:linear-gradient(180deg,#6d57ff,#7c4dff)}
+.aReceive{background:linear-gradient(180deg,#18c07b,#11b981)}
+.aPlans{background:linear-gradient(180deg,#f59e0b,#f97316)}
+.aSupport{background:linear-gradient(180deg,#38bdf8,#5b6cff)}
+.aText{font-weight:1000;font-size:13px}
+
+/* ===== converters ===== */
+.convGrid{margin-top:14px;display:grid;gap:12px}
+.convRow{display:flex;gap:10px;flex-wrap:wrap}
+.inp{
+  flex:1;min-width:140px;
+  height:50px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.22);
+  color:var(--text);
+  padding:10px 12px;
+  font-weight:1000;
+  outline:none;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+.swapBtn{
+  width:54px;height:50px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-weight:1000;
+  cursor:pointer;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+.swapBtn:hover{filter:brightness(1.05)}
+.convBtn{
+  width:100%;
+  height:54px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.12);
+  background:linear-gradient(180deg, rgba(91,108,255,1), rgba(124,77,255,1));
+  color:white;
+  font-weight:1000;
+  cursor:pointer;
+  box-shadow:0 18px 55px rgba(91,108,255,.18);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.convBtn:hover{filter:brightness(1.05)}
+.rateLine{
+  margin-top:10px;
+  font-size:12px;
+  color:rgba(234,240,255,.75);
+  font-weight:900;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.rateDot{
+  width:10px;height:10px;border-radius:999px;
+  background:rgba(52,211,153,1);
+  box-shadow:0 0 18px rgba(52,211,153,.55);
+}
+
+/* ===== searchable dropdown unlimited ===== */
+.ddWrap{flex:1;min-width:220px;position:relative}
+.ddBtn{
+  width:100%;
+  height:50px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.22);
+  color:rgba(234,240,255,.95);
+  padding:10px 12px;
+  font-weight:1000;
+  outline:none;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.ddLeft{display:flex;align-items:center;gap:10px;min-width:0}
+.ddIcon{
+  width:34px;height:34px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  display:grid;place-items:center;
+  font-size:14px;
+}
+.ddName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ddPanel{
+  position:absolute; top:56px; left:0; right:0;
+  z-index:100;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(2,6,23,.94);
+  box-shadow:0 26px 90px rgba(0,0,0,.65);
+  backdrop-filter: blur(16px);
+  overflow:hidden;
+  display:none;
+}
+.ddPanel.show{display:block;}
+.ddSearch{
+  width:100%;
+  height:46px;
+  border:none; outline:none;
+  padding:0 12px;
+  font-weight:1000;
+  color:#fff;
+  background:rgba(0,0,0,.20);
+  border-bottom:1px solid rgba(255,255,255,.10);
+}
+.ddList{max-height:320px;overflow:auto;}
+.ddItem{
+  padding:12px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  color:rgba(234,240,255,.86);
+  font-weight:900;
+}
+.ddItem:hover{background:rgba(255,255,255,.06)}
+.ddItem small{color:rgba(234,240,255,.55);font-weight:900}
+
+/* ===== mini chart ===== */
+.chartWrap{
+  margin-top:12px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.12);
+  overflow:hidden;
+  background:rgba(0,0,0,.22);
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+.chartHead{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 12px;
+  border-bottom:1px solid rgba(255,255,255,.10);
+  font-weight:1000;
+  color:rgba(234,240,255,.78);
+  font-size:13px;
+}
+.chartFrame{width:100%;height:340px;border:0;display:block}
+
+/* ===== SIDEBAR ===== */
+.overlay{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.65);
+  display:none; z-index:999;
+  backdrop-filter: blur(4px);
+}
+.overlay.show{display:block;}
+.sidebar{
+  position:fixed; top:0; left:-315px;
+  width:292px; height:100vh;
+  padding:16px;
+  z-index:1000;
+  transition: .28s ease;
+  border-right:1px solid rgba(255,255,255,.10);
+  background:
+    radial-gradient(900px 420px at 15% 10%, rgba(91,108,255,.18), transparent 55%),
+    radial-gradient(900px 420px at 90% 20%, rgba(52,211,153,.12), transparent 55%),
+    linear-gradient(180deg, rgba(4,8,20,0.98), rgba(2,6,23,0.98));
+  box-shadow:0 26px 90px rgba(0,0,0,.60);
+  backdrop-filter: blur(16px);
+}
+.sidebar.open{ left:0; }
+.sideTop{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin-bottom:12px;
+}
+.sideBrand{
+  display:flex;align-items:center;gap:10px;
+  font-weight:1000;font-size:16px;letter-spacing:.9px;
+  color:#fff;
+  padding:10px 12px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(90deg, rgba(109,87,255,.85), rgba(124,77,255,.85));
+  box-shadow:0 16px 50px rgba(109,87,255,.18);
+  min-width:170px;
+}
+.sideBrandIcon{
+  width:30px;height:30px;border-radius:12px;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.20);
+}
+.closeBtn{
+  background:rgba(0,0,0,.22);
+  border:1px solid rgba(255,255,255,.14);
+  color:rgba(234,240,255,.95);
+  border-radius:14px;
+  width:44px;height:44px;
+  cursor:pointer;
+  display:grid;place-items:center;
+  font-weight:1000;
+}
+.closeBtn:hover{background:rgba(255,255,255,.08)}
+
+.userTag{
+  padding:12px 12px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  box-shadow:0 18px 55px rgba(0,0,0,.35);
+  margin:10px 0 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.userTagLeft{min-width:0}
+.userTag .t1{color:rgba(234,240,255,.55);font-weight:1000;font-size:12px}
+.userTag .t2{
+  margin-top:6px;font-weight:1000;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  max-width:180px;
+}
+.sideAvatar{
+  width:46px;height:46px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.25);
+  display:grid;place-items:center;
+  position:relative;overflow:hidden;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+  flex:0 0 auto;
+}
+.sideAvatar span{font-size:18px}
+.sideAvatar img{
+  position:absolute; inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  display:none;
+}
+
+.menuGroupTitle{
+  margin:10px 0 8px;
+  font-size:12px;font-weight:1000;
+  color:rgba(234,240,255,.50);
+  letter-spacing:.8px;
+  text-transform:uppercase;
+}
+.sideItem{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 12px;border-radius:18px;
+  color:rgba(234,240,255,.82);
+  text-decoration:none;
+  font-weight:1000;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(0,0,0,.22);
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+  margin-bottom:10px;
+  position:relative;overflow:hidden;
+}
+.sideItem:hover{background:rgba(255,255,255,.08)}
+.sideItem .i{
+  width:42px;height:42px;border-radius:16px;
+  display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  font-size:18px;
+}
+.sideItem small{display:block;color:rgba(234,240,255,.55);font-size:12px;font-weight:900;margin-top:2px}
+.activeLink{
+  border:1px solid rgba(56,189,248,.55);
+  background:linear-gradient(180deg, rgba(56,189,248,0.14), rgba(56,189,248,0.08));
+  color:#cfefff;
+}
+.activeLink::after{
+  content:"";
+  position:absolute; inset:0;
+  background: radial-gradient(600px 160px at 30% 20%, rgba(56,189,248,.20), transparent 60%);
+  pointer-events:none;
+}
+.sideLogout{
+  margin-top:10px;
+  background:linear-gradient(90deg, rgba(248,113,113,1), rgba(239,68,68,1));
+  color:#020617;border:none;width:100%;
+  padding:14px;border-radius:18px;font-weight:1000;cursor:pointer;
+  box-shadow:0 18px 55px rgba(239,68,68,.18);
+}
+.sideLogout:hover{filter:brightness(1.03)}
+
+/* ===== DOCK ===== */
+.dock{
+  position:fixed;
+  left:0; right:0; bottom:14px;
+  z-index:2000;
+  pointer-events:none;
+}
+.dockInner{
+  pointer-events:auto;
+  max-width:980px;
+  margin:0 auto;
+  padding:0 14px;
+}
+.dockBar{
+  height:76px;
+  border-radius:28px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 20px 70px rgba(0,0,0,.45);
+  backdrop-filter: blur(14px);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px;
+  gap:10px;
+}
+.dockItem{
+  flex:1;
+  min-width:70px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  border-radius:18px;
+  padding:10px 0;
+  color:rgba(234,240,255,.55);
+  font-size:12px;
+  font-weight:1000;
+  cursor:pointer;
+  user-select:none;
+  position:relative;
+}
+.dockItem .ico{font-size:18px;opacity:.95}
+.dockItem:hover{background:rgba(255,255,255,.06)}
+.dockActive{color:#9bdcff;background:rgba(56,189,248,.10)}
+.dockHome{
+  width:78px;height:78px;border-radius:26px;
+  background:linear-gradient(180deg, rgba(109,87,255,1), rgba(91,108,255,1));
+  box-shadow:0 22px 55px rgba(109,87,255,.30);
+  display:grid;place-items:center;
+  margin-top:-32px;
+  border:1px solid rgba(255,255,255,.16);
+  cursor:pointer;user-select:none;
+  flex:0 0 auto;
+  pointer-events:auto;
+}
+.dockHome span{font-size:28px;color:white}
+.dockHome:hover{filter:brightness(1.05)}
+.dockBadge{
+  position:absolute;
+  top:2px;
+  right:18px;
+  min-width:18px;
+  height:18px;
+  padding:0 6px;
+  border-radius:999px;
+  background:#f87171;
+  color:#020617;
+  font-weight:1000;
+  font-size:11px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.18);
+}
+
+/* ============================================================
+   ✅ LIST GRID UI (CRYPTO + MARKETS)
+   ============================================================ */
+.crypto10Grid{margin-top:12px;display:grid;gap:10px;}
+.cryptoRow{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:12px;border-radius:18px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(0,0,0,.22);
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+.cryptoLeft{display:flex;align-items:center;gap:12px;min-width:0;}
+.cryptoLogo{
+  width:42px;height:42px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  display:grid;place-items:center;
+  overflow:hidden;flex:0 0 auto;
+}
+.cryptoLogo img{width:100%;height:100%;object-fit:cover;display:block;}
+.cryptoName{font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cryptoSym{display:block;font-size:12px;font-weight:1000;color:rgba(234,240,255,.55);margin-top:2px;}
+.cryptoRight{text-align:right;flex:0 0 auto;}
+.cryptoPrice{font-weight:1000;font-size:14px;}
+.cryptoChg{margin-top:4px;font-weight:1000;font-size:12px;color:rgba(234,240,255,.65);}
+.cryptoChg.up{color:rgba(34,197,94,1)}
+.cryptoChg.down{color:rgba(248,113,113,1)}
+</style>
 </head>
+
 <body>
-<!-- This file is intentionally long. -->
-<!-- PLEASE REPLACE YOUR EXISTING user-dashboard.html WITH THIS FILE -->
-<!-- The rest of the file content remains IDENTICAL to the version you pasted,
-     except the order book section below. -->
+<div class="bgFlow"></div>
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<div class="blob b3"></div>
+<div class="blob b4"></div>
+<div class="shimmer"></div>
 
-<!-- ===== ORDER BOOK (UPDATED) ===== -->
-<div class="box">
-  <h2>Live Crypto Order Book</h2>
-  <div class="small">Auto refresh every 3 seconds. Binance → OKX → Bybit fallback.</div>
-
-  <div class="orderWrap">
-    <div class="obCol">
-      <div id="asks" class="obList"></div>
-    </div>
-    <div class="obCol">
-      <div id="bids" class="obList"></div>
-    </div>
-  </div>
-
-  <div class="chartWrap">
-    <div class="chartHead">
-      <span>Mini Candlestick Chart</span>
-      <span id="chartPair">BTC/USDT</span>
-    </div>
-    <iframe id="tvChart" class="chartFrame"></iframe>
+<!-- Loading -->
+<div id="authGate">
+  <div class="gateCard">
+    <div class="gateLogo">📣</div>
+    <div class="gateTxt">Coinluxora</div>
+    <div class="gateSub">Securing your session…</div>
+    <div class="spinner"></div>
   </div>
 </div>
+
+<div id="overlay" class="overlay" onclick="closeMenu()"></div>
+
+<!-- Sidebar -->
+<div id="sidebar" class="sidebar">
+  <div class="sideTop">
+    <div class="sideBrand">
+      <div class="sideBrandIcon">◈</div>
+      COINLUXORA
+    </div>
+    <button class="closeBtn" onclick="closeMenu()">✕</button>
+  </div>
+
+  <div class="userTag">
+    <div class="userTagLeft">
+      <div class="t1">Logged in as</div>
+      <div id="sideName" class="t2">---</div>
+    </div>
+    <div class="sideAvatar" title="Profile photo">
+      <span id="sideAvatarFallback">👤</span>
+      <img id="sideAvatarImg" alt="Avatar"/>
+    </div>
+  </div>
+
+  <div class="menuGroupTitle">Navigation</div>
+
+  <a class="sideItem activeLink" href="user-dashboard.html"><div class="i">🏠</div><div>Dashboard<small>Main overview</small></div></a>
+  <a class="sideItem" href="portfolio.html"><div class="i">📊</div><div>Portfolio<small>Your assets</small></div></a>
+  <a class="sideItem" href="deposits.html"><div class="i">💳</div><div>Deposit<small>Fund your account</small></div></a>
+  <a class="sideItem" href="withdraw.html"><div class="i">➡</div><div>Withdraw Funds<small>Request payout</small></div></a>
+  <a class="sideItem" href="support.html"><div class="i">🧑‍💻</div><div>Support / Contact<small>Tickets & help</small></div></a>
+  <a class="sideItem" href="plans.html"><div class="i">💼</div><div>Investment Plans<small>Start investing</small></div></a>
+  <a class="sideItem" href="profile.html"><div class="i">👤</div><div>Profile / Settings<small>Account security</small></div></a>
+
+  <button class="sideLogout" onclick="logout()">Logout</button>
+</div>
+
+<div class="container">
+
+  <div class="topRow">
+    <div class="brand"><div class="brandIcon">📣</div>COIN</div>
+    <div class="headerActions">
+      <button class="avatarBtn" onclick="goProfile()" title="Profile">
+        <span id="avatarFallback" class="avatarFallback">👤</span>
+        <img id="avatarImgBtn" class="avatarImgBtn" alt="Avatar"/>
+      </button>
+      <button class="iconBtn" onclick="openMenu()" title="Menu">☰</button>
+    </div>
+  </div>
+
+  <div class="helloCard">
+    <div class="helloLeft">
+      <div class="helloLogo">📶</div>
+      <div>
+        <div class="chips">
+          <div class="miniChip">🟢 active</div>
+          <div class="miniChip" id="countryChip" style="display:none"></div>
+        </div>
+        <div class="helloTitle" id="greetingTitle">Greetings…</div>
+        <div class="helloSub" id="helloName">Loading…</div>
+      </div>
+    </div>
+
+    <div class="helloRight">
+      <div class="helloRightTop">
+        <div class="idChip" id="userIdChip">ID:</div>
+        <button class="logoutBtn" onclick="logout()" title="Logout">⎋</button>
+      </div>
+      <div class="datetimeChip" id="dateTimeNow">--- | ---</div>
+    </div>
+  </div>
+
+  <div class="balanceCard">
+    <div class="bTitle">Total Portfolio Value</div>
+    <div class="bValue" id="balance">--</div>
+    <div class="bHint"><div class="dot"></div> <div>Your trading account balance</div></div>
+
+    <div class="actionGrid">
+      <div class="action" onclick="goWithdrawAndClear()"><div class="aIcon aSend">✈️</div><div class="aText">Send</div></div>
+      <div class="action" onclick="goDepositAndClear()"><div class="aIcon aReceive">⬇️</div><div class="aText">Receive</div></div>
+      <div class="action" onclick="goPlans()"><div class="aIcon aPlans">📈</div><div class="aText">Plans</div></div>
+      <div class="action" onclick="goSupportAndClear()"><div class="aIcon aSupport">💬</div><div class="aText">Support</div></div>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>Active Investment Plan</h2>
+    <div id="planMsg" class="small">Loading…</div>
+    <div id="planBox"></div>
+  </div>
+
+  <div class="box">
+    <h2>Top 10 Major Cryptos</h2>
+    <div class="small">Live market prices (auto refresh every 20 seconds).</div>
+    <div id="top10Msg" class="small">Loading…</div>
+    <div id="top10List" class="crypto10Grid"></div>
+  </div>
+
+  <div class="box">
+    <h2>Top 10 Forex Pairs</h2>
+    <div class="small">Live prices (auto refresh every 30 seconds).</div>
+    <div id="fxMsg" class="small">Loading…</div>
+    <div id="fxList" class="crypto10Grid"></div>
+  </div>
+
+  <div class="box">
+    <h2>Top Stocks</h2>
+    <div class="small">Live prices (auto refresh every 30 seconds).</div>
+    <div id="stocksMsg" class="small">Loading…</div>
+    <div id="stocksList" class="crypto10Grid"></div>
+  </div>
+
+  <div class="box">
+    <h2>Top 10 Futures</h2>
+    <div class="small">Live prices (auto refresh every 30 seconds).</div>
+    <div id="futuresMsg" class="small">Loading…</div>
+    <div id="futuresList" class="crypto10Grid"></div>
+  </div>
+
+  <div class="box">
+    <h2>Top 10 Indices</h2>
+    <div class="small">Live prices (auto refresh every 30 seconds).</div>
+    <div id="indicesMsg" class="small">Loading…</div>
+    <div id="indicesList" class="crypto10Grid"></div>
+  </div>
+
+  <!-- ✅ Order Book (MODIFIED: no refresh button, no asks/bids) -->
+  <div class="box">
+    <h2>Live Crypto Order Book</h2>
+    <div class="small">Mini Candlestick Chart only.</div>
+
+    <div class="chartWrap">
+      <div class="chartHead">
+        <span>Mini Candlestick Chart</span>
+        <span id="chartPair">BTC/USDT</span>
+      </div>
+      <iframe id="tvChart" class="chartFrame"></iframe>
+    </div>
+  </div>
+
+</div>
+
+<!-- DOCK -->
+<div class="dock">
+  <div class="dockInner">
+    <div class="dockBar">
+      <div class="dockItem" onclick="goDepositAndClear()"><div id="badgeDepositDock" class="dockBadge">0</div><div class="ico">💳</div><div>Deposit</div></div>
+      <div class="dockItem" onclick="goWithdrawAndClear()"><div id="badgeWithdrawDock" class="dockBadge">0</div><div class="ico">➡</div><div>Withdraw</div></div>
+      <div class="dockHome" onclick="goDashboard()"><span>🏠</span></div>
+      <div class="dockItem" onclick="goPlans()"><div class="ico">💼</div><div>Plans</div></div>
+      <div class="dockItem" onclick="goProfile()"><div class="ico">👤</div><div>Profile</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ✅ AUTH GUARD
+   ============================================================ */
+const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+const EDGE_CLEAR_BADGE_URL = `${SUPABASE_URL}/functions/v1/clear_badge`;
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+let currentUserEmail="";
+let currentUserId="";
+let badgeChannel=null;
+
+/* ============================================================
+   ✅ TOP 10 MAJOR CRYPTO
+   ============================================================ */
+const TOP10_IDS=[
+  "bitcoin","ethereum","tether","binancecoin","solana",
+  "ripple","usd-coin","dogecoin","cardano","tron"
+];
+let top10Timer=null;
+
+/* ============================================================
+   ✅ MARKET LISTS (FOREX/STOCKS/FUTURES/INDICES)
+   ============================================================ */
+const FX_SYMBOLS=[
+  {title:"EUR/USD",sym:"EURUSD"},
+  {title:"GBP/USD",sym:"GBPUSD"},
+  {title:"USD/JPY",sym:"USDJPY"},
+  {title:"AUD/USD",sym:"AUDUSD"},
+  {title:"USD/CAD",sym:"USDCAD"},
+  {title:"USD/CHF",sym:"USDCHF"},
+  {title:"NZD/USD",sym:"NZDUSD"},
+  {title:"EUR/GBP",sym:"EURGBP"},
+  {title:"EUR/JPY",sym:"EURJPY"},
+  {title:"GBP/JPY",sym:"GBPJPY"}
+];
+
+const STOCK_SYMBOLS=[
+  {title:"Apple",sym:"AAPL.US"},
+  {title:"Microsoft",sym:"MSFT.US"},
+  {title:"NVIDIA",sym:"NVDA.US"},
+  {title:"Amazon",sym:"AMZN.US"},
+  {title:"Alphabet",sym:"GOOGL.US"},
+  {title:"Meta",sym:"META.US"},
+  {title:"Tesla",sym:"TSLA.US"},
+  {title:"Visa",sym:"V.US"},
+  {title:"JPMorgan",sym:"JPM.US"},
+  {title:"Coca-Cola",sym:"KO.US"}
+];
+
+const FUTURES_SYMBOLS=[
+  {title:"Gold",sym:"GC.F"},
+  {title:"Silver",sym:"SI.F"},
+  {title:"Crude Oil",sym:"CL.F"},
+  {title:"Brent Oil",sym:"BZZ.F"},
+  {title:"Natural Gas",sym:"NG.F"},
+  {title:"Corn",sym:"ZC.F"},
+  {title:"Wheat",sym:"ZW.F"},
+  {title:"Soybeans",sym:"ZS.F"},
+  {title:"Copper",sym:"HG.F"},
+  {title:"Coffee",sym:"KC.F"}
+];
+
+const INDEX_SYMBOLS=[
+  {title:"S&P 500",sym:"^SPX"},
+  {title:"NASDAQ 100",sym:"^NDX"},
+  {title:"Dow Jones",sym:"^DJI"},
+  {title:"DAX",sym:"^DAX"},
+  {title:"FTSE 100",sym:"^FTSE"},
+  {title:"CAC 40",sym:"^CAC"},
+  {title:"Nikkei 225",sym:"^N225"},
+  {title:"Hang Seng",sym:"^HSI"},
+  {title:"Shanghai",sym:"^SSEC"},
+  {title:"Sensex",sym:"^BSESN"}
+];
+
+let marketTimer=null;
+
+function parseCSVLine(line){
+  const out=[];
+  let cur="",inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch === '"'){ inQ=!inQ; continue; }
+    if(ch === "," && !inQ){ out.push(cur); cur=""; continue; }
+    cur+=ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+async function fetchStooqQuote(symbol){
+  const s=String(symbol||"").toLowerCase();
+  const url=`https://stooq.com/q/l/?s=${encodeURIComponent(s)}&f=sd2t2ohlcv&h&e=csv`;
+  const res=await fetch(url);
+  const text=await res.text();
+  const lines=text.trim().split(/\r?\n/);
+  if(lines.length<2) throw new Error("no csv");
+
+  const hdr=parseCSVLine(lines[0]);
+  const row=parseCSVLine(lines[1]);
+  const m={};
+  hdr.forEach((k,idx)=>m[k]=row[idx]);
+
+  if(!m.Close || m.Close==="N/A") throw new Error("na");
+
+  const close=Number(m.Close||0);
+  const open=Number(m.Open||0);
+  const chg=open ? ((close-open)/open)*100 : 0;
+
+  return {close,chg};
+}
+
+function buildMarketRow(type,title,symbol,price,chg){
+  const up=(chg>=0);
+  const chgClass=up?"up":"down";
+  const sign=up?"+":"";
+  let icon="📌";
+  if(type==="fx") icon="💱";
+  if(type==="stock") icon="🏛️";
+  if(type==="future") icon="🧾";
+  if(type==="index") icon="📌";
+
+  const priceText=(price==="--") ? "--" : Number(price).toLocaleString(undefined,{maximumFractionDigits:6});
+  const chgText=(price==="--") ? "--" : `${sign}${Number(chg).toFixed(2)}%`;
+
+  return `
+    <div class="cryptoRow">
+      <div class="cryptoLeft">
+        <div class="cryptoLogo"><span style="font-weight:1000">${icon}</span></div>
+        <div style="min-width:0">
+          <div class="cryptoName">${title}</div>
+          <span class="cryptoSym">${symbol}</span>
+        </div>
+      </div>
+
+      <div class="cryptoRight">
+        <div class="cryptoPrice">${priceText}</div>
+        <div class="cryptoChg ${chgClass}">${chgText}</div>
+      </div>
+    </div>
+  `;
+}
+
+async function loadMarketList(type, items, msgId, listId){
+  const msg=document.getElementById(msgId);
+  const list=document.getElementById(listId);
+  if(!msg || !list) return;
+
+  try{
+    msg.textContent="Loading…";
+    const results=[];
+    for(const it of items){
+      try{
+        const q=await fetchStooqQuote(it.sym);
+        results.push({...it, close:q.close, chg:q.chg, ok:true});
+      }catch{
+        results.push({...it, close:"--", chg:0, ok:false});
+      }
+    }
+
+    msg.textContent="";
+    list.innerHTML=results.map(r=>buildMarketRow(type,r.title,r.sym,r.close,r.chg)).join("");
+  }catch{
+    msg.innerHTML="<span class='err'>Unable to load market prices.</span>";
+    list.innerHTML="";
+  }
+}
+
+async function loadAllMarkets(){
+  await loadMarketList("fx",FX_SYMBOLS,"fxMsg","fxList");
+  await loadMarketList("stock",STOCK_SYMBOLS,"stocksMsg","stocksList");
+  await loadMarketList("future",FUTURES_SYMBOLS,"futuresMsg","futuresList");
+  await loadMarketList("index",INDEX_SYMBOLS,"indicesMsg","indicesList");
+}
+function startMarketAutoRefresh(){
+  if(marketTimer) clearInterval(marketTimer);
+  marketTimer=setInterval(loadAllMarkets,30000);
+}
+
+function fmtMoneySmart(n){
+  const num=Number(n||0);
+  if(num>=1000) return "$"+num.toLocaleString(undefined,{maximumFractionDigits:2});
+  if(num>=1) return "$"+num.toLocaleString(undefined,{maximumFractionDigits:4});
+  return "$"+num.toLocaleString(undefined,{maximumFractionDigits:8});
+}
+
+async function loadTop10MajorCryptos(){
+  const msg=document.getElementById("top10Msg");
+  const list=document.getElementById("top10List");
+  if(!msg || !list) return;
+
+  try{
+    msg.textContent="Loading…";
+    const url=`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${encodeURIComponent(TOP10_IDS.join(","))}&order=market_cap_desc&per_page=10&page=1&sparkline=false`;
+    const res=await fetch(url);
+    const data=await res.json();
+    if(!Array.isArray(data) || data.length===0) throw new Error("nodata");
+
+    msg.textContent="";
+    list.innerHTML=data.map(c=>{
+      const chg=Number(c.price_change_percentage_24h||0);
+      const chgClass=chg>=0?"up":"down";
+      const sign=chg>=0?"+":"";
+      return `
+        <div class="cryptoRow">
+          <div class="cryptoLeft">
+            <div class="cryptoLogo"><img src="${c.image}" alt="${c.symbol}"/></div>
+            <div style="min-width:0">
+              <div class="cryptoName">${c.name}</div>
+              <span class="cryptoSym">${String(c.symbol||"").toUpperCase()}</span>
+            </div>
+          </div>
+
+          <div class="cryptoRight">
+            <div class="cryptoPrice">${fmtMoneySmart(c.current_price)}</div>
+            <div class="cryptoChg ${chgClass}">${sign}${chg.toFixed(2)}% (24h)</div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }catch{
+    msg.innerHTML="<span class='err'>Unable to load live crypto prices.</span>";
+    list.innerHTML="";
+  }
+}
+function startTop10AutoRefresh(){
+  if(top10Timer) clearInterval(top10Timer);
+  top10Timer=setInterval(loadTop10MajorCryptos,20000);
+}
+
+/* ===== auth ===== */
+(async function authGuard(){
+  try{
+    const { data: sessionData } = await supabaseClient.auth.getSession();
+    const session = sessionData?.session;
+    if(!session){ window.location.replace("login.html"); return; }
+
+    const { data, error } = await supabaseClient.auth.getUser();
+    const user = data?.user;
+    if(error || !user){ window.location.replace("login.html"); return; }
+
+    if(!user.email_confirmed_at){
+      await supabaseClient.auth.signOut();
+      window.location.replace("verify.html?status=unverified");
+      return;
+    }
+    window.COINLUXORA_USER=user;
+    initWithUser(user);
+  }catch{
+    window.location.replace("login.html");
+  }
+})();
+
+/* NAV */
+function goPlans(){ window.location.href="plans.html"; }
+function goProfile(){ window.location.href="profile.html"; }
+function goDepositAndClear(){ window.location.href="deposits.html"; }
+function goWithdrawAndClear(){ window.location.href="withdraw.html"; }
+function goSupportAndClear(){ window.location.href="support.html"; }
+function goDashboard(){ window.scrollTo({top:0,behavior:"smooth"}); }
+
+function openMenu(){ document.getElementById("sidebar").classList.add("open"); document.getElementById("overlay").classList.add("show"); }
+function closeMenu(){ document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); }
+function hideGate(){ const g=document.getElementById("authGate"); if(g) g.style.display="none"; }
+
+function setGreeting(){
+  const h=new Date().getHours();
+  let text="Greetings",emoji="✨";
+  if(h>=5 && h<12){text="Good Morning";emoji="🌞";}
+  else if(h>=12 && h<17){text="Good Afternoon";emoji="☀️";}
+  else{text="Good Evening";emoji="🌙";}
+  document.getElementById("greetingTitle").textContent=`${text} ${emoji}`;
+}
+function startClock(){
+  const dtEl=document.getElementById("dateTimeNow");
+  const days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const tick=()=>{
+    const now=new Date();
+    const dayName=days[now.getDay()];
+    const day=String(now.getDate()).padStart(2,"0");
+    const mon=months[now.getMonth()];
+    const yr=now.getFullYear();
+    let hh=now.getHours();
+    const ampm=hh>=12?"PM":"AM";
+    hh=hh%12; hh=hh?hh:12;
+    const hhs=String(hh).padStart(2,"0");
+    const mm=String(now.getMinutes()).padStart(2,"0");
+    const ss=String(now.getSeconds()).padStart(2,"0");
+    dtEl.textContent=`${dayName}, ${day} ${mon} ${yr} | ${hhs}:${mm}:${ss} ${ampm}`;
+  };
+  tick(); setInterval(tick,1000);
+}
+
+/* logout */
+async function logout(){
+  await supabaseClient.auth.signOut();
+  window.location.replace("login.html");
+}
+
+/* chart only */
+function loadChart(){
+  const tvSymbol="BINANCE:BTCUSDT";
+  document.getElementById("chartPair").textContent="BTC/USDT";
+  document.getElementById("tvChart").src =
+    `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${encodeURIComponent(tvSymbol)}&interval=60&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=rgba(0,0,0,0)&studies=[]&theme=dark&style=1&timezone=Etc/UTC&withdateranges=1&hideideas=1`;
+}
+
+/* init */
+function initWithUser(user){
+  currentUserEmail=user.email;
+  currentUserId=user.id;
+
+  setGreeting();
+  startClock();
+  document.getElementById("userIdChip").innerText = "ID: " + currentUserId.slice(0,6).toUpperCase();
+
+  hideGate();
+
+  loadTop10MajorCryptos();
+  startTop10AutoRefresh();
+
+  loadAllMarkets();
+  startMarketAutoRefresh();
+
+  loadChart();
+}
+</script>
 
 </body>
 </html>
