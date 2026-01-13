@@ -22,7 +22,7 @@
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  font-family:system-ui;
   background:
     radial-gradient(900px 420px at 10% 0%, rgba(83,113,255,.22), transparent 55%),
     radial-gradient(900px 420px at 90% 0%, rgba(52,211,153,.18), transparent 55%),
@@ -33,11 +33,11 @@ body{
 }
 .container{max-width:860px;margin:0 auto}
 
-/* ✅ TOP FLOAT NAV */
+/* ✅ TOP FLOAT NAV (Dashboard left + Menu right) */
 .topFloatNav{
   position:sticky;
   top:10px;
-  z-index:500; /* lower than sidebar */
+  z-index:500;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -70,23 +70,27 @@ body{
 }
 .menuBtn:hover{background:rgba(255,255,255,.10)}
 
-/* ✅ SIDEBAR + OVERLAY (FIXED Z-INDEX + CLOSE BTN VISIBLE) */
+/* ✅ PREMIUM MENU (same as Support) */
 .overlay{
   position:fixed; inset:0;
   background:rgba(0,0,0,.65);
   display:none;
-  z-index:99998; /* ✅ very high */
+  z-index:99998;
   backdrop-filter: blur(6px);
 }
 .sidebar{
   position:fixed; top:0; right:-340px;
-  width:300px; height:100vh;
-  background:linear-gradient(180deg, rgba(5,10,24,1), rgba(2,6,23,1));
+  width:310px; height:100vh;
+  background:
+    radial-gradient(900px 520px at 10% 0%, rgba(83,113,255,.10), transparent 55%),
+    radial-gradient(900px 520px at 90% 0%, rgba(52,211,153,.08), transparent 55%),
+    rgba(5,10,24,0.98);
   border-left:1px solid rgba(255,255,255,.12);
   padding:16px;
   transition:.28s ease;
-  z-index:99999; /* ✅ on top of everything */
+  z-index:99999;
   box-shadow:0 20px 90px rgba(0,0,0,.75);
+  backdrop-filter: blur(14px);
 }
 .sidebar.open{ right:0; }
 .overlay.show{ display:block; }
@@ -97,7 +101,24 @@ body{
   align-items:center;
   margin-bottom:14px;
 }
-.brand{font-weight:1000;font-size:18px;letter-spacing:.6px;}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:1000;
+  font-size:16px;
+  letter-spacing:.9px;
+}
+.brandLogo{
+  width:38px;height:38px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(135deg, rgba(91,108,255,.35), rgba(52,211,153,.20));
+  box-shadow:0 14px 50px rgba(0,0,0,.45);
+}
+.brandText{line-height:1.0}
+.brandText .sub{display:block;font-size:11px;color:rgba(234,240,255,.55);font-weight:900;margin-top:4px}
+
 .closeBtn{
   width:44px;height:44px;
   display:flex;
@@ -114,28 +135,93 @@ body{
 .closeBtn:hover{background:rgba(255,255,255,.08)}
 
 .userTag{
-  padding:12px;border-radius:16px;
+  padding:12px;border-radius:18px;
   border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.06);
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.18));
+  box-shadow:0 18px 60px rgba(0,0,0,.50);
   margin-bottom:14px;
 }
-.sideSmall{color:var(--muted);font-size:13px;margin-top:0}
+.sideSmall{color:var(--muted);font-size:12px;margin-top:0;font-weight:1000}
+.userEmail{
+  font-weight:1000;
+  margin-top:8px;
+  font-size:14px;
+  color:rgba(234,240,255,.92);
+  word-break:break-word;
+}
+
+.menuSectionTitle{
+  margin:12px 0 10px 0;
+  font-size:12px;
+  font-weight:1000;
+  letter-spacing:.5px;
+  color:rgba(234,240,255,.55);
+}
+
 .sideItem{
-  display:flex;gap:10px;align-items:center;
-  padding:12px;
+  position:relative;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:13px 14px;
   border:1px solid rgba(255,255,255,.12);
-  border-radius:16px;margin-bottom:10px;
+  border-radius:18px;
+  margin-bottom:10px;
   color:var(--text);
   background:rgba(0,0,0,.22);
   font-weight:1000;
   text-decoration:none;
+  overflow:hidden;
 }
-.sideItem:hover{background:rgba(255,255,255,.08)}
-.activeLink{border:1px solid rgba(56,189,248,.55);background:rgba(56,189,248,0.12);}
+.sideItem:before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  opacity:0;
+  transition:.25s ease;
+  background:radial-gradient(700px 220px at 10% 0%, rgba(91,108,255,.25), transparent 55%);
+}
+.sideItem:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,.08);
+}
+.sideItem:hover:before{opacity:1}
+
+.sideIcon{
+  width:38px;height:38px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  font-size:18px;
+}
+.sideLabel{position:relative}
+.sideArrow{
+  margin-left:auto;
+  opacity:.55;
+  font-weight:1000;
+  position:relative;
+}
+
+.activeLink{
+  border:1px solid rgba(56,189,248,.55);
+  background:rgba(56,189,248,0.10);
+}
+.activeLink .sideIcon{
+  background:rgba(56,189,248,0.16);
+  border-color:rgba(56,189,248,0.35);
+}
+.activeBar{
+  position:absolute;
+  left:0;top:10px;bottom:10px;
+  width:4px;border-radius:999px;
+  background:linear-gradient(180deg, #5b6cff, #34d399);
+  opacity:.95;
+}
+
 .sideLogout{
   width:100%;
-  padding:14px;
-  border-radius:16px;
+  padding:15px 14px;
+  border-radius:18px;
   border:none;
   cursor:pointer;
   font-weight:1000;
@@ -143,8 +229,9 @@ body{
   background:linear-gradient(90deg, rgba(248,113,113,1), rgba(239,68,68,1));
   box-shadow:0 20px 70px rgba(239,68,68,.15);
 }
+.sideLogout:hover{filter:brightness(1.05)}
 
-/* Existing topBar */
+/* Top Bar */
 .topBar{
   display:flex;
   justify-content:space-between;
@@ -160,6 +247,7 @@ body{
 .topBar .title{font-weight:1000;letter-spacing:.2px}
 .topBar .email{font-weight:900;color:rgba(255,255,255,.8);font-size:13px;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+/* ✅ STATS */
 .statsGrid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -169,6 +257,7 @@ body{
 @media(min-width:720px){
   .statsGrid{grid-template-columns:repeat(4,1fr)}
 }
+
 .statCard{
   border:1px solid rgba(255,255,255,.14);
   border-radius:18px;
@@ -201,6 +290,7 @@ body{
 .statValue{margin-top:8px;font-size:22px;font-weight:1000;letter-spacing:.2px}
 .statHint{margin-top:6px;color:rgba(255,255,255,.52);font-size:12px}
 
+/* Sections */
 .section{
   border:1px solid var(--border);
   border-radius:22px;
@@ -262,12 +352,14 @@ input:focus,select:focus{border-color:rgba(99,102,241,.55);box-shadow:0 0 0 4px 
 }
 .addr{font-weight:1000;margin-top:8px;word-break:break-all;font-size:14px}
 
+/* ✅ Copy button green effect */
 .copyGreen{
   background: linear-gradient(90deg, rgba(34,197,94,1), rgba(16,185,129,1)) !important;
   border-color: rgba(34,197,94,.60) !important;
   box-shadow: 0 14px 40px rgba(34,197,94,.18) !important;
 }
 
+/* Chips */
 .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .chip{
   padding:9px 14px;border-radius:999px;
@@ -277,6 +369,7 @@ input:focus,select:focus{border-color:rgba(99,102,241,.55);box-shadow:0 0 0 4px 
 }
 .chip.active{background:rgba(99,102,241,.25);border-color:rgba(99,102,241,.55)}
 
+/* Table */
 .tableWrap{
   margin-top:16px;overflow:auto;
   border-radius:18px;border:1px solid rgba(255,255,255,.12);
@@ -306,6 +399,7 @@ th{color:rgba(255,255,255,.65);font-weight:1000;font-size:13px}
 }
 .actionBtn:hover{background:rgba(255,255,255,.10)}
 
+/* Modal */
 .modal{
   position:fixed;inset:0;background:rgba(0,0,0,.75);
   display:none;align-items:center;justify-content:center;z-index:9999;
@@ -345,29 +439,68 @@ th{color:rgba(255,255,255,.65);font-weight:1000;font-size:13px}
 
 <div id="sidebar" class="sidebar" aria-hidden="true">
   <div class="sideTop">
-    <div class="brand">COINLUXORA</div>
+    <div class="brand">
+      <div class="brandLogo">⬡</div>
+      <div class="brandText">
+        COINLUXORA
+        <span class="sub">Premium Dashboard</span>
+      </div>
+    </div>
     <button class="closeBtn" onclick="closeMenu()" aria-label="Close menu">✕</button>
   </div>
 
   <div class="userTag">
     <div class="sideSmall">Logged in as</div>
-    <div id="sideEmail" style="font-weight:1000;margin-top:6px;">---</div>
+    <div id="sideEmail" class="userEmail">---</div>
   </div>
 
-  <a class="sideItem" href="user-dashboard.html">🏠 Dashboard</a>
-  <a class="sideItem" href="portfolio.html">📊 Portfolio</a>
-  <a class="sideItem" href="plans.html">💼 Investment Plans</a>
-  <a class="sideItem" href="support.html">🧑‍💻 Support / Contact</a>
-  <a class="sideItem activeLink" href="deposits.html">💳 Deposit</a>
-  <a class="sideItem" href="withdraw.html">➡ Withdraw Funds</a>
+  <div class="menuSectionTitle">MAIN MENU</div>
 
-  <div style="height:12px"></div>
+  <a class="sideItem" href="user-dashboard.html">
+    <div class="sideIcon">🏠</div>
+    <div class="sideLabel">Dashboard</div>
+    <div class="sideArrow">›</div>
+  </a>
+
+  <a class="sideItem" href="portfolio.html">
+    <div class="sideIcon">📊</div>
+    <div class="sideLabel">Portfolio</div>
+    <div class="sideArrow">›</div>
+  </a>
+
+  <a class="sideItem" href="plans.html">
+    <div class="sideIcon">💼</div>
+    <div class="sideLabel">Investment Plans</div>
+    <div class="sideArrow">›</div>
+  </a>
+
+  <a class="sideItem" href="support.html">
+    <div class="sideIcon">🧑‍💻</div>
+    <div class="sideLabel">Support / Contact</div>
+    <div class="sideArrow">›</div>
+  </a>
+
+  <a class="sideItem activeLink" href="deposits.html">
+    <div class="activeBar"></div>
+    <div class="sideIcon">💳</div>
+    <div class="sideLabel">Deposit</div>
+    <div class="sideArrow">›</div>
+  </a>
+
+  <a class="sideItem" href="withdraw.html">
+    <div class="sideIcon">➡</div>
+    <div class="sideLabel">Withdraw Funds</div>
+    <div class="sideArrow">›</div>
+  </a>
+
+  <div style="height:10px"></div>
+
   <button class="sideLogout" onclick="logout()">Logout</button>
 </div>
 
 <div class="container">
 
-  <!-- ✅ STICKY TOP NAV -->
+  <!-- ✅ Sticky top nav -->
   <div class="topFloatNav">
     <button class="backBtn" onclick="goDashboard()">← Dashboard</button>
     <button class="menuBtn" onclick="openMenu()" aria-label="Open menu">☰</button>
@@ -548,7 +681,6 @@ const BUCKET_NAME="proofs";
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 let currentUserEmail="";
-let depositAddresses=[];
 let filter="all";
 let limit=8;
 let offset=0;
@@ -556,28 +688,28 @@ let cache=[];
 let searchTerm="";
 let currentDetails=null;
 
-function goDashboard(){ window.location.href="user-dashboard.html"; }
-function setMsg(html){ document.getElementById("msg").innerHTML = html; }
-function showDepMsg(html){ document.getElementById("depMsg").innerHTML = html; }
+let depositAddresses=[];
 
-/* ✅ Sidebar open/close (fixed) */
+/* ✅ Premium menu functions */
 function openMenu(){
   document.getElementById("sidebar").classList.add("open");
   document.getElementById("overlay").classList.add("show");
   document.getElementById("sidebar").setAttribute("aria-hidden","false");
-  document.body.style.overflow="hidden"; /* prevent background scroll */
+  document.body.style.overflow="hidden";
 }
 function closeMenu(){
   document.getElementById("sidebar").classList.remove("open");
   document.getElementById("overlay").classList.remove("show");
   document.getElementById("sidebar").setAttribute("aria-hidden","true");
-  document.body.style.overflow=""; /* restore scroll */
+  document.body.style.overflow="";
 }
-
-/* ✅ ESC key closes menu */
 document.addEventListener("keydown",(e)=>{
   if(e.key==="Escape") closeMenu();
 });
+
+function goDashboard(){ window.location.href="user-dashboard.html"; }
+function setMsg(html){ document.getElementById("msg").innerHTML = html; }
+function showDepMsg(html){ document.getElementById("depMsg").innerHTML = html; }
 
 function statusPill(status){
   const s=(status||"pending").toLowerCase();
@@ -615,26 +747,29 @@ function renderDepositAddress(){
   document.getElementById("depAddress").innerText = found ? found.address : "No address configured";
 }
 
-/* ✅ Copy Address */
-let copyResetTimer=null;
+/* ✅ Copy Address (no alert, green button + text change) */
+let copyResetTimer = null;
 async function copyAddress(){
   const addr=document.getElementById("depAddress").innerText.trim();
-  const copyBtn=document.getElementById("copyBtn");
+  const copyBtn = document.getElementById("copyBtn");
 
   if(!addr || addr==="Loading…" || addr==="No address configured"){
-    const oldText=copyBtn.innerText;
-    copyBtn.innerText="No Address";
-    copyBtn.classList.add("copyGreen");
-    clearTimeout(copyResetTimer);
-    copyResetTimer=setTimeout(()=>{
-      copyBtn.innerText=oldText;
-      copyBtn.classList.remove("copyGreen");
-    }, 1400);
+    if(copyBtn){
+      const oldText = copyBtn.innerText;
+      copyBtn.innerText = "No Address";
+      copyBtn.classList.add("copyGreen");
+      clearTimeout(copyResetTimer);
+      copyResetTimer=setTimeout(()=>{
+        copyBtn.innerText = oldText;
+        copyBtn.classList.remove("copyGreen");
+      }, 1400);
+    }
     return;
   }
 
-  try{ await navigator.clipboard.writeText(addr); }
-  catch{
+  try{
+    await navigator.clipboard.writeText(addr);
+  }catch(e){
     const temp=document.createElement("textarea");
     temp.value=addr;
     document.body.appendChild(temp);
@@ -643,14 +778,17 @@ async function copyAddress(){
     temp.remove();
   }
 
-  const oldText=copyBtn.innerText;
-  copyBtn.innerText="Copied ✔️";
-  copyBtn.classList.add("copyGreen");
-  clearTimeout(copyResetTimer);
-  copyResetTimer=setTimeout(()=>{
-    copyBtn.innerText=oldText;
-    copyBtn.classList.remove("copyGreen");
-  }, 2000);
+  if(copyBtn){
+    const oldText = copyBtn.innerText;
+    copyBtn.innerText = "Copied ✔️";
+    copyBtn.classList.add("copyGreen");
+
+    clearTimeout(copyResetTimer);
+    copyResetTimer=setTimeout(()=>{
+      copyBtn.innerText = oldText;
+      copyBtn.classList.remove("copyGreen");
+    }, 2000);
+  }
 }
 
 /* Clear badge */
@@ -864,6 +1002,7 @@ document.getElementById("tabs").onclick=(e)=>{
   filter=chip.dataset.status;
   loadHistory(true);
 };
+
 document.getElementById("searchInput").addEventListener("input",(e)=>{
   searchTerm=e.target.value||"";
   renderRows();
@@ -884,7 +1023,6 @@ document.getElementById("loadMore").onclick=()=>loadHistory(false);
     return;
   }
   currentUserEmail=userData.user.email;
-
   document.getElementById("topEmail").innerText=currentUserEmail;
   document.getElementById("sideEmail").innerText=currentUserEmail;
 
@@ -895,6 +1033,7 @@ document.getElementById("loadMore").onclick=()=>loadHistory(false);
   initRealtime();
 })();
 
+/* logout for sidebar */
 async function logout(){
   await supabaseClient.auth.signOut();
   window.location.href="login.html";
