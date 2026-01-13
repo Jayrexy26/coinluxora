@@ -207,6 +207,7 @@ body{
 .aReceive{background:linear-gradient(180deg,#18c07b,#11b981)}
 .aPlans{background:linear-gradient(180deg,#f59e0b,#f97316)}
 .aSupport{background:linear-gradient(180deg,#38bdf8,#5b6cff)}
+.aProfile{background:linear-gradient(180deg,#a78bfa,#7c3aed)}
 .aText{font-weight:1000;font-size:13px}
 
 /* ====== GLASS BOX ====== */
@@ -237,7 +238,7 @@ body{
   .actionGrid{grid-template-columns:repeat(2,1fr)}
 }
 
-/* ===== SIDEBAR ===== */
+/* ===== SIDEBAR PREMIUM ===== */
 .overlay{
   position:fixed; inset:0;
   background:rgba(0,0,0,.65);
@@ -246,7 +247,7 @@ body{
 }
 .sidebar{
   position:fixed; top:0; left:-290px;
-  width:270px; height:100vh;
+  width:280px; height:100vh;
   background:linear-gradient(180deg, rgba(5,10,24,1), rgba(2,6,23,1));
   border-right:1px solid rgba(255,255,255,.12);
   padding:16px;
@@ -256,6 +257,7 @@ body{
 }
 .sidebar.open{ left:0; }
 .overlay.show{ display:block; }
+
 .brandRow{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .brandSide{font-weight:1000;font-size:18px;letter-spacing:.6px;}
 .closeBtn{
@@ -271,23 +273,44 @@ body{
   background:rgba(255,255,255,.06);
   margin-bottom:12px;
 }
+
 .sideItem{
-  display:flex;gap:10px;align-items:center;
+  display:flex;
+  gap:10px;
+  align-items:center;
   padding:12px;
   border:1px solid rgba(255,255,255,.12);
-  border-radius:16px;margin-bottom:10px;
+  border-radius:16px;
+  margin-bottom:10px;
   color:var(--text);
   background:rgba(0,0,0,.22);
   font-weight:1000;
   text-decoration:none;
+  transition:.15s ease;
 }
-.sideItem:hover{background:rgba(255,255,255,.08)}
-.activeLink{border:1px solid rgba(56,189,248,.55);background:rgba(56,189,248,0.12);}
+.sideItem:hover{
+  background:rgba(255,255,255,.08);
+  transform: translateY(-1px);
+}
+.sideIcon{
+  width:34px;height:34px;border-radius:14px;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.10);
+  font-size:16px;
+}
+.activeLink{
+  border:1px solid rgba(56,189,248,.55);
+  background:rgba(56,189,248,0.12);
+}
+
 .sideLogout{
+  margin-top:8px;
   background:linear-gradient(90deg, rgba(248,113,113,1), rgba(239,68,68,1));
   color:#020617;border:none;width:100%;
   padding:14px;border-radius:16px;font-weight:1000;cursor:pointer
 }
+.sideHint{margin-top:10px;color:rgba(234,240,255,.55);font-size:12px;font-weight:900}
 
 /* ===== BOTTOM NAV ===== */
 .bottomNav{
@@ -346,12 +369,19 @@ body{
     <div id="sideEmail" style="font-weight:1000;margin-top:6px;">---</div>
   </div>
 
-  <a class="sideItem activeLink" href="user-dashboard.html">🏠 Dashboard</a>
-  <a class="sideItem" href="portfolio.html">📊 Portfolio</a>
-  <a class="sideItem" href="plans.html">💼 Investment Plans</a>
-  <a class="sideItem" href="support.html">🧑‍💻 Support / Contact</a>
-  <a class="sideItem" href="deposits.html">💳 Deposit</a>
-  <a class="sideItem" href="withdraw.html">➡ Withdraw Funds</a>
+  <a class="sideItem activeLink" href="user-dashboard.html"><div class="sideIcon">🏠</div>Dashboard</a>
+  <a class="sideItem" href="portfolio.html"><div class="sideIcon">📊</div>Portfolio</a>
+  <a class="sideItem" href="plans.html"><div class="sideIcon">💼</div>Investment Plans</a>
+  <a class="sideItem" href="support.html"><div class="sideIcon">🧑‍💻</div>Support / Contact</a>
+  <a class="sideItem" href="deposits.html"><div class="sideIcon">💳</div>Deposit</a>
+
+  <!-- ✅ FIXED WITHDRAW LINK NAME -->
+  <a class="sideItem" href="withdraw.html"><div class="sideIcon">➡️</div>Withdraw Funds</a>
+
+  <!-- ✅ NEW PROFILE / SETTINGS -->
+  <a class="sideItem" href="profile.html"><div class="sideIcon">⚙️</div>Profile / Settings</a>
+
+  <div class="sideHint">Manage your security & profile details.</div>
 
   <div style="height:12px"></div>
   <button class="sideLogout" onclick="logout()">Logout</button>
@@ -421,6 +451,12 @@ body{
         <div class="aIcon aSupport">💬</div>
         <div class="aText">Support</div>
       </div>
+
+      <!-- ✅ NEW QUICK SETTINGS BUTTON -->
+      <div class="action" onclick="goProfile()">
+        <div class="aIcon aProfile">⚙️</div>
+        <div class="aText">Settings</div>
+      </div>
     </div>
   </div>
 
@@ -452,27 +488,58 @@ body{
 
   <div class="navItem" onclick="goPlans()"><span>💼</span>Plans</div>
 
-  <div class="navItem" onclick="goSupportAndClear()">
-    <div id="badgeSupport" class="badge">0</div>
-    <span>🧑‍💻</span>Support
-  </div>
+  <!-- ✅ CHANGED SUPPORT ICON + added PROFILE in bottom nav -->
+  <div class="navItem" onclick="goProfile()"><span>⚙️</span>Profile</div>
 </div>
 
 <script>
+/* ============================================================
+   ✅ COINLUXORA AUTH GUARD (LOGIN + EMAIL VERIFIED REQUIRED)
+   Auto-added because this is a protected page.
+   ============================================================ */
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
-const EDGE_CLEAR_BADGE_URL = `${SUPABASE_URL}/functions/v1/clear_badge`;
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+// edge function
+const EDGE_CLEAR_BADGE_URL = `${SUPABASE_URL}/functions/v1/clear_badge`;
 
 let currentUserEmail="";
 let currentUserId="";
 let badgeChannel=null;
 
-init();
+(async function authGuard(){
+  try{
+    const { data, error } = await supabaseClient.auth.getUser();
+
+    // Not logged in
+    if(error || !data?.user){
+      window.location.replace("login.html");
+      return;
+    }
+
+    const user = data.user;
+
+    // Not verified
+    if(!user.email_confirmed_at){
+      await supabaseClient.auth.signOut();
+      window.location.replace("verify.html?status=unverified");
+      return;
+    }
+
+    window.COINLUXORA_USER = user;
+
+    // Continue loading dashboard
+    init();
+  }catch(e){
+    window.location.replace("login.html");
+  }
+})();
 
 /* NAV */
 function goHome(){ window.scrollTo({top:0,behavior:"smooth"}); }
 function goPlans(){ window.location.href="plans.html"; }
+function goProfile(){ window.location.href="profile.html"; }
 function goDepositAndClear(){ clearBadge("deposits"); window.location.href="deposits.html"; }
 function goWithdrawAndClear(){ clearBadge("withdrawals"); window.location.href="withdraw.html"; }
 function goSupportAndClear(){ clearBadge("notifications"); window.location.href="support.html"; }
@@ -504,7 +571,8 @@ function setBadgeFromKey(badge_key, badge_value){
   } else if(badge_key === "withdrawals"){
     setBadge("badgeWithdraw", badge_value);
   } else if(badge_key === "notifications"){
-    setBadge("badgeSupport", badge_value);
+    // old badgeSupport removed from bottom nav now but still can exist in UI if needed
+    // if you still want support badge somewhere else, we can add it back.
   }
 }
 
@@ -512,7 +580,6 @@ async function loadRealtimeBadgesOnce(){
   if(!currentUserId) return;
   setBadge("badgeDeposit", 0);
   setBadge("badgeWithdraw", 0);
-  setBadge("badgeSupport", 0);
 
   const { data, error } = await supabaseClient
     .from("user_badges")
@@ -600,7 +667,7 @@ async function loadBalance(){
 function money(n){ return "$" + Number(n||0).toFixed(2); }
 function pill(status){
   const s=(status||"pending").toLowerCase();
-  return `<span class="pill ${s}">${s}</span>`;
+  return `<span style="padding:4px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);font-weight:1000;font-size:12px">${s}</span>`;
 }
 function daysBetween(date1, date2){
   const d1=new Date(date1);
@@ -628,7 +695,7 @@ async function loadActivePlan(){
 
   if(!data || data.length===0){
     planMsg.innerHTML="<span class='err'>No investment plan started yet.</span>";
-    planBox.innerHTML=`<div class="small">Go to <a href="plans.html">Investment Plans</a> to start.</div>`;
+    planBox.innerHTML=`<div class="small">Go to <a style="color:#9bdcff;font-weight:1000" href="plans.html">Investment Plans</a> to start.</div>`;
     return;
   }
 
