@@ -222,6 +222,37 @@ body{
   white-space:nowrap;
 }
 
+/* ===== LIVE MARKET STRIP (NEW RESTORE) ===== */
+.marketStrip{
+  margin-top:14px;
+  border-radius:22px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.12);
+  background:
+    radial-gradient(900px 320px at 10% 10%, rgba(91,108,255,.18), transparent 58%),
+    radial-gradient(900px 320px at 90% 20%, rgba(52,211,153,.10), transparent 58%),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  box-shadow:0 26px 70px rgba(0,0,0,.35);
+  backdrop-filter: blur(14px);
+}
+.marketHead{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px;
+  font-weight:1000;
+  color:rgba(234,240,255,.92);
+  border-bottom:1px solid rgba(255,255,255,.10);
+}
+.marketHead small{
+  color:rgba(234,240,255,.55);
+  font-weight:900;
+}
+.marketFrame{
+  width:100%;
+  height:120px;
+  border:0;
+  display:block;
+}
+
 /* ===== BOX ===== */
 .box{
   border:1px solid rgba(255,255,255,.12);
@@ -774,6 +805,21 @@ body{
     </div>
   </div>
 
+  <!-- ✅ RESTORED: LIVE MARKET PRICES (NOW ABOVE PORTFOLIO BOX) -->
+  <div class="marketStrip">
+    <div class="marketHead">
+      <div>Live Market Prices</div>
+      <small>Powered by TradingView</small>
+    </div>
+    <iframe
+      class="marketFrame"
+      id="tvTicker"
+      loading="lazy"
+      referrerpolicy="no-referrer"
+      allowtransparency="true">
+    </iframe>
+  </div>
+
   <div class="balanceCard">
     <div class="bTitle">Total Portfolio Value</div>
     <div class="bValue" id="balance">--</div>
@@ -1092,41 +1138,12 @@ function countryNameToISO(name){
   const n=normalizeCountryText(raw);
 
   const map={
-    "nigeria":"NG",
-    "ng":"NG",
-    "nigerian":"NG",
-
-    "united states":"US",
-    "united states of america":"US",
-    "usa":"US",
-    "us":"US",
-    "america":"US",
-
-    "united kingdom":"GB",
-    "great britain":"GB",
-    "britain":"GB",
-    "england":"GB",
-    "uk":"GB",
-    "gb":"GB",
-
-    "canada":"CA",
-    "germany":"DE",
-    "france":"FR",
-    "south africa":"ZA",
-    "kenya":"KE",
-    "ghana":"GH",
-
-    "united arab emirates":"AE",
-    "uae":"AE",
-    "dubai":"AE",
-
-    "saudi arabia":"SA",
-    "india":"IN",
-    "australia":"AU",
-    "brazil":"BR",
-    "mexico":"MX",
-    "japan":"JP",
-    "singapore":"SG"
+    "nigeria":"NG","ng":"NG","nigerian":"NG",
+    "united states":"US","united states of america":"US","usa":"US","us":"US","america":"US",
+    "united kingdom":"GB","great britain":"GB","britain":"GB","england":"GB","uk":"GB","gb":"GB",
+    "canada":"CA","germany":"DE","france":"FR","south africa":"ZA","kenya":"KE","ghana":"GH",
+    "united arab emirates":"AE","uae":"AE","dubai":"AE",
+    "saudi arabia":"SA","india":"IN","australia":"AU","brazil":"BR","mexico":"MX","japan":"JP","singapore":"SG"
   };
 
   if(map[n]) return map[n];
@@ -1203,9 +1220,58 @@ function nfmt(n, dp=2){
 }
 
 /* ==============================
+   ✅ TradingView Live Market Strip Loader
+   ============================== */
+function loadMarketTicker(){
+  const frame = document.getElementById("tvTicker");
+  if(!frame) return;
+
+  // TradingView Ticker Tape (stocks + crypto + TOTAL3)
+  const symbols = [
+    {proName:"NASDAQ:HOOD", title:"HOOD"},
+    {proName:"NASDAQ:NFLX", title:"NFLX"},
+    {proName:"CRYPTOCAP:TOTAL3", title:"TOTAL3"},
+    {proName:"BINANCE:BTCUSDT", title:"BTC"}
+  ];
+
+  const theme="dark";
+  const locale="en";
+
+  const html = `
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<style>
+html,body{margin:0;padding:0;background:transparent}
+.wrap{height:120px;display:flex;align-items:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tradingview-widget-container" style="width:100%">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js">
+    {
+      "symbols": ${JSON.stringify(symbols)},
+      "showSymbolLogo": true,
+      "isTransparent": true,
+      "displayMode": "adaptive",
+      "colorTheme": "${theme}",
+      "locale": "${locale}"
+    }
+    </script>
+  </div>
+</div>
+</body>
+</html>`;
+
+  frame.srcdoc = html;
+}
+
+/* ==============================
    ✅ SEARCHABLE DROPDOWN (ALL ITEMS)
-   - Search by name/symbol/code
-   - No slicing / no limited list
    ============================== */
 function mountDropdown(elId, items, getLabel, getSearch, onPick, initial){
   const root=document.getElementById(elId);
@@ -1240,7 +1306,6 @@ function mountDropdown(elId, items, getLabel, getSearch, onPick, initial){
       renderItems = items.filter(x => getSearch(x).includes(q));
     }
 
-    // render only "visible window" chunk for performance but keep ALL scrolling
     const MAX = Math.min(renderItems.length, 600);
     const slice = renderItems.slice(0, MAX);
 
@@ -1308,7 +1373,6 @@ const FAVORITES = [
 ];
 
 async function loadCoinGeckoLists(){
-  // load fiats
   try{
     const fiatRes = await fetch("https://api.coingecko.com/api/v3/simple/supported_vs_currencies");
     const fiats = await fiatRes.json();
@@ -1317,12 +1381,10 @@ async function loadCoinGeckoLists(){
     FIATS = ["USD","NGN","EUR","GBP","CAD","AUD","JPY","CNY","INR"];
   }
 
-  // load all coins (name + symbol)
   try{
     const coinRes = await fetch("https://api.coingecko.com/api/v3/coins/list?include_platform=false");
     const coins = await coinRes.json();
 
-    // build map for favorites first
     const favMap = new Map(FAVORITES.map(f=>[f.id,f]));
     const list = [];
     for(const c of (coins||[])){
@@ -1331,7 +1393,6 @@ async function loadCoinGeckoLists(){
       const sym = (c.symbol||"").toLowerCase();
       list.push({ id:c.id, label:`${c.name}${sym?` (${sym.toUpperCase()})`:""}`, icon:"◈", symbol:sym });
     }
-
     ALL_COINS = [...FAVORITES, ...list];
   }catch{
     ALL_COINS = [...FAVORITES];
@@ -1339,42 +1400,10 @@ async function loadCoinGeckoLists(){
 
   const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$", symbol:f.toLowerCase() }));
 
-  // mount dropdowns with full search
-  mountDropdown(
-    "ddCryptoA",
-    ALL_COINS,
-    x=>x.label,
-    x=>(`${x.label} ${x.symbol} ${x.id}`).toLowerCase(),
-    x=>{ selectedCryptoA=x; },
-    selectedCryptoA
-  );
-
-  mountDropdown(
-    "ddCryptoB",
-    FIAT_ITEMS,
-    x=>x.label,
-    x=>(`${x.label} ${x.id}`).toLowerCase(),
-    x=>{ selectedCryptoB=x; },
-    selectedCryptoB
-  );
-
-  mountDropdown(
-    "ddFiatA",
-    FIAT_ITEMS,
-    x=>x.label,
-    x=>(`${x.label} ${x.id}`).toLowerCase(),
-    x=>{ selectedFiatA=x; },
-    selectedFiatA
-  );
-
-  mountDropdown(
-    "ddFiatB",
-    FIAT_ITEMS,
-    x=>x.label,
-    x=>(`${x.label} ${x.id}`).toLowerCase(),
-    x=>{ selectedFiatB=x; },
-    selectedFiatB
-  );
+  mountDropdown("ddCryptoA", ALL_COINS, x=>x.label, x=>(`${x.label} ${x.symbol} ${x.id}`).toLowerCase(), x=>{ selectedCryptoA=x; }, selectedCryptoA);
+  mountDropdown("ddCryptoB", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{ selectedCryptoB=x; }, selectedCryptoB);
+  mountDropdown("ddFiatA", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{ selectedFiatA=x; }, selectedFiatA);
+  mountDropdown("ddFiatB", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{ selectedFiatB=x; }, selectedFiatB);
 
   await loadFxRates();
 }
@@ -1399,7 +1428,6 @@ function swapCrypto(){
   selectedCryptoA = selectedCryptoB;
   selectedCryptoB = tmp;
 
-  // rebuild dropdowns
   const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$", symbol:f.toLowerCase() }));
 
   if(cryptoDirection === "crypto_to_fiat"){
@@ -1410,9 +1438,7 @@ function swapCrypto(){
 
     mountDropdown("ddCryptoA", ALL_COINS, x=>x.label, x=>(`${x.label} ${x.symbol} ${x.id}`).toLowerCase(), x=>{selectedCryptoA=x;}, selectedCryptoA);
     mountDropdown("ddCryptoB", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{selectedCryptoB=x;}, selectedCryptoB);
-
   }else{
-    // fiat -> crypto
     selectedCryptoA = {id:"USD",label:"USD",icon:"$",symbol:"usd"};
     if(!selectedCryptoB?.id || selectedCryptoB.id.length<=4) selectedCryptoB = FAVORITES[0];
 
@@ -1449,7 +1475,6 @@ async function convertCrypto(){
       document.getElementById("cryptoRate").textContent = `Rate: 1 ${selectedCryptoA.label} = ${nfmt(rate,6)} ${fiat.toUpperCase()}`;
       document.getElementById("cryptoResult").textContent = `${nfmt(result,2)} ${fiat.toUpperCase()}`;
       document.getElementById("cryptoReverse").textContent = `1 ${fiat.toUpperCase()} ≈ ${(1/rate).toFixed(10)} ${selectedCryptoA.symbol?.toUpperCase()||coinId}`;
-
     }else{
       const fiat = String(selectedCryptoA?.id || "USD").toLowerCase();
       const coinId = selectedCryptoB?.id || "bitcoin";
@@ -1519,22 +1544,15 @@ async function convertFiat(){
 
 /* ========== ORDER BOOK FIXED WITH FALLBACKS ========== */
 function parsePairForProviders(pair){
-  // pair example BTCUSDT
-  const base=pair.replace("USDT","").replace("USD",""); // BTC
-  return {
-    binance: pair,
-    okx: `${base}-USDT`,
-    bybit: `${base}USDT`
-  };
+  const base=pair.replace("USDT","").replace("USD","");
+  return { binance: pair, okx: `${base}-USDT`, bybit: `${base}USDT` };
 }
-
 async function tryBinanceOrderBook(symbol){
   const res = await fetch(`https://api.binance.com/api/v3/depth?symbol=${encodeURIComponent(symbol)}&limit=20`);
   const data = await res.json();
   if(!data?.asks || !data?.bids) throw new Error("binance invalid");
   return { asks:data.asks, bids:data.bids, source:"Binance" };
 }
-
 async function tryOKXOrderBook(instId){
   const res = await fetch(`https://www.okx.com/api/v5/market/books?instId=${encodeURIComponent(instId)}&sz=20`);
   const data = await res.json();
@@ -1542,7 +1560,6 @@ async function tryOKXOrderBook(instId){
   if(!book?.asks || !book?.bids) throw new Error("okx invalid");
   return { asks:book.asks, bids:book.bids, source:"OKX" };
 }
-
 async function tryBybitOrderBook(symbol){
   const res = await fetch(`https://api.bybit.com/v5/market/orderbook?category=spot&symbol=${encodeURIComponent(symbol)}&limit=20`);
   const data = await res.json();
@@ -1550,7 +1567,6 @@ async function tryBybitOrderBook(symbol){
   if(!book?.a || !book?.b) throw new Error("bybit invalid");
   return { asks:book.a, bids:book.b, source:"Bybit" };
 }
-
 async function loadOrderBook(force=false){
   const pair=document.getElementById("obPair").value;
   const asksEl=document.getElementById("asks");
@@ -1564,8 +1580,6 @@ async function loadOrderBook(force=false){
 
   try{
     let book=null;
-
-    // try Binance → OKX → Bybit
     try{ book = await tryBinanceOrderBook(meta.binance); }
     catch(e1){
       try{ book = await tryOKXOrderBook(meta.okx); }
@@ -1577,26 +1591,20 @@ async function loadOrderBook(force=false){
     const asks=(book.asks||[]).slice(0,20);
     const bids=(book.bids||[]).slice(0,20);
 
-    // normalize OKX/Bybit shapes
     const aNorm = asks.map(x => [x[0], x[1]]);
     const bNorm = bids.map(x => [x[0], x[1]]);
 
     asksEl.innerHTML=aNorm.map(a=>`<div class="obItem"><span>${Number(a[0]).toLocaleString()}</span><span>${Number(a[1]).toFixed(6)}</span></div>`).join("") || "<div class='obItem'>No asks</div>";
     bidsEl.innerHTML=bNorm.map(b=>`<div class="obItem"><span>${Number(b[0]).toLocaleString()}</span><span>${Number(b[1]).toFixed(6)}</span></div>`).join("") || "<div class='obItem'>No bids</div>";
-
   }catch(e){
     asksEl.innerHTML="<div class='obItem'>Order book blocked / unavailable</div>";
     bidsEl.innerHTML="<div class='obItem'>Try changing pair</div>";
   }
 }
-
-/* auto refresh every 3s */
 function startOrderAutoRefresh(){
   if(orderTimer) clearInterval(orderTimer);
   orderTimer=setInterval(()=>loadOrderBook(false), 3000);
 }
-
-/* mini candlestick widget */
 function loadChart(){
   const pair=document.getElementById("obPair").value;
   const base=pair.replace("USDT","").toUpperCase();
@@ -1651,7 +1659,6 @@ async function loadActivePlan(){
   }
 
   planMsg.innerHTML="";
-
   const plan=data[0];
   const amount=Number(plan.amount||0);
   const roi=Number(plan.roi_percent||0);
@@ -1758,6 +1765,9 @@ function initWithUser(user){
 
   hideGate();
   loadDashboardIdentity();
+
+  // ✅ live market ticker
+  loadMarketTicker();
 
   loadBalance();
   loadActivePlan();
