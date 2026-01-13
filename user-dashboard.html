@@ -321,6 +321,20 @@
   .tipsTitle{font-weight:1000;color:rgba(234,240,255,.65);font-size:16px;margin:0 0 10px;}
   ul{margin:0;padding-left:18px;color:rgba(234,240,255,.55);line-height:1.7;font-weight:900;font-size:13px}
 
+  /* ✅ Telegram icon (green tint using filter) */
+  .tgIcon{
+    width:22px;
+    height:22px;
+    object-fit:contain;
+    display:block;
+    filter: brightness(0) saturate(100%)
+            invert(67%) sepia(64%)
+            saturate(442%) hue-rotate(92deg)
+            brightness(96%) contrast(92%);
+  }
+  /* Sidebar icon wrapper needs center alignment */
+  .i .tgIcon{ width:24px; height:24px; }
+
   /* =========================================================
      ✅ ADVANCED BOTTOM NAV
      ========================================================= */
@@ -347,7 +361,7 @@
     color:rgba(234,240,255,.55);
     font-size:12px;font-weight:1000;cursor:pointer;user-select:none;
   }
-  .dockItem .ico{font-size:18px;opacity:.95}
+  .dockItem .ico{font-size:18px;opacity:.95;display:flex;align-items:center;justify-content:center}
   .dockItem:hover{background:rgba(255,255,255,.06)}
   .dockActive{color:#9bdcff;background:rgba(56,189,248,.10)}
   .dockHome{
@@ -361,9 +375,6 @@
   }
   .dockHome span{font-size:28px;color:white}
   .dockHome:hover{filter:brightness(1.05)}
-
-  /* ✅ Withdraw icon green + telegram style */
-  .withdrawGreen{ color: var(--green) !important; }
 </style>
 </head>
 
@@ -404,9 +415,11 @@
     <div>Deposit <small>Fund your account</small></div>
   </a>
 
-  <!-- ✅ Withdraw icon changed to telegram style -->
+  <!-- ✅ Withdraw now uses Telegram PNG -->
   <a class="sideItem" href="withdraw.html">
-    <div class="i">✈️</div>
+    <div class="i">
+      <img src="assets/telegram.png" class="tgIcon" alt="Withdraw"/>
+    </div>
     <div>Withdraw <small>Request payout</small></div>
   </a>
 
@@ -558,9 +571,9 @@
     <div class="dockBar">
       <div class="dockItem" onclick="goDeposit()"><div class="ico">💳</div><div>Deposit</div></div>
 
-      <!-- ✅ Withdraw now telegram style + GREEN -->
+      <!-- ✅ Withdraw now Telegram icon -->
       <div class="dockItem" onclick="goWithdraw()">
-        <div class="ico withdrawGreen">✈️</div>
+        <div class="ico"><img src="assets/telegram.png" class="tgIcon" alt="Withdraw"/></div>
         <div>Withdraw</div>
       </div>
 
@@ -577,7 +590,7 @@
    ✅ COINLUXORA AUTH GUARD (LOGIN + EMAIL VERIFIED REQUIRED)
    ============================================================ */
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
-const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5Mj230M30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
