@@ -180,6 +180,23 @@ body{
 .helloTitle{font-weight:1000;font-size:18px}
 .helloSub{font-size:12px;font-weight:900;opacity:.92}
 
+/* ✅ KEEP RIGHT SIDE EXACTLY AS BEFORE */
+.helloRight{display:flex;align-items:center;gap:10px}
+.idChip{
+  padding:8px 12px;border-radius:999px;
+  background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.22);
+  font-weight:1000;font-size:12px;
+}
+.logoutBtn{
+  width:46px;height:46px;border-radius:999px;border:none;
+  cursor:pointer;
+  background:rgba(239,68,68,0.95);
+  color:#fff;
+  font-weight:1000;
+  box-shadow:0 16px 40px rgba(239,68,68,.22);
+}
+
 /* ===== Ticker + Cards ===== */
 .tickerFloat{
   margin-top:12px;
@@ -444,7 +461,6 @@ body{
 
 <body>
 
-<!-- Loading Gate prevents rapid flicker -->
 <div id="authGate">
   <div class="gateCard">
     <div class="gateLogo">📣</div>
@@ -505,7 +521,6 @@ body{
     </div>
   </a>
 
-  <!-- ✅ Support below Withdraw -->
   <a class="sideItem" href="support.html">
     <div class="i">🧑‍💻</div>
     <div>
@@ -559,14 +574,12 @@ body{
           <div class="miniChip">🇳🇬 NG</div>
         </div>
 
-        <!-- ✅ Greeting changes based on time -->
         <div class="helloTitle" id="greetingTitle">Greetings…</div>
-
-        <!-- ✅ Only show name here (no "logged in as") -->
         <div class="helloSub" id="helloName">Loading…</div>
       </div>
     </div>
 
+    <!-- ✅ RESTORED -->
     <div class="helloRight">
       <div class="idChip" id="userIdChip">ID:</div>
       <button class="logoutBtn" onclick="logout()" title="Logout">⎋</button>
@@ -746,7 +759,7 @@ function setTopAvatar(avatarUrl){
 function setNameEverywhere(fullName){
   const nice = (fullName && fullName.trim()) ? fullName.trim() : "User";
 
-  // dashboard shows name only
+  // dashboard shows only name
   const hello = document.getElementById("helloName");
   if(hello) hello.innerHTML = `<span class="ok">${nice}</span>`;
 
@@ -869,17 +882,15 @@ function initWithUser(user){
   currentUserEmail=user.email;
   currentUserId=user.id;
 
-  // greeting based on time
-  setGreeting();
+  setGreeting(); // ✅ greeting based on time
 
+  // ✅ ID remains exactly as before
   document.getElementById("userIdChip").innerText = "ID: " + currentUserId.slice(0,6).toUpperCase();
 
   hideGate();
 
-  // ✅ load name + avatar
   loadDashboardIdentity();
 
-  // load features
   loadBalance();
   loadActivePlan();
   fetchPrices();
