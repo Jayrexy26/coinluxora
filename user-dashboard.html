@@ -1,219 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Coinluxora User Dashboard</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-:root{
-  --bg:#050a18;
-  --stroke:rgba(255,255,255,.12);
-  --text:#eaf0ff;
-  --muted:rgba(234,240,255,.65);
-
-  --ok:#22c55e;
-  --err:#f87171;
-
-  --blue:#5b6cff;
-  --purple:#7c4dff;
-  --green:#34d399;
-  --cyan:#38bdf8;
-  --pink:#ff4da6;
-
-  --shadow: 0 26px 90px rgba(0,0,0,.55);
+/* ===== order book ===== */
+.orderWrap{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
 }
-
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--text);
-  padding:16px;
-  padding-bottom:140px;
-  overflow-x:hidden;
-  background: var(--bg);
-}
-
-/* ===== UPPER ECHELON BACKGROUND ===== */
-.bgFlow{
-  position:fixed; inset:0; z-index:-4;
-  background:
-    radial-gradient(900px 520px at 10% 10%, rgba(83,113,255,.30), transparent 55%),
-    radial-gradient(900px 520px at 90% 20%, rgba(52,211,153,.20), transparent 55%),
-    radial-gradient(900px 520px at 40% 92%, rgba(255,77,166,.16), transparent 60%),
-    linear-gradient(180deg, rgba(5,10,24,1), rgba(2,6,23,1));
-}
-.blob{
-  position:fixed;
-  width:520px;height:520px;border-radius:999px;
-  filter: blur(72px);
-  opacity:.60;
-  z-index:-3;
-  mix-blend-mode: screen;
-  will-change: transform;
-}
-.blob.b1{ background: rgba(91,108,255,.92); left:-150px; top:-160px; animation: drift1 10s ease-in-out infinite; }
-.blob.b2{ background: rgba(124,77,255,.82); right:-220px; top:5%; animation: drift2 12s ease-in-out infinite; }
-.blob.b3{ background: rgba(52,211,153,.55); left:10%; bottom:-250px; animation: drift3 14s ease-in-out infinite; }
-.blob.b4{ background: rgba(255,77,166,.58); right:10%; bottom:-260px; animation: drift4 11s ease-in-out infinite; }
-@keyframes drift1{0%{transform:translate(0,0) scale(1)}50%{transform:translate(250px,140px) scale(1.10)}100%{transform:translate(0,0) scale(1)}}
-@keyframes drift2{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-280px,170px) scale(1.14)}100%{transform:translate(0,0) scale(1)}}
-@keyframes drift3{0%{transform:translate(0,0) scale(1)}50%{transform:translate(210px,-210px) scale(1.10)}100%{transform:translate(0,0) scale(1)}}
-@keyframes drift4{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-180px,-130px) scale(1.09)}100%{transform:translate(0,0) scale(1)}}
-
-.shimmer{
-  position:fixed; inset:-30px; z-index:-2;
-  opacity:.28;
-  background:
-    radial-gradient(600px 280px at 30% 10%, rgba(255,255,255,.10), transparent 60%),
-    radial-gradient(700px 320px at 80% 60%, rgba(255,255,255,.07), transparent 60%),
-    linear-gradient(120deg, transparent, rgba(255,255,255,.05), transparent);
-  animation: shimmerMove 6s ease-in-out infinite alternate;
-  pointer-events:none;
-}
-@keyframes shimmerMove{from{transform:translateY(0px) translateX(0px)}to{transform:translateY(42px) translateX(22px)}}
-
-.container{max-width:920px;margin:0 auto}
-
-/* ===== Loading Gate ===== */
-#authGate{
-  position:fixed; inset:0; z-index:99999;
-  display:flex; align-items:center; justify-content:center;
-  background:
-    radial-gradient(900px 420px at 10% 0%, rgba(83,113,255,.22), transparent 55%),
-    radial-gradient(900px 420px at 90% 0%, rgba(52,211,153,.18), transparent 55%),
-    var(--bg);
-}
-.gateCard{
-  width:min(520px,92vw);
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(0,0,0,.25);
-  border-radius:22px;
-  padding:18px;
-  box-shadow:0 26px 90px rgba(0,0,0,.55);
-  backdrop-filter: blur(14px);
-  text-align:center;
-}
-.gateLogo{
-  width:62px;height:62px;border-radius:18px;
-  margin:0 auto 10px;
-  display:grid;place-items:center;
-  border:1px solid rgba(255,255,255,.14);
-  background:linear-gradient(180deg, rgba(109,87,255,1), rgba(124,77,255,1));
-  box-shadow:0 18px 50px rgba(109,87,255,.28);
-  font-size:28px;font-weight:1000;
-}
-.gateTxt{font-weight:1000}
-.gateSub{margin-top:6px;color:rgba(234,240,255,.70);font-weight:900;font-size:13px}
-.spinner{
-  width:46px;height:46px;margin:14px auto 0;
-  border-radius:999px;
-  border:3px solid rgba(255,255,255,.18);
-  border-top-color:#9bdcff;
-  animation:spin 1s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ===== TOP BAR ===== */
-.topRow{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:12px; margin-bottom:14px;
-
-  /* ✅ sticky */
-  position:sticky;
-  top:0;
-  z-index:3000;
-  padding-top:14px;
-  padding-bottom:14px;
-  background:rgba(5,10,24,.88);
-  backdrop-filter: blur(14px);
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-.brand{
-  display:flex;align-items:center;gap:12px;
-  padding:12px 14px;border-radius:16px;
-  border:1px solid rgba(255,255,255,.14);
-  background:linear-gradient(90deg, rgba(109,87,255,1), rgba(135,116,255,0.86));
-  color:white;font-weight:1000;letter-spacing:.6px;
-  box-shadow:0 18px 50px rgba(109,87,255,.25);
-  min-width:140px;
-}
-.brandIcon{
-  width:34px;height:34px;border-radius:12px;
-  background:rgba(255,255,255,.18);
-  border:1px solid rgba(255,255,255,.22);
-  display:grid;place-items:center;
-  font-weight:1000;
-}
-.headerActions{display:flex;gap:10px;align-items:center}
-
-/* ✅ Avatar */
-.avatarBtn{
-  width:46px;height:46px;border-radius:999px;
-  border:1px solid rgba(255,255,255,.14);
-  background:linear-gradient(180deg, rgba(124,77,255,1), rgba(109,87,255,1));
-  cursor:pointer;
-  box-shadow:0 16px 40px rgba(124,77,255,.32);
-  display:grid;place-items:center;
-  position:relative;overflow:hidden;
-}
-.avatarBtn:hover{filter:brightness(1.05)}
-.avatarFallback{font-size:18px;line-height:1;z-index:2;}
-.avatarImgBtn{position:absolute; inset:0;width:100%; height:100%;object-fit:cover;display:none;z-index:3;}
-
-.iconBtn{
-  width:46px;height:46px;border-radius:999px;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(0,0,0,.18);
-  color:white;font-weight:1000;
-  cursor:pointer;
-  box-shadow:0 16px 40px rgba(0,0,0,.35);
-  backdrop-filter: blur(10px);
-}
-.iconBtn:hover{background:rgba(255,255,255,.08)}
-
-/* ===== HELLO CARD ===== */
-.helloCard{
-  border-radius:20px;
-  padding:16px 16px;
-  overflow:hidden;
-  background:
-    radial-gradient(800px 220px at 20% 20%, rgba(255,255,255,.18), transparent 60%),
-    linear-gradient(90deg, rgba(109,87,255,1), rgba(255,77,166,0.98));
-  color:white;
-  box-shadow:0 22px 70px rgba(109,87,255,.22);
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-}
-
-/* ===== BOX ===== */
-.box{
+.obCol{
+  border-radius:18px;
   border:1px solid rgba(255,255,255,.12);
-  border-radius:24px;
-  padding:16px;
-  background:
-    radial-gradient(700px 220px at 12% 10%, rgba(56,189,248,.14), transparent 62%),
-    radial-gradient(700px 220px at 88% 18%, rgba(255,77,166,.10), transparent 62%),
-    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-  box-shadow:0 26px 90px rgba(0,0,0,.55);
-  backdrop-filter: blur(12px);
-  margin-top:14px;
-  transition:.18s ease;
+  background:rgba(0,0,0,.22);
+  padding:12px;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
 }
-
-/* ✅ highlight on touch */
-.box:active{
-  transform:scale(0.992);
-  border-color:rgba(56,189,248,.55);
-  box-shadow:0 26px 90px rgba(56,189,248,.12);
+.obTitle{
+  font-weight:1000;
+  color:rgba(234,240,255,.85);
+  font-size:13px;
+  margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
 }
-
-.box h2{margin:0;font-size:20px;font-weight:1000}
-.small{color:var(--muted);font-size:13px;margin-top:8px}
-.ok{color:var(--ok);font-weight:1000}
-.err{color:var(--err);font-weight:1000}
+.obList{
+  display:grid;
+  gap:8px;
+  max-height:260px;
+  overflow:auto;
+  padding-right:6px;
+}
+.obItem{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  font-weight:900;
+  font-size:12px;
+  color:rgba(234,240,255,.78);
+}
+@media(max-width:520px){.orderWrap{grid-template-columns:1fr}}
 
 /* ===== mini chart ===== */
 .chartWrap{
@@ -257,6 +79,118 @@ body{
   backdrop-filter: blur(16px);
 }
 .sidebar.open{ left:0; }
+.sideTop{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin-bottom:12px;
+}
+.sideBrand{
+  display:flex;align-items:center;gap:10px;
+  font-weight:1000;font-size:16px;letter-spacing:.9px;
+  color:#fff;
+  padding:10px 12px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(90deg, rgba(109,87,255,.85), rgba(124,77,255,.85));
+  box-shadow:0 16px 50px rgba(109,87,255,.18);
+  min-width:170px;
+}
+.sideBrandIcon{
+  width:30px;height:30px;border-radius:12px;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.20);
+}
+.closeBtn{
+  background:rgba(0,0,0,.22);
+  border:1px solid rgba(255,255,255,.14);
+  color:rgba(234,240,255,.95);
+  border-radius:14px;
+  width:44px;height:44px;
+  cursor:pointer;
+  display:grid;place-items:center;
+  font-weight:1000;
+}
+.closeBtn:hover{background:rgba(255,255,255,.08)}
+
+.userTag{
+  padding:12px 12px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  box-shadow:0 18px 55px rgba(0,0,0,.35);
+  margin:10px 0 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.userTagLeft{min-width:0}
+.userTag .t1{color:rgba(234,240,255,.55);font-weight:1000;font-size:12px}
+.userTag .t2{
+  margin-top:6px;font-weight:1000;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  max-width:180px;
+}
+.sideAvatar{
+  width:46px;height:46px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.25);
+  display:grid;place-items:center;
+  position:relative;overflow:hidden;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+  flex:0 0 auto;
+}
+.sideAvatar span{font-size:18px}
+.sideAvatar img{
+  position:absolute; inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  display:none;
+}
+
+.menuGroupTitle{
+  margin:10px 0 8px;
+  font-size:12px;font-weight:1000;
+  color:rgba(234,240,255,.50);
+  letter-spacing:.8px;
+  text-transform:uppercase;
+}
+.sideItem{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 12px;border-radius:18px;
+  color:rgba(234,240,255,.82);
+  text-decoration:none;
+  font-weight:1000;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(0,0,0,.22);
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+  margin-bottom:10px;
+  position:relative;overflow:hidden;
+}
+.sideItem:hover{background:rgba(255,255,255,.08)}
+.sideItem .i{
+  width:42px;height:42px;border-radius:16px;
+  display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  font-size:18px;
+}
+.sideItem small{display:block;color:rgba(234,240,255,.55);font-size:12px;font-weight:900;margin-top:2px}
+.activeLink{
+  border:1px solid rgba(56,189,248,.55);
+  background:linear-gradient(180deg, rgba(56,189,248,0.14), rgba(56,189,248,0.08));
+  color:#cfefff;
+}
+.activeLink::after{
+  content:"";
+  position:absolute; inset:0;
+  background: radial-gradient(600px 160px at 30% 20%, rgba(56,189,248,.20), transparent 60%);
+  pointer-events:none;
+}
+.sideLogout{
+  margin-top:10px;
+  background:linear-gradient(90deg, rgba(248,113,113,1), rgba(239,68,68,1));
+  color:#020617;border:none;width:100%;
+  padding:14px;border-radius:18px;font-weight:1000;cursor:pointer;
+  box-shadow:0 18px 55px rgba(239,68,68,.18);
+}
+.sideLogout:hover{filter:brightness(1.03)}
 
 /* ===== DOCK ===== */
 .dock{
@@ -265,31 +199,175 @@ body{
   z-index:2000;
   pointer-events:none;
 }
+.dockInner{
+  pointer-events:auto;
+  max-width:980px;
+  margin:0 auto;
+  padding:0 14px;
+}
+.dockBar{
+  height:76px;
+  border-radius:28px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 20px 70px rgba(0,0,0,.45);
+  backdrop-filter: blur(14px);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px;
+  gap:10px;
+}
+.dockItem{
+  flex:1;
+  min-width:70px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  border-radius:18px;
+  padding:10px 0;
+  color:rgba(234,240,255,.55);
+  font-size:12px;
+  font-weight:1000;
+  cursor:pointer;
+  user-select:none;
+  position:relative;
+}
+.dockItem .ico{font-size:18px;opacity:.95}
+.dockItem:hover{background:rgba(255,255,255,.06)}
+.dockActive{color:#9bdcff;background:rgba(56,189,248,.10)}
+.dockHome{
+  width:78px;height:78px;border-radius:26px;
+  background:linear-gradient(180deg, rgba(109,87,255,1), rgba(91,108,255,1));
+  box-shadow:0 22px 55px rgba(109,87,255,.30);
+  display:grid;place-items:center;
+  margin-top:-32px;
+  border:1px solid rgba(255,255,255,.16);
+  cursor:pointer;user-select:none;
+  flex:0 0 auto;
+  pointer-events:auto;
+}
+.dockHome span{font-size:28px;color:white}
+.dockHome:hover{filter:brightness(1.05)}
+.dockBadge{
+  position:absolute;
+  top:2px;
+  right:18px;
+  min-width:18px;
+  height:18px;
+  padding:0 6px;
+  border-radius:999px;
+  background:#f87171;
+  color:#020617;
+  font-weight:1000;
+  font-size:11px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.18);
+}
 
-/* ✅ scroll arrows */
-.scrollArrows{
+/* ============================================================
+   ✅ TOP 10 CRYPTO LIST
+   ============================================================ */
+.crypto10Grid{
+  margin-top:12px;
+  display:grid;
+  gap:10px;
+}
+.cryptoRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(0,0,0,.22);
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+.cryptoLeft{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+.cryptoLogo{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.06);
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  flex:0 0 auto;
+}
+.cryptoLogo img{width:100%;height:100%;object-fit:cover;display:block;}
+.cryptoName{
+  font-weight:1000;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.cryptoSym{
+  display:block;
+  font-size:12px;
+  font-weight:1000;
+  color:rgba(234,240,255,.55);
+  margin-top:2px;
+}
+.cryptoRight{
+  text-align:right;
+  flex:0 0 auto;
+}
+.cryptoPrice{
+  font-weight:1000;
+  font-size:14px;
+}
+.cryptoChg{
+  margin-top:4px;
+  font-weight:1000;
+  font-size:12px;
+  color:rgba(234,240,255,.65);
+}
+.cryptoChg.up{color:rgba(34,197,94,1)}
+.cryptoChg.down{color:rgba(248,113,113,1)}
+
+/* ============================================================
+   ✅ NEW: SCROLL QUICK BUTTONS (UP + DOWN)
+   ============================================================ */
+.scrollBtns{
   position:fixed;
   right:14px;
   bottom:110px;
-  z-index:2600;
+  z-index:5000;
   display:flex;
   flex-direction:column;
   gap:10px;
 }
 .scrollBtn{
-  width:50px;
-  height:50px;
-  border-radius:999px;
+  width:52px;
+  height:52px;
+  border-radius:16px;
   border:1px solid rgba(255,255,255,.14);
-  background:rgba(0,0,0,.35);
-  backdrop-filter: blur(14px);
-  box-shadow:0 18px 55px rgba(0,0,0,.45);
+  background:rgba(0,0,0,.28);
   color:#fff;
   font-weight:1000;
-  font-size:18px;
   cursor:pointer;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+  backdrop-filter: blur(12px);
+  display:grid;
+  place-items:center;
+  user-select:none;
+  transition:.14s ease;
 }
-.scrollBtn:active{transform:scale(.96)}
+.scrollBtn:active{
+  transform:scale(.96);
+  border-color:rgba(155,220,255,.55);
+}
 </style>
 </head>
 
@@ -301,12 +379,6 @@ body{
 <div class="blob b4"></div>
 <div class="shimmer"></div>
 
-<!-- ✅ Scroll arrows -->
-<div class="scrollArrows">
-  <button class="scrollBtn" onclick="scrollTopFast()" title="Scroll up">⬆️</button>
-  <button class="scrollBtn" onclick="scrollDownFast()" title="Scroll down">⬇️</button>
-</div>
-
 <!-- Loading -->
 <div id="authGate">
   <div class="gateCard">
@@ -315,6 +387,12 @@ body{
     <div class="gateSub">Securing your session…</div>
     <div class="spinner"></div>
   </div>
+</div>
+
+<!-- ✅ NEW: Scroll buttons -->
+<div class="scrollBtns">
+  <div class="scrollBtn" onclick="scrollTopFast()" title="Scroll to top">⬆️</div>
+  <div class="scrollBtn" onclick="scrollDownFast()" title="Scroll down">⬇️</div>
 </div>
 
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
@@ -368,7 +446,7 @@ body{
 
   <div class="helloCard">
     <div class="helloLeft">
-      <div class="helloLogo">📶</div>
+      <div class="helloLogo">💫</div>
       <div>
         <div class="chips">
           <div class="miniChip">🟢 active</div>
@@ -417,16 +495,20 @@ body{
   <div class="box">
     <h2>Crypto Converter</h2>
     <div class="small">Search & convert from ALL coins to ALL fiat currencies.</div>
+
     <div class="convGrid">
       <div class="convRow">
         <div class="ddWrap" id="ddCryptoA"></div>
         <button class="swapBtn" onclick="swapCrypto()">⇄</button>
         <div class="ddWrap" id="ddCryptoB"></div>
       </div>
+
       <div class="convRow">
         <input id="cryptoAmount" class="inp" type="number" min="0" step="0.00000001" placeholder="Enter amount"/>
       </div>
+
       <button class="convBtn" onclick="convertCrypto()">⚡ Convert</button>
+
       <div class="card">
         <div class="rateLine"><span class="rateDot"></span> <span id="cryptoRate">Rate: --</span></div>
         <div class="small" style="margin-top:10px;font-size:14px;">Result: <strong id="cryptoResult">--</strong></div>
@@ -441,275 +523,23 @@ body{
   <div class="box">
     <h2>Fiat Currency Converter</h2>
     <div class="small">Search & convert from ALL fiat currencies to ALL fiat currencies.</div>
+
     <div class="convGrid">
       <div class="convRow">
         <div class="ddWrap" id="ddFiatA"></div>
         <button class="swapBtn" onclick="swapFiat()">⇄</button>
         <div class="ddWrap" id="ddFiatB"></div>
       </div>
+
       <div class="convRow">
         <input id="fiatAmount" class="inp" type="number" min="0" step="0.01" placeholder="Enter amount"/>
       </div>
+
       <button class="convBtn" onclick="convertFiat()">💱 Convert Fiat</button>
+
       <div class="card">
         <div class="rateLine"><span class="rateDot"></span> <span id="fiatRate">Rate: --</span></div>
         <div class="small" style="margin-top:10px;font-size:14px;">Result: <strong id="fiatResult">--</strong></div>
       </div>
     </div>
   </div>
-
-  <!-- ✅ Order Book (BID/ASK REMOVED + REFRESH REMOVED) -->
-  <div class="box">
-    <h2>Live Crypto Order Book</h2>
-    <div class="small">Auto refresh every 3 seconds. Binance → OKX → Bybit fallback.</div>
-
-    <div class="convRow" style="margin-top:12px">
-      <select id="obPair" class="inp" style="min-width:220px">
-        <option value="BTCUSDT">BTC/USDT</option>
-        <option value="ETHUSDT">ETH/USDT</option>
-        <option value="BNBUSDT">BNB/USDT</option>
-        <option value="XRPUSDT">XRP/USDT</option>
-        <option value="SOLUSDT">SOL/USDT</option>
-      </select>
-    </div>
-
-    <div class="chartWrap">
-      <div class="chartHead">
-        <span>Mini Candlestick Chart</span>
-        <span id="chartPair">BTC/USDT</span>
-      </div>
-      <iframe id="tvChart" class="chartFrame"></iframe>
-    </div>
-  </div>
-
-</div>
-
-<!-- DOCK -->
-<div class="dock">
-  <div class="dockInner">
-    <div class="dockBar">
-      <div class="dockItem" onclick="goDepositAndClear()"><div id="badgeDepositDock" class="dockBadge">0</div><div class="ico">💳</div><div>Deposit</div></div>
-      <div class="dockItem" onclick="goWithdrawAndClear()"><div id="badgeWithdrawDock" class="dockBadge">0</div><div class="ico">➡</div><div>Withdraw</div></div>
-      <div class="dockHome" onclick="goDashboard()"><span>🏠</span></div>
-      <div class="dockItem" onclick="goPlans()"><div class="ico">💼</div><div>Plans</div></div>
-      <div class="dockItem" onclick="goProfile()"><div class="ico">👤</div><div>Profile</div></div>
-    </div>
-  </div>
-</div>
-
-<script>
-const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
-const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
-const EDGE_CLEAR_BADGE_URL = `${SUPABASE_URL}/functions/v1/clear_badge`;
-const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-
-let currentUserEmail="";
-let currentUserId="";
-let badgeChannel=null;
-
-let ALL_COINS=[];
-let FIATS=[];
-let FX_RATES=null;
-let cryptoDirection="crypto_to_fiat";
-
-let selectedCryptoA={ id:"bitcoin", label:"Bitcoin (BTC)", icon:"₿", symbol:"btc" };
-let selectedCryptoB={ id:"USD", label:"USD", icon:"$", symbol:"usd" };
-let selectedFiatA={ id:"USD", label:"USD", icon:"$" };
-let selectedFiatB={ id:"NGN", label:"NGN", icon:"₦" };
-
-let orderTimer=null;
-
-const TOP10_IDS = ["bitcoin","ethereum","tether","binancecoin","solana","ripple","usd-coin","dogecoin","cardano","tron"];
-let top10Timer=null;
-
-/* ✅ scroll arrows */
-function scrollTopFast(){ window.scrollTo({top:0,behavior:"smooth"}); }
-function scrollDownFast(){ window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"}); }
-
-/* ✅ money format with comma */
-function fmtMoneySmart(n){
-  const num=Number(n||0);
-  return "$" + num.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
-}
-
-(async function authGuard(){
-  try{
-    const { data: sessionData } = await supabaseClient.auth.getSession();
-    const session = sessionData?.session;
-    if(!session){ window.location.replace("login.html"); return; }
-
-    const { data, error } = await supabaseClient.auth.getUser();
-    const user = data?.user;
-    if(error || !user){ window.location.replace("login.html"); return; }
-
-    if(!user.email_confirmed_at){
-      await supabaseClient.auth.signOut();
-      window.location.replace("verify.html?status=unverified");
-      return;
-    }
-    window.COINLUXORA_USER=user;
-    initWithUser(user);
-  }catch(e){
-    window.location.replace("login.html");
-  }
-})();
-
-/* NAV */
-function goPlans(){ window.location.href="plans.html"; }
-function goProfile(){ window.location.href="profile.html"; }
-function goDepositAndClear(){ clearBadge("deposits"); window.location.href="deposits.html"; }
-function goWithdrawAndClear(){ clearBadge("withdrawals"); window.location.href="withdraw.html"; }
-function goSupportAndClear(){ clearBadge("notifications"); window.location.href="support.html"; }
-function goDashboard(){ window.scrollTo({top:0,behavior:"smooth"}); }
-
-function openMenu(){ document.getElementById("sidebar").classList.add("open"); document.getElementById("overlay").classList.add("show"); }
-function closeMenu(){ document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); }
-function hideGate(){ const g=document.getElementById("authGate"); if(g) g.style.display="none"; }
-
-/* greeting */
-function setGreeting(){
-  const h = new Date().getHours();
-  let text="Greetings", emoji="✨";
-  if(h>=5 && h<12){ text="Good Morning"; emoji="🌞"; }
-  else if(h>=12 && h<17){ text="Good Afternoon"; emoji="☀️"; }
-  else { text="Good Evening"; emoji="🌙"; }
-  document.getElementById("greetingTitle").textContent = `${text} ${emoji}`;
-}
-function startClock(){
-  const dtEl=document.getElementById("dateTimeNow");
-  const days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-  const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const tick=()=>{
-    const now=new Date();
-    const dayName=days[now.getDay()];
-    const day=String(now.getDate()).padStart(2,"0");
-    const mon=months[now.getMonth()];
-    const yr=now.getFullYear();
-    let hh=now.getHours();
-    const ampm=hh>=12?"PM":"AM";
-    hh=hh%12; hh=hh?hh:12;
-    const hhs=String(hh).padStart(2,"0");
-    const mm=String(now.getMinutes()).padStart(2,"0");
-    const ss=String(now.getSeconds()).padStart(2,"0");
-    dtEl.textContent=`${dayName}, ${day} ${mon} ${yr} | ${hhs}:${mm}:${ss} ${ampm}`;
-  };
-  tick(); setInterval(tick,1000);
-}
-
-/* balance */
-async function loadBalance(){
-  const { data } = await supabaseClient.from("users").select("*").eq("email", currentUserEmail).single();
-  const bal = Number(data?.balance || 0);
-  document.getElementById("balance").innerHTML = fmtMoneySmart(bal);
-}
-
-/* mini candlestick widget */
-function loadChart(){
-  const pair=document.getElementById("obPair").value;
-  const base=pair.replace("USDT","").toUpperCase();
-  const tvSymbol = `BINANCE:${base}USDT`;
-  document.getElementById("chartPair").textContent = `${base}/USDT`;
-  const frame=document.getElementById("tvChart");
-  frame.src = `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${encodeURIComponent(tvSymbol)}&interval=60&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=rgba(0,0,0,0)&studies=[]&theme=dark&style=1&timezone=Etc/UTC&withdateranges=1&hideideas=1`;
-}
-document.getElementById("obPair").addEventListener("change",()=>{
-  loadChart();
-});
-
-/* auto refresh every 3s (kept for order book text, but bid/ask removed so only chart stays) */
-function startOrderAutoRefresh(){
-  if(orderTimer) clearInterval(orderTimer);
-  orderTimer=setInterval(()=>{}, 3000);
-}
-
-/* badges */
-function setBadge(elId, count){
-  const el=document.getElementById(elId);
-  if(!el) return;
-  const n=Number(count||0);
-  if(n<=0) el.style.display="none";
-  else { el.style.display="flex"; el.innerText = n>99?"99+":String(n); }
-}
-function setBadgeFromKey(key,val){
-  if(key==="deposits") setBadge("badgeDepositDock", val);
-  else if(key==="withdrawals") setBadge("badgeWithdrawDock", val);
-}
-async function loadRealtimeBadgesOnce(){
-  if(!currentUserId) return;
-  setBadge("badgeDepositDock", 0);
-  setBadge("badgeWithdrawDock", 0);
-
-  const { data, error } = await supabaseClient
-    .from("user_badges")
-    .select("badge_key, badge_value")
-    .eq("user_id", currentUserId);
-
-  if(error) return;
-  (data || []).forEach(row => setBadgeFromKey(row.badge_key, row.badge_value));
-}
-function subscribeToRealtimeBadges(){
-  if(!currentUserId) return;
-  if(badgeChannel){
-    supabaseClient.removeChannel(badgeChannel);
-    badgeChannel=null;
-  }
-  badgeChannel = supabaseClient
-    .channel("realtime-user-badges-dashboard")
-    .on("postgres_changes", {
-      event: "*",
-      schema: "public",
-      table: "user_badges",
-      filter: `user_id=eq.${currentUserId}`
-    }, payload => {
-      const row = payload.new;
-      if(!row) return;
-      setBadgeFromKey(row.badge_key, row.badge_value);
-    })
-    .subscribe();
-}
-async function clearBadge(badge_key){
-  try{
-    const { data: sessionData } = await supabaseClient.auth.getSession();
-    const accessToken = sessionData?.session?.access_token;
-    if(!accessToken) return;
-
-    await fetch(EDGE_CLEAR_BADGE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`,
-        "apikey": SUPABASE_ANON_KEY
-      },
-      body: JSON.stringify({ badge_key })
-    });
-  }catch(e){}
-}
-
-/* logout */
-async function logout(){
-  await supabaseClient.auth.signOut();
-  window.location.replace("login.html");
-}
-
-/* init */
-function initWithUser(user){
-  currentUserEmail=user.email;
-  currentUserId=user.id;
-
-  setGreeting();
-  startClock();
-  document.getElementById("userIdChip").innerText = "ID: " + currentUserId.slice(0,6).toUpperCase();
-
-  hideGate();
-
-  loadBalance();
-  loadRealtimeBadgesOnce();
-  subscribeToRealtimeBadges();
-
-  loadChart();
-  startOrderAutoRefresh();
-}
-</script>
-
-</body>
-</html>
