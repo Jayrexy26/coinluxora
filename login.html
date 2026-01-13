@@ -8,77 +8,354 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body{margin:0;font-family:system-ui;background:#020617;color:#e5e7eb;padding:16px}
-.box{max-width:500px;margin:40px auto;border:1px solid #1e293b;border-radius:14px;padding:18px;background:#020617}
-h2{margin:0 0 14px 0}
-input{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #1e293b;background:#020617;color:#e5e7eb}
-button{width:100%;padding:12px;border:none;border-radius:10px;background:#38bdf8;color:#020617;font-weight:800;cursor:pointer}
-a{color:#38bdf8;text-decoration:none;font-weight:800}
-.small{color:#94a3b8;font-size:13px;margin-top:10px}
-.ok{color:#22c55e}
-.err{color:#f87171}
+  :root{
+    --bg:#020617;
+    --stroke: rgba(255,255,255,0.12);
+    --card: rgba(255,255,255,0.06);
+    --text:#e5e7eb;
+    --muted:#9ca3af;
+    --muted2:#94a3b8;
+    --brand1:#3b82f6;
+    --brand2:#2563eb;
+    --ok:#22c55e;
+    --err:#f87171;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:16px;
+    overflow-x:hidden;
+  }
+
+  /* background glow like screenshot */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+      radial-gradient(900px 500px at 15% 12%, rgba(59,130,246,.18), transparent 55%),
+      radial-gradient(700px 420px at 85% 18%, rgba(99,102,241,.15), transparent 55%),
+      radial-gradient(600px 360px at 45% 92%, rgba(59,130,246,.10), transparent 55%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .wrap{
+    width:100%;
+    max-width:520px;
+    z-index:1;
+  }
+
+  .card{
+    width:100%;
+    border-radius:18px;
+    border:1px solid var(--stroke);
+    background: var(--card);
+    box-shadow: 0 25px 80px rgba(0,0,0,.50);
+    padding:26px 22px 22px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .topIcon{
+    width:60px;
+    height:60px;
+    border-radius:18px;
+    margin:0 auto 12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 10px 35px rgba(0,0,0,.40);
+  }
+
+  .topIcon svg{
+    width:32px;height:32px;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,.50));
+  }
+
+  h1{
+    margin:0;
+    font-size:36px;
+    text-align:center;
+    font-weight:900;
+    letter-spacing:-0.8px;
+    background: linear-gradient(90deg, #3b82f6, #6366f1);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .sub{
+    text-align:center;
+    margin-top:6px;
+    color: var(--muted);
+    font-size:16px;
+    margin-bottom:18px;
+  }
+
+  .field{margin-top:14px;}
+  .label{
+    font-size:15px;
+    font-weight:700;
+    color:#d1d5db;
+    margin:0 0 8px 2px;
+  }
+
+  .input{
+    width:100%;
+    padding:14px 14px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.12);
+    background: rgba(2,6,23,0.35);
+    color: var(--text);
+    font-size:16px;
+    outline:none;
+    transition:.18s ease;
+  }
+
+  .input::placeholder{color:#9ca3af}
+
+  .input:focus{
+    border-color: rgba(96,165,250,.60);
+    box-shadow: 0 0 0 4px rgba(59,130,246,.18);
+  }
+
+  /* password wrapper */
+  .pwWrap{position:relative;}
+  .pwWrap input{padding-right:54px;}
+  .togglePw{
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:.15s ease;
+  }
+  .togglePw:hover{transform:translateY(-50%) scale(1.03);}
+  .togglePw svg{width:20px;height:20px;opacity:.95}
+
+  .tinyRow{
+    margin-top:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    color:var(--muted2);
+    font-size:14px;
+  }
+
+  .tinyRow a{
+    color:#60a5fa;
+    font-weight:900;
+    text-decoration:none;
+  }
+  .tinyRow a:hover{text-decoration:underline;}
+
+  .btn{
+    width:100%;
+    border:none;
+    margin-top:22px;
+    padding:15px 14px;
+    font-size:18px;
+    font-weight:900;
+    border-radius:12px;
+    cursor:pointer;
+    color:#fff;
+    background: linear-gradient(180deg, var(--brand1), var(--brand2));
+    box-shadow: 0 18px 55px rgba(37,99,235,.35);
+    transition:.15s ease;
+  }
+
+  .btn:hover{transform: translateY(-1px); filter:brightness(1.02);}
+  .btn:active{transform: translateY(0px);}
+
+  .msg{
+    margin-top:14px;
+    text-align:center;
+    font-size:14px;
+    min-height:18px;
+    color: var(--muted);
+  }
+  .msg .ok{color:var(--ok); font-weight:900}
+  .msg .err{color:var(--err); font-weight:900}
+
+  .bottom{
+    text-align:center;
+    margin-top:18px;
+    color: var(--muted);
+    font-size:18px;
+  }
+
+  .bottom a{
+    color:#60a5fa;
+    font-weight:900;
+    text-decoration:none;
+  }
+  .bottom a:hover{text-decoration:underline;}
+
+  @media(max-width:420px){
+    h1{font-size:32px}
+    .card{padding:22px 18px 18px}
+    .bottom{font-size:16px}
+  }
 </style>
 </head>
 
 <body>
 
-<div class="box">
-  <h2>Login</h2>
+<div class="wrap">
+  <div class="card">
 
-  <input id="email" type="email" placeholder="Email address"/>
-  <input id="password" type="password" placeholder="Password"/>
+    <div class="topIcon" aria-hidden="true">
+      <!-- wifi icon like screenshot -->
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M2.2 8.8c5.5-5.1 14.1-5.1 19.6 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M5.3 12c3.8-3.5 9.6-3.5 13.4 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M8.7 15.2c1.8-1.6 4.8-1.6 6.6 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M12 19.5h.01" stroke="white" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+    </div>
 
-  <button onclick="login()">Login</button>
+    <h1>Login</h1>
+    <div class="sub">Access your CoinLuxora account</div>
 
-  <p id="msg" class="small"></p>
+    <div class="field">
+      <div class="label">Email Address *</div>
+      <input id="email" class="input" type="email" placeholder="Enter your email address" autocomplete="email"/>
+    </div>
 
-  <p class="small">
-    Don’t have an account?
-    <a href="signup.html">Sign Up</a>
-  </p>
+    <div class="field">
+      <div class="label">Password *</div>
+      <div class="pwWrap">
+        <input id="password" class="input" type="password" placeholder="Enter your password" autocomplete="current-password"/>
+        <button class="togglePw" type="button" onclick="togglePassword()" aria-label="Show/Hide password">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="white" stroke-width="1.8"/>
+            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="white" stroke-width="1.8"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="tinyRow">
+        <span>Secure login</span>
+        <a href="#" onclick="forgotPassword(); return false;">Forgot password?</a>
+      </div>
+    </div>
+
+    <button class="btn" onclick="login()">Login</button>
+
+    <p id="msg" class="msg"></p>
+
+    <div class="bottom">
+      Don’t have an account?
+      <a href="signup.html">Sign Up</a>
+    </div>
+
+  </div>
 </div>
 
 <script>
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
-const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// If already logged in → go dashboard
+// If already logged in → only allow dashboard if VERIFIED
 checkSession();
 async function checkSession(){
-  const { data } = await supabaseClient.auth.getSession();
-  if(data.session){
+  const { data } = await supabaseClient.auth.getUser();
+  if(data?.user){
+    // user exists - verify
+    if(!data.user.email_confirmed_at){
+      // not verified → keep on login page
+      await supabaseClient.auth.signOut();
+      setMsg("err", "Please verify your email before logging in.");
+      return;
+    }
     window.location.href="user-dashboard.html";
   }
 }
 
-async function login(){
+function setMsg(type, text){
   const msg=document.getElementById("msg");
-  msg.innerHTML="Logging in…";
+  if(type==="ok") msg.innerHTML=`<span class="ok">${text}</span>`;
+  else if(type==="err") msg.innerHTML=`<span class="err">${text}</span>`;
+  else msg.textContent=text;
+}
+
+function togglePassword(){
+  const el=document.getElementById("password");
+  el.type = (el.type==="password") ? "text" : "password";
+}
+
+async function login(){
+  setMsg("", "Logging in…");
 
   const email=document.getElementById("email").value.trim();
   const password=document.getElementById("password").value;
 
   if(!email || !password){
-    msg.innerHTML="<span class='err'>Fill all fields</span>";
+    setMsg("err","Fill all fields");
     return;
   }
 
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+  if(error){
+    setMsg("err", error.message);
+    return;
+  }
+
+  // VERIFIED CHECK ✅
+  const user = data?.user;
+  if(user && !user.email_confirmed_at){
+    await supabaseClient.auth.signOut();
+    setMsg("err", "Your email is not verified yet. Please check your inbox and verify your account.");
+    return;
+  }
+
+  setMsg("ok","Login successful ✅ Redirecting…");
+  setTimeout(()=> window.location.href="user-dashboard.html", 800);
+}
+
+// Forgot password reset
+async function forgotPassword(){
+  const email=document.getElementById("email").value.trim();
+
+  if(!email){
+    setMsg("err","Enter your email first.");
+    return;
+  }
+
+  setMsg("", "Sending reset email…");
+
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + "/login.html"
   });
 
   if(error){
-    msg.innerHTML="<span class='err'>"+error.message+"</span>";
+    setMsg("err", error.message);
     return;
   }
 
-  msg.innerHTML="<span class='ok'>Login successful ✅ Redirecting…</span>";
-
-  setTimeout(()=>{
-    window.location.href="user-dashboard.html";
-  }, 800);
+  setMsg("ok","Reset email sent ✅ Please check your inbox.");
 }
 </script>
 
