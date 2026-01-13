@@ -868,6 +868,38 @@ body{
     <div id="top10List" class="crypto10Grid"></div>
   </div>
 
+  <!-- ✅ ADDED: TOP 10 FOREX PAIRS -->
+  <div class="box">
+    <h2>Top 10 Forex Pairs</h2>
+    <div class="small">Live prices (auto refresh every 30 seconds).</div>
+    <div id="fxMsg" class="small">Loading…</div>
+    <div id="fxList" class="crypto10Grid"></div>
+  </div>
+
+  <!-- ✅ ADDED: TOP STOCKS -->
+  <div class="box">
+    <h2>Top Stocks</h2>
+    <div class="small">Live prices (auto refresh every 30 seconds).</div>
+    <div id="stocksMsg" class="small">Loading…</div>
+    <div id="stocksList" class="crypto10Grid"></div>
+  </div>
+
+  <!-- ✅ ADDED: TOP 10 FUTURES -->
+  <div class="box">
+    <h2>Top 10 Futures</h2>
+    <div class="small">Live prices (auto refresh every 30 seconds).</div>
+    <div id="futuresMsg" class="small">Loading…</div>
+    <div id="futuresList" class="crypto10Grid"></div>
+  </div>
+
+  <!-- ✅ ADDED: TOP 10 INDICES -->
+  <div class="box">
+    <h2>Top 10 Indices</h2>
+    <div class="small">Live prices (auto refresh every 30 seconds).</div>
+    <div id="indicesMsg" class="small">Loading…</div>
+    <div id="indicesList" class="crypto10Grid"></div>
+  </div>
+
   <!-- ✅ Crypto Converter -->
   <div class="box">
     <h2>Crypto Converter</h2>
@@ -1016,6 +1048,212 @@ const TOP10_IDS = [
   "tron"
 ];
 let top10Timer=null;
+
+/* ============================================================
+   ✅ MARKET LISTS (FOREX/STOCKS/FUTURES/INDICES) - ADDED
+   - Stooq CSV feed (browser safe)
+   ============================================================ */
+const FX_SYMBOLS = [
+  { title:"EUR/USD", sym:"EURUSD" },
+  { title:"GBP/USD", sym:"GBPUSD" },
+  { title:"USD/JPY", sym:"USDJPY" },
+  { title:"AUD/USD", sym:"AUDUSD" },
+  { title:"USD/CAD", sym:"USDCAD" },
+  { title:"USD/CHF", sym:"USDCHF" },
+  { title:"NZD/USD", sym:"NZDUSD" },
+  { title:"EUR/GBP", sym:"EURGBP" },
+  { title:"EUR/JPY", sym:"EURJPY" },
+  { title:"GBP/JPY", sym:"GBPJPY" }
+];
+
+const STOCK_SYMBOLS = [
+  { title:"Apple", sym:"AAPL.US" },
+  { title:"Microsoft", sym:"MSFT.US" },
+  { title:"NVIDIA", sym:"NVDA.US" },
+  { title:"Amazon", sym:"AMZN.US" },
+  { title:"Alphabet", sym:"GOOGL.US" },
+  { title:"Meta", sym:"META.US" },
+  { title:"Tesla", sym:"TSLA.US" },
+  { title:"Visa", sym:"V.US" },
+  { title:"JPMorgan", sym:"JPM.US" },
+  { title:"Coca-Cola", sym:"KO.US" }
+];
+
+const FUTURES_SYMBOLS = [
+  { title:"Gold", sym:"GC.F" },
+  { title:"Silver", sym:"SI.F" },
+  { title:"Crude Oil", sym:"CL.F" },
+  { title:"Brent Oil", sym:"BZZ.F" },
+  { title:"Natural Gas", sym:"NG.F" },
+  { title:"Corn", sym:"ZC.F" },
+  { title:"Wheat", sym:"ZW.F" },
+  { title:"Soybeans", sym:"ZS.F" },
+  { title:"Copper", sym:"HG.F" },
+  { title:"Coffee", sym:"KC.F" }
+];
+
+const INDEX_SYMBOLS = [
+  { title:"S&P 500", sym:"^SPX" },
+  { title:"NASDAQ 100", sym:"^NDX" },
+  { title:"Dow Jones", sym:"^DJI" },
+  { title:"DAX", sym:"^DAX" },
+  { title:"FTSE 100", sym:"^FTSE" },
+  { title:"CAC 40", sym:"^CAC" },
+  { title:"Nikkei 225", sym:"^N225" },
+  { title:"Hang Seng", sym:"^HSI" },
+  { title:"Shanghai", sym:"^SSEC" },
+  { title:"Sensex", sym:"^BSESN" }
+];
+
+let marketTimer=null;
+
+function parseCSVLine(line){
+  // split CSV respecting commas in quotes
+  const out=[];
+  let cur="", inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch === '"'){ inQ=!inQ; continue; }
+    if(ch === "," && !inQ){ out.push(cur); cur=""; continue; }
+    cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+async function fetchStooqQuote(symbol){
+  // Stooq expects lowercase
+  const s=String(symbol||"").toLowerCase();
+  const url = `https://stooq.com/q/l/?s=${encodeURIComponent(s)}&f=sd2t2ohlcv&h&e=csv`;
+  const res = await fetch(url);
+  const text = await res.text();
+  const lines = text.trim().split(/\r?\n/);
+  if(lines.length < 2) throw new Error("no csv");
+  const hdr=parseCSVLine(lines[0]);
+  const row=parseCSVLine(lines[1]);
+
+  // map
+  const m={};
+  hdr.forEach((k,idx)=>m[k]=row[idx]);
+
+  // if "N/A"
+  if(!m.Close || m.Close==="N/A") throw new Error("na");
+
+  const close=Number(m.Close||0);
+  const open=Number(m.Open||0);
+  const chg = open ? ((close-open)/open)*100 : 0;
+
+  return {
+    close,
+    open,
+    chg
+  };
+}
+
+function logoForMarket(type, sym){
+  // Stock logos via Clearbit (works well for big tickers)
+  // Only for STOCKS; others use emoji.
+  if(type==="stock"){
+    const t = sym.replace(".US","").replace(".us","");
+    // best effort (not perfect but safe)
+    // use "logo.clearbit.com" with common domains for top companies:
+    const domainMap={
+      AAPL:"apple.com", MSFT:"microsoft.com", NVDA:"nvidia.com", AMZN:"amazon.com",
+      GOOGL:"abc.xyz", META:"meta.com", TSLA:"tesla.com", V:"visa.com",
+      JPM:"jpmorganchase.com", KO:"coca-colacompany.com"
+    };
+    const domain = domainMap[String(t||"").toUpperCase()];
+    if(domain){
+      return `<img src="https://logo.clearbit.com/${domain}" alt="${t}" onerror="this.style.display='none'">`;
+    }
+  }
+  return "";
+}
+
+function buildMarketRow(type, title, symbol, price, chg){
+  const up = (chg>=0);
+  const chgClass = up ? "up" : "down";
+  const sign = up ? "+" : "";
+  let leftIcon="";
+
+  if(type==="fx") leftIcon="💱";
+  if(type==="future") leftIcon="🧾";
+  if(type==="index") leftIcon="📌";
+
+  // Use same crypto UI row
+  const logoHTML = (type==="stock")
+    ? logoForMarket(type, symbol)
+    : "";
+
+  return `
+    <div class="cryptoRow">
+      <div class="cryptoLeft">
+        <div class="cryptoLogo">
+          ${logoHTML || `<span style="font-weight:1000">${leftIcon}</span>`}
+        </div>
+        <div style="min-width:0">
+          <div class="cryptoName">${title}</div>
+          <span class="cryptoSym">${symbol}</span>
+        </div>
+      </div>
+
+      <div class="cryptoRight">
+        <div class="cryptoPrice">${Number(price).toLocaleString(undefined,{maximumFractionDigits:6})}</div>
+        <div class="cryptoChg ${chgClass}">${sign}${Number(chg).toFixed(2)}%</div>
+      </div>
+    </div>
+  `;
+}
+
+async function loadMarketList(type, items, msgId, listId){
+  const msg=document.getElementById(msgId);
+  const list=document.getElementById(listId);
+  if(!msg || !list) return;
+
+  try{
+    msg.textContent="Loading…";
+    const results=[];
+
+    for(const it of items){
+      try{
+        // stooq symbol for fx pairs (format: eurusd)
+        // for our fx list we send raw EURUSD -> eurusd
+        const stooqSym = (type==="fx")
+          ? `${it.sym}` // eurusd style
+          : it.sym;
+
+        const q = await fetchStooqQuote(stooqSym);
+        results.push({ ...it, close:q.close, chg:q.chg });
+      }catch{
+        // show row as unavailable
+        results.push({ ...it, close:null, chg:0, fail:true });
+      }
+    }
+
+    msg.textContent="";
+    list.innerHTML = results.map(r=>{
+      if(r.fail || r.close===null){
+        return buildMarketRow(type, r.title, r.sym, "--", 0).replace("0.00%","--");
+      }
+      return buildMarketRow(type, r.title, r.sym, r.close, r.chg);
+    }).join("");
+  }catch(e){
+    msg.innerHTML = "<span class='err'>Unable to load market prices (blocked / network).</span>";
+    list.innerHTML="";
+  }
+}
+
+async function loadAllMarkets(){
+  await loadMarketList("fx", FX_SYMBOLS, "fxMsg", "fxList");
+  await loadMarketList("stock", STOCK_SYMBOLS, "stocksMsg", "stocksList");
+  await loadMarketList("future", FUTURES_SYMBOLS, "futuresMsg", "futuresList");
+  await loadMarketList("index", INDEX_SYMBOLS, "indicesMsg", "indicesList");
+}
+
+function startMarketAutoRefresh(){
+  if(marketTimer) clearInterval(marketTimer);
+  marketTimer=setInterval(loadAllMarkets, 30000);
+}
 
 function fmtMoneySmart(n){
   const num=Number(n||0);
@@ -1917,6 +2155,10 @@ function initWithUser(user){
   // ✅ top 10 cryptos (added)
   loadTop10MajorCryptos();
   startTop10AutoRefresh();
+
+  // ✅ NEW: markets
+  loadAllMarkets();
+  startMarketAutoRefresh();
 
   loadCoinGeckoLists().then(async ()=>{
     await loadOrderBook(true);
