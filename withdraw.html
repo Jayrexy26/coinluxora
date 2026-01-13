@@ -8,65 +8,213 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    body { margin:0; font-family:Arial,sans-serif; background:#0b0f19; color:#fff; }
-    .layout { display:flex; min-height:100vh; }
+    :root{
+      --bg:#050a18;
+      --border:rgba(255,255,255,.12);
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.65);
+      --ok:#34d399;
+      --err:#fb7185;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(900px 420px at 10% 0%, rgba(83,113,255,.20), transparent 55%),
+        radial-gradient(900px 420px at 90% 0%, rgba(52,211,153,.16), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      padding:16px;
+      padding-bottom:34px;
+    }
+    .container{max-width:980px;margin:0 auto}
 
+    /* ✅ TOP FLOAT NAV */
+    .topFloatNav{
+      position:sticky;
+      top:10px;
+      z-index:500; /* lower than sidebar */
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .backBtn{
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
+      color:white;
+      font-weight:1000;
+      cursor:pointer;
+      backdrop-filter: blur(12px);
+      box-shadow:0 20px 70px rgba(0,0,0,.55);
+    }
+    .backBtn:hover{background:rgba(255,255,255,.08)}
+    .menuBtn{
+      width:48px;
+      height:48px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      box-shadow:0 20px 70px rgba(0,0,0,.55);
+      backdrop-filter: blur(12px);
+      cursor:pointer;
+      font-weight:1000;
+      color:white;
+    }
+    .menuBtn:hover{background:rgba(255,255,255,.10)}
+
+    /* ✅ SIDEBAR + OVERLAY (FIXED) */
+    .overlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.65);
+      display:none;
+      z-index:99998;
+      backdrop-filter: blur(6px);
+    }
     .sidebar{
-      width:240px; background:#0f172a; padding:18px; box-sizing:border-box;
-      border-right:1px solid rgba(255,255,255,0.08);
+      position:fixed; top:0; right:-340px;
+      width:300px; height:100vh;
+      background:linear-gradient(180deg, rgba(5,10,24,1), rgba(2,6,23,1));
+      border-left:1px solid rgba(255,255,255,.12);
+      padding:16px;
+      transition:.28s ease;
+      z-index:99999;
+      box-shadow:0 20px 90px rgba(0,0,0,.75);
     }
-    .brand{ font-size:20px; font-weight:800; margin-bottom:22px; letter-spacing:0.5px; }
-    .nav a{
-      display:block; padding:12px; margin:6px 0; border-radius:10px;
-      color:rgba(255,255,255,0.88); text-decoration:none; font-weight:600;
-      background:rgba(255,255,255,0.03);
+    .sidebar.open{ right:0; }
+    .overlay.show{ display:block; }
+
+    .sideTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:14px;
     }
-    .nav a:hover{ background:rgba(255,255,255,0.07); }
-    .nav a.active{
-      background:rgba(99,102,241,0.25);
-      border:1px solid rgba(99,102,241,0.35);
+    .brand{font-weight:1000;font-size:18px;letter-spacing:.6px;}
+    .closeBtn{
+      width:44px;height:44px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.25);
+      color:white;
+      font-weight:1000;
+      cursor:pointer;
+      font-size:18px;
+    }
+    .closeBtn:hover{background:rgba(255,255,255,.08)}
+    .userTag{
+      padding:12px;border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      margin-bottom:14px;
+    }
+    .sideSmall{color:var(--muted);font-size:13px;margin-top:0}
+    .sideItem{
+      display:flex;gap:10px;align-items:center;
+      padding:12px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:16px;margin-bottom:10px;
+      color:var(--text);
+      background:rgba(0,0,0,.22);
+      font-weight:1000;
+      text-decoration:none;
+    }
+    .sideItem:hover{background:rgba(255,255,255,.08)}
+    .activeLink{border:1px solid rgba(56,189,248,.55);background:rgba(56,189,248,0.12);}
+    .sideLogout{
+      width:100%;
+      padding:14px;
+      border-radius:16px;
+      border:none;
+      cursor:pointer;
+      font-weight:1000;
+      color:white;
+      background:linear-gradient(90deg, rgba(248,113,113,1), rgba(239,68,68,1));
+      box-shadow:0 20px 70px rgba(239,68,68,.15);
     }
 
-    .main{ flex:1; padding:20px; box-sizing:border-box; }
+    /* Top header glass bar */
     .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:16px 18px; border-radius:16px;
-      background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
-      margin-bottom:18px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:16px 18px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 20px 80px rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      margin-bottom:14px;
     }
-    .topbar h2{ margin:0; font-size:18px; font-weight:800; }
+    .topbar h2{ margin:0; font-size:18px; font-weight:1000; letter-spacing:.2px; }
+    .topbar .email{
+      opacity:.85;font-weight:900;font-size:13px;
+      max-width:55%; overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+    }
 
     .card{
-      max-width:980px; margin:0 auto 18px auto; padding:20px;
-      border-radius:18px; background:rgba(255,255,255,0.04);
-      border:1px solid rgba(255,255,255,0.08);
-      box-shadow:0 10px 30px rgba(0,0,0,0.35);
+      max-width:980px;
+      margin:0 auto 14px auto;
+      padding:18px;
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 26px 90px rgba(0,0,0,.55);
+      backdrop-filter: blur(12px);
     }
 
-    .card h3{ margin:0 0 18px 0; font-size:22px; font-weight:900; }
+    .card h3{ margin:0 0 16px 0; font-size:24px; font-weight:1000; }
 
     .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    label{ display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:rgba(255,255,255,0.88); }
+    label{ display:block; font-size:13px; font-weight:900; margin-bottom:8px; color:rgba(255,255,255,0.85); }
 
     input,select{
-      width:100%; padding:13px; border-radius:12px;
-      border:1px solid rgba(255,255,255,0.12);
-      background:rgba(0,0,0,0.25); color:#fff; outline:none; box-sizing:border-box;
+      width:100%;
+      padding:16px 14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.32);
+      color:var(--text);
+      outline:none;
+      box-sizing:border-box;
+      font-size:15px;
     }
-    input::placeholder{ color:rgba(255,255,255,0.35); }
+    input::placeholder{ color:rgba(255,255,255,.35); }
+    input:focus,select:focus{
+      border-color:rgba(99,102,241,.55);
+      box-shadow:0 0 0 4px rgba(99,102,241,.18);
+    }
 
     .full{ grid-column:1 / -1; }
     button{
-      padding:14px; border:0; border-radius:12px;
+      padding:16px 14px;
+      border:0;
+      border-radius:16px;
       background:linear-gradient(90deg,#6366f1,#22c55e);
-      color:#fff; font-weight:900; cursor:pointer; font-size:15px;
+      color:#fff;
+      font-weight:1000;
+      cursor:pointer;
+      font-size:15px;
+      box-shadow:0 18px 60px rgba(0,0,0,.45);
     }
+    button:active{transform:translateY(1px)}
     button:disabled{ opacity:0.6; cursor:not-allowed; }
 
     .msg{
-      margin-top:14px; padding:12px; border-radius:12px;
-      background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.08);
-      font-weight:700; font-size:14px; display:none; white-space:pre-wrap;
+      margin-top:14px;
+      padding:12px;
+      border-radius:16px;
+      background:rgba(0,0,0,0.25);
+      border:1px solid rgba(255,255,255,0.08);
+      font-weight:900;
+      font-size:14px;
+      display:none;
+      white-space:pre-wrap;
     }
     .msg.ok{ color:#4ade80; display:block; }
     .msg.err{ color:#fb7185; display:block; }
@@ -77,16 +225,14 @@
       margin-bottom:14px;
       flex-wrap:wrap;
     }
-    .historyHead h4{ margin:0; font-size:16px; font-weight:900; }
+    .historyHead h4{ margin:0; font-size:16px; font-weight:1000; }
 
     /* Tabs */
-    .tabs{
-      display:flex; gap:8px; flex-wrap:wrap;
-    }
+    .tabs{ display:flex; gap:8px; flex-wrap:wrap; }
     .tab{
       padding:9px 12px;
       border-radius:999px;
-      font-weight:900;
+      font-weight:1000;
       font-size:12px;
       cursor:pointer;
       border:1px solid rgba(255,255,255,0.10);
@@ -100,19 +246,29 @@
     }
 
     /* History table */
-    table{ width:100%; border-collapse:collapse; overflow:hidden; border-radius:14px; }
+    .tableWrap{
+      overflow:auto;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,0.12);
+      background:rgba(0,0,0,0.22);
+    }
+    table{ width:100%; border-collapse:collapse; min-width:820px; }
     th,td{
-      text-align:left; padding:12px 10px;
+      text-align:left; padding:13px 12px;
       border-bottom:1px solid rgba(255,255,255,0.06);
       font-size:13px;
       vertical-align:middle;
     }
-    th{ font-size:12px; color:rgba(255,255,255,0.75); font-weight:900; }
+    th{ font-size:12px; color:rgba(255,255,255,0.75); font-weight:1000; }
     tr:hover td{ background:rgba(255,255,255,0.03); }
 
     .pill{
-      display:inline-block; padding:6px 10px; border-radius:999px;
-      font-weight:900; font-size:12px; border:1px solid rgba(255,255,255,0.12);
+      display:inline-block;
+      padding:7px 12px;
+      border-radius:999px;
+      font-weight:1000;
+      font-size:12px;
+      border:1px solid rgba(255,255,255,0.12);
     }
     .pending{ background:rgba(250,204,21,0.10); color:#fde047; border-color:rgba(250,204,21,0.25); }
     .approved{ background:rgba(34,197,94,0.10); color:#4ade80; border-color:rgba(34,197,94,0.25); }
@@ -120,141 +276,162 @@
     .cancelled{ background:rgba(148,163,184,0.10); color:#cbd5e1; border-color:rgba(148,163,184,0.25); }
 
     .miniBtn{
-      padding:10px 12px;
-      border-radius:10px;
+      padding:11px 13px;
+      border-radius:14px;
       font-size:13px;
-      font-weight:900;
+      font-weight:1000;
       cursor:pointer;
       border:1px solid rgba(255,255,255,0.12);
-      background:rgba(255,255,255,0.08);
+      background:rgba(0,0,0,0.25);
       color:#fff;
+      box-shadow:none;
     }
-    .miniBtn:hover{ background:rgba(255,255,255,0.12); }
+    .miniBtn:hover{ background:rgba(255,255,255,0.10); }
 
     .dangerBtn{
-      padding:9px 11px;
-      border-radius:10px;
+      padding:9px 12px;
+      border-radius:12px;
       font-size:12px;
-      font-weight:900;
+      font-weight:1000;
       cursor:pointer;
       border:1px solid rgba(244,63,94,0.35);
       background:rgba(244,63,94,0.12);
       color:#fb7185;
+      box-shadow:none;
     }
     .dangerBtn:hover{ background:rgba(244,63,94,0.18); }
     .dangerBtn:disabled{ opacity:0.55; cursor:not-allowed; }
 
     .empty{
-      padding:14px; border-radius:14px;
+      padding:14px;
+      border-radius:18px;
       background:rgba(0,0,0,0.25);
       border:1px solid rgba(255,255,255,0.08);
-      font-weight:800; opacity:0.85;
+      font-weight:1000;
+      opacity:0.9;
     }
 
     .footerActions{
-      display:flex; justify-content:center; margin-top:14px;
+      display:flex;
+      justify-content:center;
+      margin-top:14px;
     }
 
     @media (max-width: 900px){
-      .sidebar{ display:none; }
       .grid{ grid-template-columns:1fr; }
-      .main{ padding:14px; }
       th:nth-child(4), td:nth-child(4){ display:none; } /* hide wallet column */
-      th:nth-child(7), td:nth-child(7){ display:none; } /* hide method column */
+      th:nth-child(6), td:nth-child(6){ display:none; } /* hide method column */
     }
   </style>
 </head>
 
 <body>
-<div class="layout">
 
-  <aside class="sidebar">
+<!-- ✅ OVERLAY + SIDEBAR -->
+<div id="overlay" class="overlay" onclick="closeMenu()"></div>
+
+<div id="sidebar" class="sidebar" aria-hidden="true">
+  <div class="sideTop">
     <div class="brand">COINLUXORA</div>
-    <div class="nav">
-      <a href="user_dashboard.html">Dashboard</a>
-      <a href="deposit.html">Deposit</a>
-      <a class="active" href="withdraw.html">Withdraw</a>
-      <a href="account.html">Account</a>
-      <a href="#" id="logoutBtn">Logout</a>
-    </div>
-  </aside>
+    <button class="closeBtn" onclick="closeMenu()" aria-label="Close menu">✕</button>
+  </div>
 
-  <main class="main">
-    <div class="topbar">
-      <h2>Withdrawals</h2>
-      <div id="userEmail" style="opacity:0.85;font-weight:800;"></div>
-    </div>
+  <div class="userTag">
+    <div class="sideSmall">Logged in as</div>
+    <div id="sideEmail" style="font-weight:1000;margin-top:6px;">---</div>
+  </div>
 
-    <!-- ✅ Withdraw form -->
-    <div class="card">
-      <h3>Request Withdrawal</h3>
+  <a class="sideItem" href="user-dashboard.html">🏠 Dashboard</a>
+  <a class="sideItem" href="portfolio.html">📊 Portfolio</a>
+  <a class="sideItem" href="plans.html">💼 Investment Plans</a>
+  <a class="sideItem" href="support.html">🧑‍💻 Support / Contact</a>
+  <a class="sideItem" href="deposits.html">💳 Deposit</a>
+  <a class="sideItem activeLink" href="withdraw.html">➡ Withdraw Funds</a>
 
-      <div class="grid">
-        <div>
-          <label>Amount</label>
-          <input type="number" id="amount" placeholder="Enter amount"/>
-        </div>
+  <div style="height:12px"></div>
+  <button class="sideLogout" onclick="logout()">Logout</button>
+</div>
 
-        <div>
-          <label>Asset</label>
-          <select id="asset">
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-            <option value="ETH">ETH</option>
-            <option value="BTC">BTC</option>
-            <option value="USDT">USDT</option>
-          </select>
-        </div>
+<div class="container">
 
-        <div class="full">
-          <label>Network</label>
-          <select id="network">
-            <option value="TRC20">TRC20</option>
-            <option value="ERC20">ERC20</option>
-            <option value="BEP20">BEP20</option>
-            <option value="BTC">BTC</option>
-          </select>
-        </div>
+  <!-- ✅ Sticky top nav -->
+  <div class="topFloatNav">
+    <button class="backBtn" onclick="goDashboard()">← Dashboard</button>
+    <button class="menuBtn" onclick="openMenu()" aria-label="Open menu">☰</button>
+  </div>
 
-        <div class="full">
-          <label>Wallet Address</label>
-          <input type="text" id="wallet_address" placeholder="Enter your wallet address"/>
-        </div>
+  <div class="topbar">
+    <h2>Withdrawals</h2>
+    <div id="userEmail" class="email"></div>
+  </div>
 
-        <div class="full">
-          <button id="submitBtn" type="button" style="width:100%;">Submit Withdrawal</button>
-          <div id="msg" class="msg"></div>
-        </div>
-      </div>
-    </div>
+  <!-- ✅ Withdraw form -->
+  <div class="card">
+    <h3>Request Withdrawal</h3>
 
-    <!-- ✅ History -->
-    <div class="card">
-      <div class="historyHead">
-        <h4>Withdrawal History</h4>
-
-        <!-- ✅ Tabs -->
-        <div class="tabs" id="tabs">
-          <div class="tab active" data-status="all">All</div>
-          <div class="tab" data-status="pending">Pending</div>
-          <div class="tab" data-status="approved">Approved</div>
-          <div class="tab" data-status="rejected">Rejected</div>
-          <div class="tab" data-status="cancelled">Cancelled</div>
-        </div>
-
-        <button id="refreshHistoryBtn" class="miniBtn" type="button">Refresh</button>
+    <div class="grid">
+      <div>
+        <label>Amount</label>
+        <input type="number" id="amount" placeholder="Enter amount"/>
       </div>
 
-      <div id="historyContainer"></div>
+      <div>
+        <label>Asset</label>
+        <select id="asset">
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="ETH">ETH</option>
+          <option value="BTC">BTC</option>
+          <option value="USDT">USDT</option>
+        </select>
+      </div>
 
-      <!-- ✅ Pagination -->
-      <div class="footerActions">
-        <button id="loadMoreBtn" class="miniBtn" type="button" style="display:none;">Load More</button>
+      <div class="full">
+        <label>Network</label>
+        <select id="network">
+          <option value="TRC20">TRC20</option>
+          <option value="ERC20">ERC20</option>
+          <option value="BEP20">BEP20</option>
+          <option value="BTC">BTC</option>
+        </select>
+      </div>
+
+      <div class="full">
+        <label>Wallet Address</label>
+        <input type="text" id="wallet_address" placeholder="Enter your wallet address"/>
+      </div>
+
+      <div class="full">
+        <button id="submitBtn" type="button" style="width:100%;">Submit Withdrawal</button>
+        <div id="msg" class="msg"></div>
       </div>
     </div>
+  </div>
 
-  </main>
+  <!-- ✅ History -->
+  <div class="card">
+    <div class="historyHead">
+      <h4>Withdrawal History</h4>
+
+      <div class="tabs" id="tabs">
+        <div class="tab active" data-status="all">All</div>
+        <div class="tab" data-status="pending">Pending</div>
+        <div class="tab" data-status="approved">Approved</div>
+        <div class="tab" data-status="rejected">Rejected</div>
+        <div class="tab" data-status="cancelled">Cancelled</div>
+      </div>
+
+      <button id="refreshHistoryBtn" class="miniBtn" type="button">Refresh</button>
+    </div>
+
+    <div id="historyContainer"></div>
+
+    <div class="footerActions">
+      <button id="loadMoreBtn" class="miniBtn" type="button" style="display:none;">Load More</button>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -263,6 +440,27 @@
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  /* ✅ Menu Open/Close FIXED */
+  function openMenu(){
+    document.getElementById("sidebar").classList.add("open");
+    document.getElementById("overlay").classList.add("show");
+    document.getElementById("sidebar").setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden";
+  }
+  function closeMenu(){
+    document.getElementById("sidebar").classList.remove("open");
+    document.getElementById("overlay").classList.remove("show");
+    document.getElementById("sidebar").setAttribute("aria-hidden","true");
+    document.body.style.overflow="";
+  }
+  document.addEventListener("keydown",(e)=>{
+    if(e.key==="Escape") closeMenu();
+  });
+
+  function goDashboard(){
+    window.location.href="user-dashboard.html";
+  }
 
   const msg = document.getElementById("msg");
   const submitBtn = document.getElementById("submitBtn");
@@ -273,10 +471,10 @@
   const tabsEl = document.getElementById("tabs");
 
   let currentUserEmail = null;
-  let currentFilter = "all";   // all | pending | approved | rejected | cancelled
+  let currentFilter = "all";
   let pageSize = 10;
   let currentOffset = 0;
-  let historyCache = [];       // holds loaded records for pagination display
+  let historyCache = [];
 
   function showMessage(text, ok=false) {
     msg.textContent = text;
@@ -310,15 +508,10 @@
       return null;
     }
     userEmailDiv.textContent = data.user.email || "";
+    document.getElementById("sideEmail").innerText = data.user.email || "";
     currentUserEmail = data.user.email || "";
     return data.user;
   }
-
-  document.getElementById("logoutBtn").addEventListener("click", async (e) => {
-    e.preventDefault();
-    await supabaseClient.auth.signOut();
-    window.location.href = "login.html";
-  });
 
   function renderHistoryTable(records){
     if (!records || records.length === 0) {
@@ -353,24 +546,25 @@
     }).join("");
 
     historyContainer.innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th>Asset</th>
-            <th>Amount</th>
-            <th>Network</th>
-            <th>Wallet</th>
-            <th>Status</th>
-            <th>Method</th>
-            <th>Date</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Asset</th>
+              <th>Amount</th>
+              <th>Network</th>
+              <th>Wallet</th>
+              <th>Status</th>
+              <th>Method</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
     `;
 
-    // ✅ attach cancel listeners
     document.querySelectorAll("[data-cancel-id]").forEach(btn => {
       btn.addEventListener("click", async (e) => {
         const withdrawalId = e.currentTarget.getAttribute("data-cancel-id");
@@ -396,9 +590,7 @@
       .order("created_at", { ascending: false })
       .range(currentOffset, currentOffset + pageSize - 1);
 
-    if (currentFilter !== "all") {
-      query = query.eq("status", currentFilter);
-    }
+    if (currentFilter !== "all") query = query.eq("status", currentFilter);
 
     const { data, error } = await query;
 
@@ -418,7 +610,6 @@
     historyCache = historyCache.concat(data);
     renderHistoryTable(historyCache);
 
-    // show/hide load more
     if (data.length === pageSize) {
       loadMoreBtn.style.display = "inline-block";
       currentOffset += pageSize;
@@ -427,14 +618,11 @@
     }
   }
 
-  // ✅ Cancel logic (Front-end only)
-  // This updates withdrawal status -> "cancelled" ONLY if the record belongs to user_email and is pending.
   async function cancelWithdrawal(withdrawalId, btnEl) {
     try {
       btnEl.disabled = true;
       btnEl.textContent = "Cancelling...";
 
-      // Safety confirm
       const ok = confirm("Cancel this pending withdrawal request?");
       if (!ok) {
         btnEl.disabled = false;
@@ -442,7 +630,6 @@
         return;
       }
 
-      // Update in DB
       const { error } = await supabaseClient
         .from("withdrawals")
         .update({ status: "cancelled" })
@@ -458,8 +645,6 @@
       }
 
       showMessage("Withdrawal cancelled ✅", true);
-
-      // Refresh history in same filter
       await fetchWithdrawals({ reset:true });
 
     } catch (e) {
@@ -467,7 +652,6 @@
     }
   }
 
-  // Tabs
   tabsEl.addEventListener("click", async (e) => {
     const tab = e.target.closest(".tab");
     if (!tab) return;
@@ -487,7 +671,6 @@
     await fetchWithdrawals({ reset:false });
   });
 
-  // Submit withdrawal
   submitBtn.addEventListener("click", async () => {
     try {
       showMessage("Submitting withdrawal request...");
@@ -554,7 +737,6 @@
       submitBtn.disabled = false;
       submitBtn.textContent = "Submit Withdrawal";
 
-      // Refresh history back to top
       await fetchWithdrawals({ reset:true });
 
     } catch (err) {
@@ -565,7 +747,11 @@
     }
   });
 
-  // init
+  async function logout(){
+    await supabaseClient.auth.signOut();
+    window.location.href="login.html";
+  }
+
   (async () => {
     const user = await loadUser();
     if (user?.email) {
