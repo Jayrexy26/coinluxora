@@ -32,7 +32,7 @@ body{
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   color:var(--text);
   padding:16px;
-  padding-bottom:120px;
+  padding-bottom:140px;
   overflow-x:hidden;
   background: var(--bg);
 }
@@ -80,12 +80,8 @@ body{
 
 /* ===== Loading Gate ===== */
 #authGate{
-  position:fixed;
-  inset:0;
-  z-index:99999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  position:fixed; inset:0; z-index:99999;
+  display:flex; align-items:center; justify-content:center;
   background:
     radial-gradient(900px 420px at 10% 0%, rgba(83,113,255,.22), transparent 55%),
     radial-gradient(900px 420px at 90% 0%, rgba(52,211,153,.18), transparent 55%),
@@ -102,8 +98,7 @@ body{
   text-align:center;
 }
 .gateLogo{
-  width:62px;height:62px;
-  border-radius:18px;
+  width:62px;height:62px;border-radius:18px;
   margin:0 auto 10px;
   display:grid;place-items:center;
   border:1px solid rgba(255,255,255,.14);
@@ -124,21 +119,15 @@ body{
 
 /* ===== TOP BAR ===== */
 .topRow{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:14px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; margin-bottom:14px;
 }
 .brand{
   display:flex;align-items:center;gap:12px;
-  padding:12px 14px;
-  border-radius:16px;
+  padding:12px 14px;border-radius:16px;
   border:1px solid rgba(255,255,255,.14);
   background:linear-gradient(90deg, rgba(109,87,255,1), rgba(135,116,255,0.86));
-  color:white;
-  font-weight:1000;
-  letter-spacing:.6px;
+  color:white;font-weight:1000;letter-spacing:.6px;
   box-shadow:0 18px 50px rgba(109,87,255,.25);
   min-width:140px;
 }
@@ -158,27 +147,18 @@ body{
   background:linear-gradient(180deg, rgba(124,77,255,1), rgba(109,87,255,1));
   cursor:pointer;
   box-shadow:0 16px 40px rgba(124,77,255,.32);
-  display:grid;
-  place-items:center;
-  position:relative;
-  overflow:hidden;
+  display:grid;place-items:center;
+  position:relative;overflow:hidden;
 }
 .avatarBtn:hover{filter:brightness(1.05)}
 .avatarFallback{font-size:18px;line-height:1;z-index:2;}
-.avatarImgBtn{
-  position:absolute; inset:0;
-  width:100%; height:100%;
-  object-fit:cover;
-  display:none;
-  z-index:3;
-}
+.avatarImgBtn{position:absolute; inset:0;width:100%; height:100%;object-fit:cover;display:none;z-index:3;}
 
 .iconBtn{
   width:46px;height:46px;border-radius:999px;
   border:1px solid rgba(255,255,255,.14);
   background:rgba(0,0,0,.18);
-  color:white;
-  font-weight:1000;
+  color:white;font-weight:1000;
   cursor:pointer;
   box-shadow:0 16px 40px rgba(0,0,0,.35);
   backdrop-filter: blur(10px);
@@ -195,10 +175,7 @@ body{
     linear-gradient(90deg, rgba(109,87,255,1), rgba(255,77,166,0.98));
   color:white;
   box-shadow:0 22px 70px rgba(109,87,255,.22);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
 }
 .helloLeft{display:flex;align-items:center;gap:12px;}
 .helloLogo{
@@ -218,13 +195,8 @@ body{
 }
 .helloTitle{font-weight:1000;font-size:18px}
 .helloSub{font-size:12px;font-weight:900;opacity:.92}
-
-/* right */
 .helloRight{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:8px;
+  display:flex;flex-direction:column;align-items:flex-end;gap:8px;
 }
 .helloRightTop{display:flex;align-items:center;gap:10px}
 .idChip{
@@ -237,8 +209,7 @@ body{
   width:46px;height:46px;border-radius:999px;border:none;
   cursor:pointer;
   background:rgba(239,68,68,0.95);
-  color:#fff;
-  font-weight:1000;
+  color:#fff;font-weight:1000;
   box-shadow:0 16px 40px rgba(239,68,68,.22);
 }
 .datetimeChip{
@@ -250,30 +221,31 @@ body{
   white-space:nowrap;
 }
 
-/* ===== Ticker ===== */
-.tickerFloat{
-  margin-top:12px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.14);
-  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-  box-shadow:0 22px 70px rgba(0,0,0,.48);
+/* ===== BOX ===== */
+.box{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:24px;
+  padding:16px;
+  background:
+    radial-gradient(700px 220px at 12% 10%, rgba(56,189,248,.14), transparent 62%),
+    radial-gradient(700px 220px at 88% 18%, rgba(255,77,166,.10), transparent 62%),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+  box-shadow:0 26px 90px rgba(0,0,0,.55);
   backdrop-filter: blur(12px);
-  overflow:hidden;
+  margin-top:14px;
 }
-.tickerHeader{
-  padding:10px 12px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:1px solid rgba(255,255,255,.10);
-  color:rgba(234,240,255,.78);
-  font-weight:1000;
-  font-size:13px;
+.box h2{margin:0;font-size:20px;font-weight:1000}
+.small{color:var(--muted);font-size:13px;margin-top:8px}
+.ok{color:var(--ok);font-weight:1000}
+.err{color:var(--err);font-weight:1000}
+.card{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:18px;
+  padding:12px;
+  background:rgba(0,0,0,.22);
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
 }
-.tickerHint{color:rgba(234,240,255,.50);font-size:12px;font-weight:900}
-.tickerFrame{width:100%;height:54px;border:0;display:block;background:transparent}
 
-/* ===== BALANCE ===== */
 .balanceCard{
   margin-top:14px;
   border-radius:24px;
@@ -291,7 +263,6 @@ body{
 .bValue{font-size:34px;font-weight:1000;margin-top:8px}
 .bHint{margin-top:6px;font-size:13px;font-weight:900;opacity:.88;display:flex;gap:10px;align-items:center}
 .dot{width:10px;height:10px;border-radius:999px;background:var(--green)}
-
 .actionGrid{
   margin-top:16px;
   display:grid;
@@ -322,32 +293,7 @@ body{
 .aSupport{background:linear-gradient(180deg,#38bdf8,#5b6cff)}
 .aText{font-weight:1000;font-size:13px}
 
-/* ===== BOX ===== */
-.box{
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:24px;
-  padding:16px;
-  background:
-    radial-gradient(700px 220px at 12% 10%, rgba(56,189,248,.14), transparent 62%),
-    radial-gradient(700px 220px at 88% 18%, rgba(255,77,166,.10), transparent 62%),
-    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-  box-shadow:0 26px 90px rgba(0,0,0,.55);
-  backdrop-filter: blur(12px);
-  margin-top:14px;
-}
-.box h2{margin:0;font-size:20px;font-weight:1000}
-.small{color:var(--muted);font-size:13px;margin-top:8px}
-.ok{color:var(--ok);font-weight:1000}
-.err{color:var(--err);font-weight:1000}
-
-.card{
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:18px;
-  padding:12px;
-  background:rgba(0,0,0,.22);
-  box-shadow:0 16px 40px rgba(0,0,0,.35);
-}
-
+/* ===== converters ===== */
 .convGrid{margin-top:14px;display:grid;gap:12px}
 .convRow{display:flex;gap:10px;flex-wrap:wrap}
 .inp{
@@ -400,8 +346,8 @@ body{
   box-shadow:0 0 18px rgba(52,211,153,.55);
 }
 
-/* ===== searchable dropdown ===== */
-.ddWrap{flex:1;min-width:200px;position:relative}
+/* ===== searchable dropdown unlimited ===== */
+.ddWrap{flex:1;min-width:220px;position:relative}
 .ddBtn{
   width:100%;
   height:50px;
@@ -419,12 +365,7 @@ body{
   justify-content:space-between;
   gap:10px;
 }
-.ddLeft{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
-}
+.ddLeft{display:flex;align-items:center;gap:10px;min-width:0}
 .ddIcon{
   width:34px;height:34px;border-radius:12px;
   border:1px solid rgba(255,255,255,.12);
@@ -432,16 +373,13 @@ body{
   display:grid;place-items:center;
   font-size:14px;
 }
-.ddName{
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
+.ddName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ddPanel{
-  position:absolute;
-  top:56px; left:0; right:0;
+  position:absolute; top:56px; left:0; right:0;
   z-index:100;
   border-radius:18px;
   border:1px solid rgba(255,255,255,.12);
-  background:rgba(2,6,23,.92);
+  background:rgba(2,6,23,.94);
   box-shadow:0 26px 90px rgba(0,0,0,.65);
   backdrop-filter: blur(16px);
   overflow:hidden;
@@ -451,18 +389,14 @@ body{
 .ddSearch{
   width:100%;
   height:46px;
-  border:none;
-  outline:none;
+  border:none; outline:none;
   padding:0 12px;
   font-weight:1000;
   color:#fff;
   background:rgba(0,0,0,.20);
   border-bottom:1px solid rgba(255,255,255,.10);
 }
-.ddList{
-  max-height:260px;
-  overflow:auto;
-}
+.ddList{max-height:320px;overflow:auto;}
 .ddItem{
   padding:12px 12px;
   display:flex;
@@ -477,7 +411,7 @@ body{
 .ddItem:hover{background:rgba(255,255,255,.06)}
 .ddItem small{color:rgba(234,240,255,.55);font-weight:900}
 
-/* order book */
+/* ===== order book ===== */
 .orderWrap{
   margin-top:12px;
   display:grid;
@@ -502,7 +436,7 @@ body{
 .obList{
   display:grid;
   gap:8px;
-  max-height:240px;
+  max-height:260px;
   overflow:auto;
   padding-right:6px;
 }
@@ -514,9 +448,26 @@ body{
   font-size:12px;
   color:rgba(234,240,255,.78);
 }
-@media(max-width:520px){
-  .orderWrap{grid-template-columns:1fr}
+@media(max-width:520px){.orderWrap{grid-template-columns:1fr}}
+
+/* ===== mini chart ===== */
+.chartWrap{
+  margin-top:12px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.12);
+  overflow:hidden;
+  background:rgba(0,0,0,.22);
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
 }
+.chartHead{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 12px;
+  border-bottom:1px solid rgba(255,255,255,.10);
+  font-weight:1000;
+  color:rgba(234,240,255,.78);
+  font-size:13px;
+}
+.chartFrame{width:100%;height:340px;border:0;display:block}
 
 /* ===== SIDEBAR ===== */
 .overlay{
@@ -526,7 +477,6 @@ body{
   backdrop-filter: blur(4px);
 }
 .overlay.show{display:block;}
-
 .sidebar{
   position:fixed; top:0; left:-315px;
   width:292px; height:100vh;
@@ -542,7 +492,6 @@ body{
   backdrop-filter: blur(16px);
 }
 .sidebar.open{ left:0; }
-
 .sideTop{
   display:flex;align-items:center;justify-content:space-between;
   gap:10px;margin-bottom:12px;
@@ -582,10 +531,7 @@ body{
   background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
   box-shadow:0 18px 55px rgba(0,0,0,.35);
   margin:10px 0 14px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
 }
 .userTagLeft{min-width:0}
 .userTag .t1{color:rgba(234,240,255,.55);font-weight:1000;font-size:12px}
@@ -618,11 +564,9 @@ body{
   letter-spacing:.8px;
   text-transform:uppercase;
 }
-
 .sideItem{
   display:flex;align-items:center;gap:12px;
-  padding:12px 12px;
-  border-radius:18px;
+  padding:12px 12px;border-radius:18px;
   color:rgba(234,240,255,.82);
   text-decoration:none;
   font-weight:1000;
@@ -630,8 +574,7 @@ body{
   background:rgba(0,0,0,.22);
   box-shadow:0 16px 40px rgba(0,0,0,.35);
   margin-bottom:10px;
-  position:relative;
-  overflow:hidden;
+  position:relative;overflow:hidden;
 }
 .sideItem:hover{background:rgba(255,255,255,.08)}
 .sideItem .i{
@@ -642,7 +585,6 @@ body{
   font-size:18px;
 }
 .sideItem small{display:block;color:rgba(234,240,255,.55);font-size:12px;font-weight:900;margin-top:2px}
-
 .activeLink{
   border:1px solid rgba(56,189,248,.55);
   background:linear-gradient(180deg, rgba(56,189,248,0.14), rgba(56,189,248,0.08));
@@ -654,7 +596,6 @@ body{
   background: radial-gradient(600px 160px at 30% 20%, rgba(56,189,248,.20), transparent 60%);
   pointer-events:none;
 }
-
 .sideLogout{
   margin-top:10px;
   background:linear-gradient(90deg, rgba(248,113,113,1), rgba(239,68,68,1));
@@ -664,9 +605,7 @@ body{
 }
 .sideLogout:hover{filter:brightness(1.03)}
 
-/* =========================================================
-   ✅ PROFILE-STYLE DOCK BOTTOM NAV (EXACT STYLE)
-   ========================================================= */
+/* ===== DOCK ===== */
 .dock{
   position:fixed;
   left:0; right:0; bottom:14px;
@@ -725,7 +664,6 @@ body{
 }
 .dockHome span{font-size:28px;color:white}
 .dockHome:hover{filter:brightness(1.05)}
-
 .dockBadge{
   position:absolute;
   top:2px;
@@ -747,7 +685,6 @@ body{
 </head>
 
 <body>
-
 <div class="bgFlow"></div>
 <div class="blob b1"></div>
 <div class="blob b2"></div>
@@ -755,7 +692,7 @@ body{
 <div class="blob b4"></div>
 <div class="shimmer"></div>
 
-<!-- Loading Gate -->
+<!-- Loading -->
 <div id="authGate">
   <div class="gateCard">
     <div class="gateLogo">📣</div>
@@ -767,7 +704,7 @@ body{
 
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
-<!-- SIDEBAR -->
+<!-- Sidebar -->
 <div id="sidebar" class="sidebar">
   <div class="sideTop">
     <div class="sideBrand">
@@ -782,7 +719,6 @@ body{
       <div class="t1">Logged in as</div>
       <div id="sideName" class="t2">---</div>
     </div>
-
     <div class="sideAvatar" title="Profile photo">
       <span id="sideAvatarFallback">👤</span>
       <img id="sideAvatarImg" alt="Avatar"/>
@@ -791,40 +727,13 @@ body{
 
   <div class="menuGroupTitle">Navigation</div>
 
-  <a class="sideItem activeLink" href="user-dashboard.html">
-    <div class="i">🏠</div>
-    <div>Dashboard<small>Main overview</small></div>
-  </a>
-
-  <a class="sideItem" href="portfolio.html">
-    <div class="i">📊</div>
-    <div>Portfolio<small>Your assets</small></div>
-  </a>
-
-  <a class="sideItem" href="deposits.html">
-    <div class="i">💳</div>
-    <div>Deposit<small>Fund your account</small></div>
-  </a>
-
-  <a class="sideItem" href="withdraw.html">
-    <div class="i">➡</div>
-    <div>Withdraw Funds<small>Request payout</small></div>
-  </a>
-
-  <a class="sideItem" href="support.html">
-    <div class="i">🧑‍💻</div>
-    <div>Support / Contact<small>Tickets & help</small></div>
-  </a>
-
-  <a class="sideItem" href="plans.html">
-    <div class="i">💼</div>
-    <div>Investment Plans<small>Start investing</small></div>
-  </a>
-
-  <a class="sideItem" href="profile.html">
-    <div class="i">👤</div>
-    <div>Profile / Settings<small>Account security</small></div>
-  </a>
+  <a class="sideItem activeLink" href="user-dashboard.html"><div class="i">🏠</div><div>Dashboard<small>Main overview</small></div></a>
+  <a class="sideItem" href="portfolio.html"><div class="i">📊</div><div>Portfolio<small>Your assets</small></div></a>
+  <a class="sideItem" href="deposits.html"><div class="i">💳</div><div>Deposit<small>Fund your account</small></div></a>
+  <a class="sideItem" href="withdraw.html"><div class="i">➡</div><div>Withdraw Funds<small>Request payout</small></div></a>
+  <a class="sideItem" href="support.html"><div class="i">🧑‍💻</div><div>Support / Contact<small>Tickets & help</small></div></a>
+  <a class="sideItem" href="plans.html"><div class="i">💼</div><div>Investment Plans<small>Start investing</small></div></a>
+  <a class="sideItem" href="profile.html"><div class="i">👤</div><div>Profile / Settings<small>Account security</small></div></a>
 
   <button class="sideLogout" onclick="logout()">Logout</button>
 </div>
@@ -832,11 +741,7 @@ body{
 <div class="container">
 
   <div class="topRow">
-    <div class="brand">
-      <div class="brandIcon">📣</div>
-      COIN
-    </div>
-
+    <div class="brand"><div class="brandIcon">📣</div>COIN</div>
     <div class="headerActions">
       <button class="avatarBtn" onclick="goProfile()" title="Profile">
         <span id="avatarFallback" class="avatarFallback">👤</span>
@@ -868,14 +773,6 @@ body{
     </div>
   </div>
 
-  <div class="tickerFloat">
-    <div class="tickerHeader">
-      <div>Live Market Prices</div>
-      <div class="tickerHint">TradingView</div>
-    </div>
-    <iframe class="tickerFrame" src="tv-ticker.html"></iframe>
-  </div>
-
   <div class="balanceCard">
     <div class="bTitle">Total Portfolio Value</div>
     <div class="bValue" id="balance">--</div>
@@ -895,10 +792,10 @@ body{
     <div id="planBox"></div>
   </div>
 
-  <!-- ✅ Crypto converter -->
+  <!-- ✅ Crypto Converter -->
   <div class="box">
     <h2>Crypto Converter</h2>
-    <div class="small">Convert any crypto ↔ any fiat currency.</div>
+    <div class="small">Search & convert from ALL coins to ALL fiat currencies.</div>
 
     <div class="convGrid">
       <div class="convRow">
@@ -917,14 +814,17 @@ body{
         <div class="rateLine"><span class="rateDot"></span> <span id="cryptoRate">Rate: --</span></div>
         <div class="small" style="margin-top:10px;font-size:14px;">Result: <strong id="cryptoResult">--</strong></div>
         <div class="small" style="margin-top:10px;font-size:14px;">Reverse: <strong id="cryptoReverse">--</strong></div>
+        <div class="small" style="margin-top:10px;font-size:13px;color:rgba(234,240,255,.55)">
+          Tip: Search by coin name or symbol (example: “btc”, “eth”, “sol”, “xrp”).
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ✅ Fiat converter -->
+  <!-- ✅ Fiat Converter -->
   <div class="box">
     <h2>Fiat Currency Converter</h2>
-    <div class="small">Convert any fiat → any fiat with live FX rates.</div>
+    <div class="small">Search & convert from ALL fiat currencies to ALL fiat currencies.</div>
 
     <div class="convGrid">
       <div class="convRow">
@@ -946,10 +846,10 @@ body{
     </div>
   </div>
 
-  <!-- ✅ Order book -->
+  <!-- ✅ Order Book -->
   <div class="box">
     <h2>Live Crypto Order Book</h2>
-    <div class="small">Realtime bids & asks (Binance).</div>
+    <div class="small">Auto refresh every 3 seconds. Binance → OKX → Bybit fallback.</div>
 
     <div class="convRow" style="margin-top:12px">
       <select id="obPair" class="inp" style="min-width:220px">
@@ -959,7 +859,7 @@ body{
         <option value="XRPUSDT">XRP/USDT</option>
         <option value="SOLUSDT">SOL/USDT</option>
       </select>
-      <button class="convBtn" style="height:50px" onclick="loadOrderBook()">📈 Refresh Order Book</button>
+      <button class="convBtn" style="height:50px" onclick="loadOrderBook(true)">🔄 Refresh Now</button>
     </div>
 
     <div class="orderWrap">
@@ -972,26 +872,26 @@ body{
         <div id="bids" class="obList"></div>
       </div>
     </div>
+
+    <!-- ✅ Mini chart -->
+    <div class="chartWrap">
+      <div class="chartHead">
+        <span>Mini Candlestick Chart</span>
+        <span id="chartPair">BTC/USDT</span>
+      </div>
+      <iframe id="tvChart" class="chartFrame"></iframe>
+    </div>
   </div>
 
 </div>
 
-<!-- ✅ PROFILE STYLE DOCK NAV -->
+<!-- DOCK -->
 <div class="dock">
   <div class="dockInner">
     <div class="dockBar">
-      <div class="dockItem" onclick="goDepositAndClear()">
-        <div id="badgeDepositDock" class="dockBadge">0</div>
-        <div class="ico">💳</div><div>Deposit</div>
-      </div>
-
-      <div class="dockItem" onclick="goWithdrawAndClear()">
-        <div id="badgeWithdrawDock" class="dockBadge">0</div>
-        <div class="ico">➡</div><div>Withdraw</div>
-      </div>
-
+      <div class="dockItem" onclick="goDepositAndClear()"><div id="badgeDepositDock" class="dockBadge">0</div><div class="ico">💳</div><div>Deposit</div></div>
+      <div class="dockItem" onclick="goWithdrawAndClear()"><div id="badgeWithdrawDock" class="dockBadge">0</div><div class="ico">➡</div><div>Withdraw</div></div>
       <div class="dockHome" onclick="goDashboard()"><span>🏠</span></div>
-
       <div class="dockItem" onclick="goPlans()"><div class="ico">💼</div><div>Plans</div></div>
       <div class="dockItem" onclick="goProfile()"><div class="ico">👤</div><div>Profile</div></div>
     </div>
@@ -1000,7 +900,7 @@ body{
 
 <script>
 /* ============================================================
-   ✅ COINLUXORA AUTH GUARD (LOGIN + EMAIL VERIFIED REQUIRED)
+   ✅ AUTH GUARD
    ============================================================ */
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
@@ -1011,15 +911,18 @@ let currentUserEmail="";
 let currentUserId="";
 let badgeChannel=null;
 
-/* ============ converter global ============ */
-let ALL_COINS = [];
-let FIATS = [];
-let FX_RATES = null;
-let cryptoDirection = "crypto_to_fiat"; // or fiat_to_crypto
-let selectedCryptoA = { id:"bitcoin", label:"Bitcoin (BTC)", icon:"₿" };
-let selectedCryptoB = { id:"USD", label:"USD", icon:"$" };
-let selectedFiatA = { id:"USD", label:"USD", icon:"$" };
-let selectedFiatB = { id:"NGN", label:"NGN", icon:"₦" };
+/* converter global */
+let ALL_COINS=[];
+let FIATS=[];
+let FX_RATES=null;
+let cryptoDirection="crypto_to_fiat"; // or fiat_to_crypto
+
+let selectedCryptoA={ id:"bitcoin", label:"Bitcoin (BTC)", icon:"₿", symbol:"btc" };
+let selectedCryptoB={ id:"USD", label:"USD", icon:"$", symbol:"usd" };
+let selectedFiatA={ id:"USD", label:"USD", icon:"$" };
+let selectedFiatB={ id:"NGN", label:"NGN", icon:"₦" };
+
+let orderTimer=null;
 
 /* ===== auth ===== */
 (async function authGuard(){
@@ -1037,8 +940,7 @@ let selectedFiatB = { id:"NGN", label:"NGN", icon:"₦" };
       window.location.replace("verify.html?status=unverified");
       return;
     }
-
-    window.COINLUXORA_USER = user;
+    window.COINLUXORA_USER=user;
     initWithUser(user);
   }catch(e){
     window.location.replace("login.html");
@@ -1046,18 +948,18 @@ let selectedFiatB = { id:"NGN", label:"NGN", icon:"₦" };
 })();
 
 /* NAV */
-function goDashboard(){ window.scrollTo({top:0,behavior:"smooth"}); }
 function goPlans(){ window.location.href="plans.html"; }
 function goProfile(){ window.location.href="profile.html"; }
 function goDepositAndClear(){ clearBadge("deposits"); window.location.href="deposits.html"; }
 function goWithdrawAndClear(){ clearBadge("withdrawals"); window.location.href="withdraw.html"; }
 function goSupportAndClear(){ clearBadge("notifications"); window.location.href="support.html"; }
+function goDashboard(){ window.scrollTo({top:0,behavior:"smooth"}); }
 
 function openMenu(){ document.getElementById("sidebar").classList.add("open"); document.getElementById("overlay").classList.add("show"); }
 function closeMenu(){ document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); }
 function hideGate(){ const g=document.getElementById("authGate"); if(g) g.style.display="none"; }
 
-/* ✅ greeting */
+/* greeting */
 function setGreeting(){
   const h = new Date().getHours();
   let text="Greetings", emoji="✨";
@@ -1066,8 +968,6 @@ function setGreeting(){
   else { text="Good Evening"; emoji="🌙"; }
   document.getElementById("greetingTitle").textContent = `${text} ${emoji}`;
 }
-
-/* ✅ Date + Time */
 function startClock(){
   const dtEl=document.getElementById("dateTimeNow");
   const days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -1089,7 +989,7 @@ function startClock(){
   tick(); setInterval(tick,1000);
 }
 
-/* avatar set */
+/* avatar */
 function setTopAvatar(avatarUrl){
   const fallback=document.getElementById("avatarFallback");
   const img=document.getElementById("avatarImgBtn");
@@ -1114,15 +1014,13 @@ function setSideAvatar(avatarUrl){
     fb.style.display="block";
   }
 }
-
-/* name */
 function setNameEverywhere(fullName){
   const nice=(fullName && fullName.trim()) ? fullName.trim() : "User";
   document.getElementById("helloName").innerHTML=`<span class="ok">${nice}</span>`;
   document.getElementById("sideName").textContent=nice;
 }
 
-/* iso flag */
+/* flag */
 function isoToFlag(iso){
   if(!iso || iso.length!==2) return "";
   const code=iso.toUpperCase();
@@ -1166,13 +1064,11 @@ async function loadDashboardIdentity(){
       .select("full_name, avatar_url, country")
       .eq("email", currentUserEmail)
       .maybeSingle();
-
     if(!error && row){
       fullName=row.full_name||"";
       avatarUrl=row.avatar_url||"";
       countryName=row.country||"";
     }
-
     const md=(window.COINLUXORA_USER?.user_metadata||{});
     if(!fullName) fullName=md.full_name||"User";
     if(!avatarUrl) avatarUrl=md.avatar_url||"";
@@ -1192,12 +1088,18 @@ async function loadDashboardIdentity(){
   }
 }
 
-/* ==============================
-   ✅ SEARCHABLE DROPDOWN SYSTEM
-   ============================== */
-function mountDropdown(elId, items, getLabel, onPick, initial){
-  const root=document.getElementById(elId);
+/* helpers */
+function nfmt(n, dp=2){
+  return Number(n).toLocaleString(undefined,{minimumFractionDigits:dp, maximumFractionDigits:dp});
+}
 
+/* ==============================
+   ✅ SEARCHABLE DROPDOWN (ALL ITEMS)
+   - Search by name/symbol/code
+   - No slicing / no limited list
+   ============================== */
+function mountDropdown(elId, items, getLabel, getSearch, onPick, initial){
+  const root=document.getElementById(elId);
   root.innerHTML = `
     <button class="ddBtn" type="button">
       <div class="ddLeft">
@@ -1219,16 +1121,32 @@ function mountDropdown(elId, items, getLabel, onPick, initial){
   const search=root.querySelector(".ddSearch");
   const nameEl=root.querySelector(".ddName");
 
+  let renderItems = items;
+
   function render(filter=""){
     const q=filter.trim().toLowerCase();
-    const filtered = !q ? items : items.filter(x => getLabel(x).toLowerCase().includes(q));
-    list.innerHTML = filtered.slice(0,140).map(x => {
+    if(!q){
+      renderItems = items;
+    }else{
+      renderItems = items.filter(x => getSearch(x).includes(q));
+    }
+
+    // render only "visible window" chunk for performance but keep ALL scrolling
+    const MAX = Math.min(renderItems.length, 600);
+    const slice = renderItems.slice(0, MAX);
+
+    list.innerHTML = slice.map(x => {
       const lab=getLabel(x);
       return `<div class="ddItem" data-id="${encodeURIComponent(JSON.stringify(x))}">
         <span>${lab}</span>
         <small>tap</small>
       </div>`;
     }).join("") || `<div class="ddItem"><span>No results</span></div>`;
+
+    if(renderItems.length > MAX){
+      const remain = renderItems.length - MAX;
+      list.innerHTML += `<div class="ddItem" style="opacity:.7"><span>Scroll/search to narrow results (${remain} more)…</span></div>`;
+    }
   }
 
   function setSelected(obj){
@@ -1236,7 +1154,6 @@ function mountDropdown(elId, items, getLabel, onPick, initial){
     onPick(obj);
   }
 
-  // initial
   if(initial) setSelected(initial);
   render("");
 
@@ -1270,91 +1187,128 @@ function mountDropdown(elId, items, getLabel, onPick, initial){
 }
 
 /* ==============================
-   ✅ CRYPTO + FIAT DATA LOAD
+   ✅ Load ALL COINS + ALL FIATS
    ============================== */
 const FAVORITES = [
-  { id:"bitcoin", label:"Bitcoin (BTC)", icon:"₿" },
-  { id:"ethereum", label:"Ethereum (ETH)", icon:"Ξ" },
-  { id:"tether", label:"Tether (USDT)", icon:"₮" },
-  { id:"binancecoin", label:"BNB (BNB)", icon:"◎" },
-  { id:"solana", label:"Solana (SOL)", icon:"⟠" },
-  { id:"ripple", label:"XRP (XRP)", icon:"✕" }
+  { id:"bitcoin", label:"Bitcoin (BTC)", icon:"₿", symbol:"btc" },
+  { id:"ethereum", label:"Ethereum (ETH)", icon:"Ξ", symbol:"eth" },
+  { id:"tether", label:"Tether (USDT)", icon:"₮", symbol:"usdt" },
+  { id:"binancecoin", label:"BNB (BNB)", icon:"◎", symbol:"bnb" },
+  { id:"solana", label:"Solana (SOL)", icon:"⟠", symbol:"sol" },
+  { id:"ripple", label:"XRP (XRP)", icon:"✕", symbol:"xrp" }
 ];
 
 async function loadCoinGeckoLists(){
-  // load fiat list (stable endpoint)
+  // load fiats
   try{
     const fiatRes = await fetch("https://api.coingecko.com/api/v3/simple/supported_vs_currencies");
     const fiats = await fiatRes.json();
     FIATS = (fiats || []).map(x => String(x).toUpperCase());
-  }catch(e){
-    FIATS = ["USD","NGN","EUR","GBP","CAD","AUD","JPY"];
+  }catch{
+    FIATS = ["USD","NGN","EUR","GBP","CAD","AUD","JPY","CNY","INR"];
   }
 
-  // load coin list
+  // load all coins (name + symbol)
   try{
     const coinRes = await fetch("https://api.coingecko.com/api/v3/coins/list?include_platform=false");
     const coins = await coinRes.json();
-    const mapFav = new Set(FAVORITES.map(x=>x.id));
-    ALL_COINS = [
-      ...FAVORITES,
-      ...((coins||[])
-        .filter(c => c?.id && c?.name && !mapFav.has(c.id))
-        .slice(0, 2400)
-        .map(c => ({ id:c.id, label:c.name, icon:"◈" })))
-    ];
-  }catch(e){
+
+    // build map for favorites first
+    const favMap = new Map(FAVORITES.map(f=>[f.id,f]));
+    const list = [];
+    for(const c of (coins||[])){
+      if(!c?.id || !c?.name) continue;
+      if(favMap.has(c.id)) continue;
+      const sym = (c.symbol||"").toLowerCase();
+      list.push({ id:c.id, label:`${c.name}${sym?` (${sym.toUpperCase()})`:""}`, icon:"◈", symbol:sym });
+    }
+
+    ALL_COINS = [...FAVORITES, ...list];
+  }catch{
     ALL_COINS = [...FAVORITES];
   }
 
-  // mount crypto dropdowns
-  mountDropdown("ddCryptoA", ALL_COINS, x=>x.label, x=>{selectedCryptoA=x;}, selectedCryptoA);
+  const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$", symbol:f.toLowerCase() }));
 
-  const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$" }));
-  mountDropdown("ddCryptoB", FIAT_ITEMS, x=>x.label, x=>{selectedCryptoB=x;}, selectedCryptoB);
+  // mount dropdowns with full search
+  mountDropdown(
+    "ddCryptoA",
+    ALL_COINS,
+    x=>x.label,
+    x=>(`${x.label} ${x.symbol} ${x.id}`).toLowerCase(),
+    x=>{ selectedCryptoA=x; },
+    selectedCryptoA
+  );
 
-  // fiat dropdowns
-  mountDropdown("ddFiatA", FIAT_ITEMS, x=>x.label, x=>{selectedFiatA=x;}, selectedFiatA);
-  mountDropdown("ddFiatB", FIAT_ITEMS, x=>x.label, x=>{selectedFiatB=x;}, selectedFiatB);
+  mountDropdown(
+    "ddCryptoB",
+    FIAT_ITEMS,
+    x=>x.label,
+    x=>(`${x.label} ${x.id}`).toLowerCase(),
+    x=>{ selectedCryptoB=x; },
+    selectedCryptoB
+  );
 
-  // fetch FX (fiat)
+  mountDropdown(
+    "ddFiatA",
+    FIAT_ITEMS,
+    x=>x.label,
+    x=>(`${x.label} ${x.id}`).toLowerCase(),
+    x=>{ selectedFiatA=x; },
+    selectedFiatA
+  );
+
+  mountDropdown(
+    "ddFiatB",
+    FIAT_ITEMS,
+    x=>x.label,
+    x=>(`${x.label} ${x.id}`).toLowerCase(),
+    x=>{ selectedFiatB=x; },
+    selectedFiatB
+  );
+
   await loadFxRates();
 }
 
-/* ==============================
-   ✅ FIXED FIAT FX RATES (WORKING)
-   ============================== */
+/* FX rates */
 async function loadFxRates(){
   try{
-    // stable free FX endpoint
     const res = await fetch("https://open.er-api.com/v6/latest/USD");
     const data = await res.json();
     if(data?.result !== "success") throw new Error("fx fail");
     FX_RATES = data.rates || {};
-  }catch(e){
+  }catch{
     FX_RATES = null;
   }
 }
 
-/* ==============================
-   ✅ SWAP + CONVERT CRYPTO
-   ============================== */
+/* swap crypto direction */
 function swapCrypto(){
   cryptoDirection = (cryptoDirection === "crypto_to_fiat") ? "fiat_to_crypto" : "crypto_to_fiat";
 
-  // swap selected (logical)
   const tmp = selectedCryptoA;
   selectedCryptoA = selectedCryptoB;
   selectedCryptoB = tmp;
 
-  // re-mount dropdowns accordingly
+  // rebuild dropdowns
+  const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$", symbol:f.toLowerCase() }));
+
   if(cryptoDirection === "crypto_to_fiat"){
-    mountDropdown("ddCryptoA", ALL_COINS, x=>x.label, x=>{selectedCryptoA=x;}, (typeof selectedCryptoA.id==="string" && selectedCryptoA.id.length<=5) ? FAVORITES[0] : selectedCryptoA);
-    mountDropdown("ddCryptoB", FIATS.map(f=>({id:f,label:f,icon:"$"})), x=>x.label, x=>{selectedCryptoB=x;}, (selectedCryptoB.id || "USD") ? selectedCryptoB : {id:"USD",label:"USD"});
+    if(!selectedCryptoA?.id || typeof selectedCryptoA.id !== "string" || selectedCryptoA.id.length<=4){
+      selectedCryptoA = FAVORITES[0];
+    }
+    if(!selectedCryptoB?.id || selectedCryptoB.id.length>4) selectedCryptoB = {id:"USD",label:"USD",icon:"$",symbol:"usd"};
+
+    mountDropdown("ddCryptoA", ALL_COINS, x=>x.label, x=>(`${x.label} ${x.symbol} ${x.id}`).toLowerCase(), x=>{selectedCryptoA=x;}, selectedCryptoA);
+    mountDropdown("ddCryptoB", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{selectedCryptoB=x;}, selectedCryptoB);
+
   }else{
     // fiat -> crypto
-    mountDropdown("ddCryptoA", FIATS.map(f=>({id:f,label:f,icon:"$"})), x=>x.label, x=>{selectedCryptoA=x;}, {id:"USD",label:"USD",icon:"$"});
-    mountDropdown("ddCryptoB", ALL_COINS, x=>x.label, x=>{selectedCryptoB=x;}, FAVORITES[0]);
+    selectedCryptoA = {id:"USD",label:"USD",icon:"$",symbol:"usd"};
+    if(!selectedCryptoB?.id || selectedCryptoB.id.length<=4) selectedCryptoB = FAVORITES[0];
+
+    mountDropdown("ddCryptoA", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{selectedCryptoA=x;}, selectedCryptoA);
+    mountDropdown("ddCryptoB", ALL_COINS, x=>x.label, x=>(`${x.label} ${x.symbol} ${x.id}`).toLowerCase(), x=>{selectedCryptoB=x;}, selectedCryptoB);
   }
 
   document.getElementById("cryptoRate").textContent="Rate: --";
@@ -1362,10 +1316,7 @@ function swapCrypto(){
   document.getElementById("cryptoReverse").textContent="--";
 }
 
-function nfmt(n, dp=2){
-  return Number(n).toLocaleString(undefined,{minimumFractionDigits:dp, maximumFractionDigits:dp});
-}
-
+/* crypto convert */
 async function convertCrypto(){
   const amt = Number(document.getElementById("cryptoAmount").value || 0);
   if(!amt || amt<=0){
@@ -1386,10 +1337,9 @@ async function convertCrypto(){
       if(!rate) throw new Error("rate missing");
 
       const result = rate * amt;
-
-      document.getElementById("cryptoRate").textContent = `Rate: 1 ${coinId} = ${nfmt(rate,6)} ${fiat.toUpperCase()}`;
+      document.getElementById("cryptoRate").textContent = `Rate: 1 ${selectedCryptoA.label} = ${nfmt(rate,6)} ${fiat.toUpperCase()}`;
       document.getElementById("cryptoResult").textContent = `${nfmt(result,2)} ${fiat.toUpperCase()}`;
-      document.getElementById("cryptoReverse").textContent = `1 ${fiat.toUpperCase()} ≈ ${(1/rate).toFixed(10)} ${coinId}`;
+      document.getElementById("cryptoReverse").textContent = `1 ${fiat.toUpperCase()} ≈ ${(1/rate).toFixed(10)} ${selectedCryptoA.symbol?.toUpperCase()||coinId}`;
 
     }else{
       const fiat = String(selectedCryptoA?.id || "USD").toLowerCase();
@@ -1402,10 +1352,9 @@ async function convertCrypto(){
       if(!rate) throw new Error("rate missing");
 
       const cryptoAmount = amt / rate;
-
-      document.getElementById("cryptoRate").textContent = `Rate: 1 ${coinId} = ${nfmt(rate,6)} ${fiat.toUpperCase()}`;
-      document.getElementById("cryptoResult").textContent = `${cryptoAmount.toFixed(10)} ${coinId}`;
-      document.getElementById("cryptoReverse").textContent = `1 ${coinId} ≈ ${nfmt(rate,6)} ${fiat.toUpperCase()}`;
+      document.getElementById("cryptoRate").textContent = `Rate: 1 ${selectedCryptoB.label} = ${nfmt(rate,6)} ${fiat.toUpperCase()}`;
+      document.getElementById("cryptoResult").textContent = `${cryptoAmount.toFixed(10)} ${selectedCryptoB.symbol?.toUpperCase()||coinId}`;
+      document.getElementById("cryptoReverse").textContent = `1 ${selectedCryptoB.symbol?.toUpperCase()||coinId} ≈ ${nfmt(rate,6)} ${fiat.toUpperCase()}`;
     }
   }catch(e){
     document.getElementById("cryptoRate").textContent="Rate: unavailable (network)";
@@ -1414,23 +1363,21 @@ async function convertCrypto(){
   }
 }
 
-/* ==============================
-   ✅ SWAP + CONVERT FIAT (FIXED)
-   ============================== */
+/* swap fiat */
 function swapFiat(){
   const tmp = selectedFiatA;
   selectedFiatA = selectedFiatB;
   selectedFiatB = tmp;
 
-  // re-mount
-  const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$" }));
-  mountDropdown("ddFiatA", FIAT_ITEMS, x=>x.label, x=>{selectedFiatA=x;}, selectedFiatA);
-  mountDropdown("ddFiatB", FIAT_ITEMS, x=>x.label, x=>{selectedFiatB=x;}, selectedFiatB);
+  const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$", symbol:f.toLowerCase() }));
+  mountDropdown("ddFiatA", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{selectedFiatA=x;}, selectedFiatA);
+  mountDropdown("ddFiatB", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{selectedFiatB=x;}, selectedFiatB);
 
   document.getElementById("fiatRate").textContent="Rate: --";
   document.getElementById("fiatResult").textContent="--";
 }
 
+/* fiat convert */
 async function convertFiat(){
   const amt = Number(document.getElementById("fiatAmount").value || 0);
   if(!amt || amt<=0){
@@ -1449,7 +1396,6 @@ async function convertFiat(){
     const toRate   = Number(FX_RATES[to] || 0);
     if(!fromRate || !toRate) throw new Error("rate missing");
 
-    // USD base normalization
     const usdAmount = amt / fromRate;
     const result = usdAmount * toRate;
     const rate = toRate / fromRate;
@@ -1462,30 +1408,100 @@ async function convertFiat(){
   }
 }
 
-/* ===== order book ===== */
-async function loadOrderBook(){
+/* ========== ORDER BOOK FIXED WITH FALLBACKS ========== */
+function parsePairForProviders(pair){
+  // pair example BTCUSDT
+  const base=pair.replace("USDT","").replace("USD",""); // BTC
+  return {
+    binance: pair,
+    okx: `${base}-USDT`,
+    bybit: `${base}USDT`
+  };
+}
+
+async function tryBinanceOrderBook(symbol){
+  const res = await fetch(`https://api.binance.com/api/v3/depth?symbol=${encodeURIComponent(symbol)}&limit=20`);
+  const data = await res.json();
+  if(!data?.asks || !data?.bids) throw new Error("binance invalid");
+  return { asks:data.asks, bids:data.bids, source:"Binance" };
+}
+
+async function tryOKXOrderBook(instId){
+  const res = await fetch(`https://www.okx.com/api/v5/market/books?instId=${encodeURIComponent(instId)}&sz=20`);
+  const data = await res.json();
+  const book = data?.data?.[0];
+  if(!book?.asks || !book?.bids) throw new Error("okx invalid");
+  return { asks:book.asks, bids:book.bids, source:"OKX" };
+}
+
+async function tryBybitOrderBook(symbol){
+  const res = await fetch(`https://api.bybit.com/v5/market/orderbook?category=spot&symbol=${encodeURIComponent(symbol)}&limit=20`);
+  const data = await res.json();
+  const book = data?.result;
+  if(!book?.a || !book?.b) throw new Error("bybit invalid");
+  return { asks:book.a, bids:book.b, source:"Bybit" };
+}
+
+async function loadOrderBook(force=false){
   const pair=document.getElementById("obPair").value;
   const asksEl=document.getElementById("asks");
   const bidsEl=document.getElementById("bids");
-  asksEl.innerHTML="<div class='obItem'>Loading…</div>";
-  bidsEl.innerHTML="<div class='obItem'>Loading…</div>";
+  const meta=parsePairForProviders(pair);
+
+  if(force){
+    asksEl.innerHTML="<div class='obItem'>Loading…</div>";
+    bidsEl.innerHTML="<div class='obItem'>Loading…</div>";
+  }
 
   try{
-    const res=await fetch(`https://api.binance.com/api/v3/depth?symbol=${encodeURIComponent(pair)}&limit=20`);
-    const data=await res.json();
+    let book=null;
 
-    const asks=(data?.asks||[]).slice(0,20);
-    const bids=(data?.bids||[]).slice(0,20);
+    // try Binance → OKX → Bybit
+    try{ book = await tryBinanceOrderBook(meta.binance); }
+    catch(e1){
+      try{ book = await tryOKXOrderBook(meta.okx); }
+      catch(e2){
+        book = await tryBybitOrderBook(meta.bybit);
+      }
+    }
 
-    asksEl.innerHTML=asks.map(a=>`<div class="obItem"><span>${Number(a[0]).toLocaleString()}</span><span>${Number(a[1]).toFixed(6)}</span></div>`).join("");
-    bidsEl.innerHTML=bids.map(b=>`<div class="obItem"><span>${Number(b[0]).toLocaleString()}</span><span>${Number(b[1]).toFixed(6)}</span></div>`).join("");
+    const asks=(book.asks||[]).slice(0,20);
+    const bids=(book.bids||[]).slice(0,20);
+
+    // normalize OKX/Bybit shapes
+    const aNorm = asks.map(x => [x[0], x[1]]);
+    const bNorm = bids.map(x => [x[0], x[1]]);
+
+    asksEl.innerHTML=aNorm.map(a=>`<div class="obItem"><span>${Number(a[0]).toLocaleString()}</span><span>${Number(a[1]).toFixed(6)}</span></div>`).join("") || "<div class='obItem'>No asks</div>";
+    bidsEl.innerHTML=bNorm.map(b=>`<div class="obItem"><span>${Number(b[0]).toLocaleString()}</span><span>${Number(b[1]).toFixed(6)}</span></div>`).join("") || "<div class='obItem'>No bids</div>";
+
   }catch(e){
-    asksEl.innerHTML="<div class='obItem'>Failed to load asks</div>";
-    bidsEl.innerHTML="<div class='obItem'>Failed to load bids</div>";
+    asksEl.innerHTML="<div class='obItem'>Order book blocked / unavailable</div>";
+    bidsEl.innerHTML="<div class='obItem'>Try changing pair</div>";
   }
 }
 
-/* ===== existing balance / plan ===== */
+/* auto refresh every 3s */
+function startOrderAutoRefresh(){
+  if(orderTimer) clearInterval(orderTimer);
+  orderTimer=setInterval(()=>loadOrderBook(false), 3000);
+}
+
+/* mini candlestick widget */
+function loadChart(){
+  const pair=document.getElementById("obPair").value;
+  const base=pair.replace("USDT","").toUpperCase();
+  const tvSymbol = `BINANCE:${base}USDT`;
+  document.getElementById("chartPair").textContent = `${base}/USDT`;
+  const frame=document.getElementById("tvChart");
+  frame.src = `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${encodeURIComponent(tvSymbol)}&interval=60&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=rgba(0,0,0,0)&studies=[]&theme=dark&style=1&timezone=Etc/UTC&withdateranges=1&hideideas=1`;
+}
+document.getElementById("obPair").addEventListener("change",()=>{
+  loadOrderBook(true);
+  loadChart();
+});
+
+/* balance / plan */
 async function loadBalance(){
   const { data } = await supabaseClient.from("users").select("*").eq("email", currentUserEmail).single();
   const bal = Number(data?.balance || 0).toFixed(2);
@@ -1502,7 +1518,6 @@ function daysBetween(date1, date2){
   const diff=(d2 - d1) / (1000*60*60*24);
   return Math.max(0, Math.ceil(diff));
 }
-
 async function loadActivePlan(){
   const planMsg=document.getElementById("planMsg");
   const planBox=document.getElementById("planBox");
@@ -1554,7 +1569,7 @@ async function loadActivePlan(){
   `;
 }
 
-/* badges (keep sync for dock too) */
+/* badges */
 function setBadge(elId, count){
   const el=document.getElementById(elId);
   if(!el) return;
@@ -1563,11 +1578,8 @@ function setBadge(elId, count){
   else { el.style.display="flex"; el.innerText = n>99?"99+":String(n); }
 }
 function setBadgeFromKey(key,val){
-  if(key==="deposits"){
-    setBadge("badgeDepositDock", val);
-  }else if(key==="withdrawals"){
-    setBadge("badgeWithdrawDock", val);
-  }
+  if(key==="deposits") setBadge("badgeDepositDock", val);
+  else if(key==="withdrawals") setBadge("badgeWithdrawDock", val);
 }
 async function loadRealtimeBadgesOnce(){
   if(!currentUserId) return;
@@ -1588,7 +1600,6 @@ function subscribeToRealtimeBadges(){
     supabaseClient.removeChannel(badgeChannel);
     badgeChannel=null;
   }
-
   badgeChannel = supabaseClient
     .channel("realtime-user-badges-dashboard")
     .on("postgres_changes", {
@@ -1603,7 +1614,6 @@ function subscribeToRealtimeBadges(){
     })
     .subscribe();
 }
-
 async function clearBadge(badge_key){
   try{
     const { data: sessionData } = await supabaseClient.auth.getSession();
@@ -1628,6 +1638,7 @@ async function logout(){
   window.location.replace("login.html");
 }
 
+/* init */
 function initWithUser(user){
   currentUserEmail=user.email;
   currentUserId=user.id;
@@ -1635,16 +1646,20 @@ function initWithUser(user){
   setGreeting();
   startClock();
   document.getElementById("userIdChip").innerText = "ID: " + currentUserId.slice(0,6).toUpperCase();
-  hideGate();
 
+  hideGate();
   loadDashboardIdentity();
+
   loadBalance();
   loadActivePlan();
   loadRealtimeBadgesOnce();
   subscribeToRealtimeBadges();
 
-  loadCoinGeckoLists();
-  loadOrderBook();
+  loadCoinGeckoLists().then(async ()=>{
+    await loadOrderBook(true);
+    loadChart();
+    startOrderAutoRefresh();
+  });
 }
 </script>
 
