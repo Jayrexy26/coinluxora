@@ -109,7 +109,7 @@ body{
 }
 .headerActions{display:flex;gap:10px;align-items:center}
 
-/* ✅ new avatar icon button */
+/* ✅ Avatar button upgraded to support photo inside circle */
 .avatarBtn{
   width:46px;height:46px;border-radius:999px;
   border:1px solid rgba(255,255,255,.14);
@@ -118,9 +118,26 @@ body{
   font-weight:1000;
   cursor:pointer;
   box-shadow:0 16px 40px rgba(124,77,255,.32);
-  display:grid;place-items:center;
+  display:grid;
+  place-items:center;
+  position:relative;
+  overflow:hidden; /* ✅ ensures image stays in circle */
 }
 .avatarBtn:hover{filter:brightness(1.05)}
+.avatarFallback{
+  font-size:18px;
+  line-height:1;
+  z-index:2;
+}
+.avatarImgBtn{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover; /* ✅ fills circle without stretching */
+  display:none;
+  z-index:3;
+}
 
 .iconBtn{
   width:46px;height:46px;border-radius:999px;
@@ -431,8 +448,11 @@ body{
     </div>
 
     <div class="headerActions">
-      <!-- ✅ Avatar opens profile -->
-      <button class="avatarBtn" onclick="goProfile()" title="Profile">👤</button>
+      <!-- ✅ Avatar opens profile (NOW SUPPORTS PHOTO) -->
+      <button class="avatarBtn" onclick="goProfile()" title="Profile" aria-label="Profile">
+        <span id="avatarFallback" class="avatarFallback">👤</span>
+        <img id="avatarImgBtn" class="avatarImgBtn" alt="Avatar"/>
+      </button>
       <button class="iconBtn" onclick="openMenu()" title="Menu">☰</button>
     </div>
   </div>
@@ -590,6 +610,49 @@ function hideGate(){
   if(g) g.style.display="none";
 }
 
+/* ✅ Avatar loader for dashboard circle button */
+function setTopAvatar(avatarUrl){
+  const fallback = document.getElementById("avatarFallback");
+  const img = document.getElementById("avatarImgBtn");
+  if(!fallback || !img) return;
+
+  if(avatarUrl){
+    img.src = avatarUrl + "?t=" + Date.now(); // cache bust
+    img.style.display = "block";
+    fallback.style.display = "none";
+  }else{
+    img.removeAttribute("src");
+    img.style.display = "none";
+    fallback.style.display = "block";
+  }
+}
+
+async function loadAvatarForDashboard(){
+  try{
+    // try DB first (users.avatar_url)
+    let avatarUrl = "";
+
+    const { data: row, error } = await supabaseClient
+      .from("users")
+      .select("avatar_url")
+      .eq("email", currentUserEmail)
+      .maybeSingle();
+
+    if(!error && row?.avatar_url) avatarUrl = row.avatar_url;
+
+    // fallback to auth metadata
+    if(!avatarUrl){
+      const u = window.COINLUXORA_USER;
+      avatarUrl = u?.user_metadata?.avatar_url || "";
+    }
+
+    setTopAvatar(avatarUrl);
+  }catch(e){
+    // if anything fails, keep default icon
+    setTopAvatar("");
+  }
+}
+
 function setBadge(id, count){
   const el=document.getElementById(id);
   if(!el) return;
@@ -679,6 +742,9 @@ function initWithUser(user){
   document.getElementById("userIdChip").innerText = "ID: " + currentUserId.slice(0,6).toUpperCase();
 
   hideGate();
+
+  // ✅ load avatar into circle button
+  loadAvatarForDashboard();
 
   // load features
   loadBalance();
