@@ -76,22 +76,27 @@ body{
   z-index:99998;
   backdrop-filter: blur(6px);
 }
+
+/* ✅ IMPORTANT FIX: remove transparency blending + blur from sidebar */
 .sidebar{
   position:fixed; top:0; right:-340px;
   width:300px; height:100vh;
 
-  /* ✅ FIXED: match the same menu color style used in Withdraw/Plans */
+  /* ✅ SOLID DARK PREMIUM BACKGROUND (NO YELLOW TINT POSSIBLE) */
   background:
-    radial-gradient(900px 520px at 10% 0%, rgba(83,113,255,.10), transparent 55%),
-    radial-gradient(900px 520px at 90% 0%, rgba(52,211,153,.08), transparent 55%),
-    rgba(5,10,24,0.98);
+    radial-gradient(900px 520px at 10% 0%, rgba(83,113,255,.18), transparent 58%),
+    radial-gradient(900px 520px at 90% 0%, rgba(52,211,153,.12), transparent 58%),
+    #050a18;
 
   border-left:1px solid rgba(255,255,255,.12);
   padding:16px;
   transition:.28s ease;
   z-index:99999;
   box-shadow:0 20px 90px rgba(0,0,0,.75);
-  backdrop-filter: blur(14px);
+
+  /* ✅ remove blend filters from sidebar only */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 .sidebar.open{ right:0; }
 .overlay.show{ display:block; }
@@ -102,7 +107,7 @@ body{
   align-items:center;
   margin-bottom:14px;
 }
-.brand{font-weight:1000;font-size:18px;letter-spacing:.6px;}
+.brand{font-weight:1000;font-size:18px;letter-spacing:.6px;color:#f8fafc}
 .closeBtn{
   width:44px;height:44px;
   display:flex;
@@ -358,7 +363,6 @@ const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 let currentUserEmail="";
-
 init();
 
 /* ✅ Menu Open/Close */
