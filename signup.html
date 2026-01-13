@@ -152,6 +152,58 @@
       color: var(--muted2);
     }
 
+    /* password field wrapper */
+    .pwWrap{position:relative;}
+    .pwWrap input{padding-right:54px;}
+    .togglePw{
+      position:absolute;
+      right:10px;
+      top:50%;
+      transform:translateY(-50%);
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:.15s ease;
+    }
+    .togglePw:hover{transform:translateY(-50%) scale(1.03);}
+    .togglePw svg{width:20px;height:20px;opacity:.95}
+
+    /* strength */
+    .strengthRow{
+      margin-top:10px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .strengthBar{
+      flex:1;
+      height:8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.06);
+      overflow:hidden;
+    }
+    .strengthFill{
+      height:100%;
+      width:0%;
+      border-radius:999px;
+      background: linear-gradient(90deg, #3b82f6, #6366f1);
+      transition: width .2s ease;
+    }
+    .strengthText{
+      min-width:74px;
+      text-align:right;
+      font-size:13px;
+      font-weight:900;
+      color: var(--muted2);
+    }
+
     .btn{
       width:100%;
       border:none;
@@ -194,7 +246,6 @@
     }
     .bottom a:hover{text-decoration:underline;}
 
-    /* Make it match screenshot on phones */
     @media(max-width:420px){
       h1{font-size:32px}
       .card{padding:22px 18px 18px}
@@ -290,7 +341,7 @@
           <option>Equatorial Guinea</option>
           <option>Eritrea</option>
           <option>Estonia</option>
-          <option>Eswatini (fmr. "Swaziland")</option>
+          <option>Eswatini</option>
           <option>Ethiopia</option>
           <option>Fiji</option>
           <option>Finland</option>
@@ -351,7 +402,7 @@
           <option>Montenegro</option>
           <option>Morocco</option>
           <option>Mozambique</option>
-          <option>Myanmar (Burma)</option>
+          <option>Myanmar</option>
           <option>Namibia</option>
           <option>Nauru</option>
           <option>Nepal</option>
@@ -360,13 +411,11 @@
           <option>Nicaragua</option>
           <option>Niger</option>
           <option>Nigeria</option>
-          <option>North Korea</option>
           <option>North Macedonia</option>
           <option>Norway</option>
           <option>Oman</option>
           <option>Pakistan</option>
           <option>Palau</option>
-          <option>Palestine State</option>
           <option>Panama</option>
           <option>Papua New Guinea</option>
           <option>Paraguay</option>
@@ -439,13 +488,36 @@
 
       <div class="field">
         <div class="label">Password *</div>
-        <input id="password" class="input" type="password" placeholder="Enter your password">
-        <div class="note">Password must be at least 8 characters long</div>
+        <div class="pwWrap">
+          <input id="password" class="input" type="password" placeholder="Enter your password" oninput="updateStrength()">
+          <button class="togglePw" type="button" onclick="togglePassword('password', this)" aria-label="Show/Hide password">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="white" stroke-width="1.8"/>
+              <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="white" stroke-width="1.8"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="note" id="pwNote">Password must be at least 8 characters long</div>
+
+        <div class="strengthRow">
+          <div class="strengthBar"><div id="pwFill" class="strengthFill"></div></div>
+          <div id="pwText" class="strengthText">Weak</div>
+        </div>
       </div>
 
       <div class="field">
         <div class="label">Confirm Password *</div>
-        <input id="confirmPassword" class="input" type="password" placeholder="Confirm your password">
+        <div class="pwWrap">
+          <input id="confirmPassword" class="input" type="password" placeholder="Confirm your password" oninput="checkMatch()">
+          <button class="togglePw" type="button" onclick="togglePassword('confirmPassword', this)" aria-label="Show/Hide password">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="white" stroke-width="1.8"/>
+              <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="white" stroke-width="1.8"/>
+            </svg>
+          </button>
+        </div>
+        <div class="note" id="matchNote">Make sure passwords match.</div>
       </div>
 
       <button class="btn" onclick="signup()">Create Account</button>
@@ -478,6 +550,54 @@
     if(type==="ok") msg.innerHTML=`<span class="ok">${text}</span>`;
     else if(type==="err") msg.innerHTML=`<span class="err">${text}</span>`;
     else msg.textContent=text;
+  }
+
+  function togglePassword(id){
+    const el=document.getElementById(id);
+    el.type = (el.type==="password") ? "text" : "password";
+  }
+
+  function updateStrength(){
+    const pw=document.getElementById("password").value;
+    const fill=document.getElementById("pwFill");
+    const txt=document.getElementById("pwText");
+
+    let score=0;
+    if(pw.length >= 8) score++;
+    if(/[A-Z]/.test(pw)) score++;
+    if(/[0-9]/.test(pw)) score++;
+    if(/[^A-Za-z0-9]/.test(pw)) score++;
+
+    const pct = (score/4)*100;
+    fill.style.width = pct + "%";
+
+    let label="Weak";
+    if(score===2) label="Medium";
+    if(score>=3) label="Strong";
+
+    txt.textContent=label;
+
+    checkMatch();
+  }
+
+  function checkMatch(){
+    const p1=document.getElementById("password").value;
+    const p2=document.getElementById("confirmPassword").value;
+    const match=document.getElementById("matchNote");
+
+    if(!p2){
+      match.textContent="Make sure passwords match.";
+      match.style.color="#94a3b8";
+      return;
+    }
+
+    if(p1===p2){
+      match.textContent="Passwords match ✅";
+      match.style.color="#22c55e";
+    }else{
+      match.textContent="Passwords do not match ❌";
+      match.style.color="#f87171";
+    }
   }
 
   async function signup(){
@@ -536,6 +656,9 @@
     setMsg("ok", "Account created ✅ Redirecting…");
     setTimeout(()=>window.location.href="user-dashboard.html", 1500);
   }
+
+  // initial UI state
+  updateStrength();
 </script>
 
 </body>
