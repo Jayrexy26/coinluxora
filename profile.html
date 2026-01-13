@@ -14,8 +14,10 @@
     --muted: rgba(234,240,255,.65);
     --ok:#22c55e;
     --err:#f87171;
+
     --stroke: rgba(255,255,255,0.12);
     --shadow: 0 26px 90px rgba(0,0,0,.55);
+
     --blue:#5b6cff;
     --purple:#7c4dff;
     --green:#34d399;
@@ -27,7 +29,7 @@
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
     color:var(--text);
     min-height:100vh;
-    padding-bottom:110px; /* more for advanced nav */
+    padding-bottom:110px;
     background: var(--bg);
     overflow-x:hidden;
   }
@@ -101,33 +103,128 @@
   .circleBtn:hover{background:rgba(255,255,255,.08)}
   .circleBtn svg{width:22px;height:22px}
 
-  /* ===== SIDEBAR ===== */
-  .overlay{position:fixed; inset:0;background:rgba(0,0,0,.65);display:none; z-index:999;backdrop-filter: blur(4px);}
+  /* =========================================================
+     ✅ PREMIUM MENU (UPGRADED SIDEBAR)
+     ========================================================= */
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,.65);
+    display:none; z-index:999;
+    backdrop-filter: blur(4px);
+  }
   .overlay.show{display:block;}
+
   .sidebar{
-    position:fixed; top:0; left:-290px;width:270px; height:100vh;
-    background:linear-gradient(180deg, rgba(5,10,24,1), rgba(2,6,23,1));
-    border-right:1px solid rgba(255,255,255,.12);
-    padding:16px;transition:.28s ease;z-index:1000;
-    box-shadow:0 20px 80px rgba(0,0,0,.6);
+    position:fixed; top:0; left:-315px;
+    width:292px; height:100vh;
+    padding:16px;
+    z-index:1000;
+    transition: .28s ease;
+    border-right:1px solid rgba(255,255,255,.10);
+    background:
+      radial-gradient(900px 420px at 15% 10%, rgba(91,108,255,.18), transparent 55%),
+      radial-gradient(900px 420px at 90% 20%, rgba(52,211,153,.12), transparent 55%),
+      linear-gradient(180deg, rgba(4,8,20,0.98), rgba(2,6,23,0.98));
+    box-shadow:0 26px 90px rgba(0,0,0,.60);
+    backdrop-filter: blur(16px);
   }
   .sidebar.open{ left:0; }
-  .brandRow{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  .brandSide{font-weight:1000;font-size:18px;letter-spacing:.6px;}
-  .closeBtn{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.14);color:var(--text);border-radius:12px;padding:8px 12px;font-weight:1000;}
-  .userTag{padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);margin-bottom:12px;}
+
+  .sideTop{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:10px;margin-bottom:12px;
+  }
+  .sideBrand{
+    display:flex;align-items:center;gap:10px;
+    font-weight:1000;font-size:16px;letter-spacing:.9px;
+    color:#fff;
+    padding:10px 12px;border-radius:16px;
+    border:1px solid rgba(255,255,255,.10);
+    background:linear-gradient(90deg, rgba(109,87,255,.85), rgba(124,77,255,.85));
+    box-shadow:0 16px 50px rgba(109,87,255,.18);
+    min-width:170px;
+  }
+  .sideBrandIcon{
+    width:30px;height:30px;border-radius:12px;
+    display:grid;place-items:center;
+    background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.20);
+  }
+  .closeBtn{
+    background:rgba(0,0,0,.22);
+    border:1px solid rgba(255,255,255,.14);
+    color:rgba(234,240,255,.95);
+    border-radius:14px;
+    width:44px;height:44px;
+    cursor:pointer;
+    display:grid;place-items:center;
+    font-weight:1000;
+  }
+  .closeBtn:hover{background:rgba(255,255,255,.08)}
+
+  .userTag{
+    padding:12px 12px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.10);
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    box-shadow:0 18px 55px rgba(0,0,0,.35);
+    margin:10px 0 14px;
+  }
+  .userTag .t1{color:rgba(234,240,255,.55);font-weight:1000;font-size:12px}
+  .userTag .t2{margin-top:6px;font-weight:1000}
+
+  .menuGroupTitle{
+    margin:10px 0 8px;
+    font-size:12px;font-weight:1000;
+    color:rgba(234,240,255,.50);
+    letter-spacing:.8px;
+    text-transform:uppercase;
+  }
+
   .sideItem{
-    display:flex;gap:10px;align-items:center;padding:12px;
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:16px;margin-bottom:10px;color:var(--text);
-    background:rgba(0,0,0,.22);font-weight:1000;text-decoration:none;
+    display:flex;align-items:center;gap:12px;
+    padding:12px 12px;
+    border-radius:18px;
+    color:rgba(234,240,255,.82);
+    text-decoration:none;
+    font-weight:1000;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(0,0,0,.22);
+    box-shadow:0 16px 40px rgba(0,0,0,.35);
+    margin-bottom:10px;
+    position:relative;
+    overflow:hidden;
   }
   .sideItem:hover{background:rgba(255,255,255,.08)}
-  .activeLink{border:1px solid rgba(56,189,248,.55);background:rgba(56,189,248,0.12);}
-  .sideLogout{
-    background:linear-gradient(90deg, rgba(248,113,113,1), rgba(239,68,68,1));
-    color:#020617;border:none;width:100%;padding:14px;border-radius:16px;font-weight:1000;cursor:pointer
+  .sideItem .i{
+    width:42px;height:42px;border-radius:16px;
+    display:grid;place-items:center;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.06);
+    font-size:18px;
   }
+  .sideItem small{display:block;color:rgba(234,240,255,.55);font-size:12px;font-weight:900;margin-top:2px}
+
+  .activeLink{
+    border:1px solid rgba(56,189,248,.55);
+    background:linear-gradient(180deg, rgba(56,189,248,0.14), rgba(56,189,248,0.08));
+    color:#cfefff;
+  }
+  .activeLink::after{
+    content:"";
+    position:absolute; inset:0;
+    background: radial-gradient(600px 160px at 30% 20%, rgba(56,189,248,.20), transparent 60%);
+    pointer-events:none;
+  }
+
+  .sideLogout{
+    margin-top:10px;
+    background:linear-gradient(90deg, rgba(248,113,113,1), rgba(239,68,68,1));
+    color:#020617;border:none;width:100%;
+    padding:14px;border-radius:18px;font-weight:1000;cursor:pointer;
+    box-shadow:0 18px 55px rgba(239,68,68,.18);
+  }
+  .sideLogout:hover{filter:brightness(1.03)}
 
   /* ===== CONTENT ===== */
   .wrap{max-width:980px;margin:0 auto;padding:14px;}
@@ -144,14 +241,11 @@
   /* ===== Avatar ===== */
   .profileHead{text-align:center;padding:14px 0 6px;}
   .avatarWrap{
-    width:128px;height:128px;
-    margin:0 auto 12px;
-    border-radius:999px;
+    width:128px;height:128px;margin:0 auto 12px;border-radius:999px;
     border:1px solid rgba(255,255,255,.12);
     background:rgba(0,0,0,.24);
     display:grid;place-items:center;
-    position:relative;
-    overflow:hidden;
+    position:relative;overflow:hidden;
     box-shadow:0 18px 55px rgba(0,0,0,.35);
   }
   .avatarEmoji{font-size:64px;opacity:.95}
@@ -228,7 +322,7 @@
   ul{margin:0;padding-left:18px;color:rgba(234,240,255,.55);line-height:1.7;font-weight:900;font-size:13px}
 
   /* =========================================================
-     ✅ ADVANCED BOTTOM NAV (like your screenshot)
+     ✅ ADVANCED BOTTOM NAV
      ========================================================= */
   .dock{
     position:fixed;
@@ -236,58 +330,34 @@
     z-index:2000;
     pointer-events:none;
   }
-  .dockInner{
-    pointer-events:auto;
-    max-width:980px;
-    margin:0 auto;
-    padding:0 14px;
-  }
+  .dockInner{pointer-events:auto;max-width:980px;margin:0 auto;padding:0 14px;}
   .dockBar{
-    height:76px;
-    border-radius:28px;
+    height:76px;border-radius:28px;
     background:rgba(255,255,255,.08);
     border:1px solid rgba(255,255,255,.14);
     box-shadow:0 20px 70px rgba(0,0,0,.45);
     backdrop-filter: blur(14px);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:10px 12px;
-    gap:10px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 12px;gap:10px;
   }
   .dockItem{
-    flex:1;
-    min-width:70px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    border-radius:18px;
-    padding:10px 0;
+    flex:1;min-width:70px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:6px;border-radius:18px;padding:10px 0;
     color:rgba(234,240,255,.55);
-    font-size:12px;
-    font-weight:1000;
-    cursor:pointer;
-    user-select:none;
-    position:relative;
+    font-size:12px;font-weight:1000;cursor:pointer;user-select:none;
   }
   .dockItem .ico{font-size:18px;opacity:.95}
   .dockItem:hover{background:rgba(255,255,255,.06)}
   .dockActive{color:#9bdcff;background:rgba(56,189,248,.10)}
-
-  /* floating center home */
   .dockHome{
-    width:78px;height:78px;
-    border-radius:26px;
+    width:78px;height:78px;border-radius:26px;
     background:linear-gradient(180deg, rgba(109,87,255,1), rgba(91,108,255,1));
     box-shadow:0 22px 55px rgba(109,87,255,.30);
-    display:grid;
-    place-items:center;
+    display:grid;place-items:center;
     margin-top:-32px;
     border:1px solid rgba(255,255,255,.16);
-    cursor:pointer;
-    user-select:none;
+    cursor:pointer;user-select:none;
   }
   .dockHome span{font-size:28px;color:white}
   .dockHome:hover{filter:brightness(1.05)}
@@ -304,25 +374,72 @@
 
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
+<!-- ✅ PREMIUM SIDEBAR -->
 <div id="sidebar" class="sidebar">
-  <div class="brandRow">
-    <div class="brandSide">COINLUXORA</div>
+  <div class="sideTop">
+    <div class="sideBrand">
+      <div class="sideBrandIcon">◈</div>
+      COINLUXORA
+    </div>
     <button class="closeBtn" onclick="closeMenu()">✕</button>
   </div>
 
   <div class="userTag">
-    <div style="color:rgba(234,240,255,.55);font-weight:1000;font-size:12px;">Logged in as</div>
-    <div id="sideEmail" style="font-weight:1000;margin-top:6px;">---</div>
+    <div class="t1">Logged in as</div>
+    <div id="sideEmail" class="t2">---</div>
   </div>
 
-  <a class="sideItem" href="user-dashboard.html">🏠 Dashboard</a>
-  <a class="sideItem" href="deposits.html">💳 Deposit</a>
-  <a class="sideItem" href="withdraw.html">➡ Withdraw</a>
-  <a class="sideItem" href="plans.html">💼 Plans</a>
-  <a class="sideItem" href="support.html">🧑‍💻 Support</a>
-  <a class="sideItem activeLink" href="profile.html">👤 Profile / Settings</a>
+  <div class="menuGroupTitle">Navigation</div>
 
-  <div style="height:12px"></div>
+  <a class="sideItem" href="user-dashboard.html">
+    <div class="i">🏠</div>
+    <div>
+      Dashboard
+      <small>Main overview</small>
+    </div>
+  </a>
+
+  <a class="sideItem" href="deposits.html">
+    <div class="i">💳</div>
+    <div>
+      Deposit
+      <small>Fund your account</small>
+    </div>
+  </a>
+
+  <a class="sideItem" href="withdraw.html">
+    <div class="i">➡</div>
+    <div>
+      Withdraw
+      <small>Request payout</small>
+    </div>
+  </a>
+
+  <!-- ✅ Support below Withdraw (as requested) -->
+  <a class="sideItem" href="support.html">
+    <div class="i">🧑‍💻</div>
+    <div>
+      Support
+      <small>Contact & tickets</small>
+    </div>
+  </a>
+
+  <a class="sideItem" href="plans.html">
+    <div class="i">💼</div>
+    <div>
+      Investment Plans
+      <small>Start investing</small>
+    </div>
+  </a>
+
+  <a class="sideItem activeLink" href="profile.html">
+    <div class="i">👤</div>
+    <div>
+      Profile / Settings
+      <small>Account security</small>
+    </div>
+  </a>
+
   <button class="sideLogout" onclick="logout()">Logout</button>
 </div>
 
@@ -494,10 +611,8 @@ let currentUser = null;
       window.location.replace("verify.html?status=unverified");
       return;
     }
-
     currentUser = user;
     document.getElementById("sideEmail").innerText = user.email;
-
     await loadProfile();
   }catch(e){
     window.location.replace("login.html");
@@ -654,14 +769,11 @@ async function logout(){
   window.location.replace("login.html");
 }
 
-/* ============================================================
-   ✅ AVATAR UPLOAD
-   ============================================================ */
+/* AVATAR UPLOAD */
 document.getElementById("avatarInput").addEventListener("change", async (e)=>{
   try{
     const file = e.target.files?.[0];
-    if(!file) return;
-    if(!currentUser) return;
+    if(!file || !currentUser) return;
 
     setMsg("", "Uploading photo…");
 
@@ -677,16 +789,11 @@ document.getElementById("avatarInput").addEventListener("change", async (e)=>{
     const ext = file.name.split(".").pop().toLowerCase();
     const path = `${currentUser.id}/avatar.${ext}`;
 
-    const { error: upErr } = await supabaseClient
-      .storage
-      .from("avatars")
+    const { error: upErr } = await supabaseClient.storage.from("avatars")
       .upload(path, file, { upsert:true, cacheControl:"3600" });
 
     if(upErr){
-      setMsg("err",
-        "Avatar upload failed: " + upErr.message +
-        " ✅ Fix: run Storage SQL policies I sent in Supabase SQL Editor."
-      );
+      setMsg("err","Avatar upload failed: " + upErr.message);
       return;
     }
 
