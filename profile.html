@@ -9,36 +9,111 @@
 
 <style>
   :root{
-    --bg:#f3f5f9;
-    --card:#ffffff;
-    --text:#0f172a;
-    --muted:#64748b;
-    --stroke:#e5e7eb;
-    --blue:#3b82f6;
-    --blue2:#2563eb;
-    --green:#22c55e;
-    --shadow:0 14px 40px rgba(2,6,23,.08);
-    --radius:18px;
+    --bg:#050a18;
+    --card: rgba(255,255,255,0.06);
+    --card2: rgba(0,0,0,0.22);
+    --text:#eaf0ff;
+    --muted: rgba(234,240,255,.65);
+    --stroke: rgba(255,255,255,0.12);
+
+    --blue:#5b6cff;
+    --purple:#7c4dff;
+    --green:#34d399;
+
+    --ok:#22c55e;
+    --err:#f87171;
+
+    --shadow: 0 26px 90px rgba(0,0,0,.55);
+    --radius: 18px;
   }
+
   *{box-sizing:border-box}
+
   body{
     margin:0;
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    background:var(--bg);
     color:var(--text);
-    padding-bottom:90px; /* bottom nav */
+    min-height:100vh;
+    padding-bottom:90px;
+    background: var(--bg);
+    overflow-x:hidden;
   }
 
-  /* top header */
+  /* =========================================================
+     ✅ FLOWING GRADIENT BACKGROUND (premium animated)
+     ========================================================= */
+  .bgFlow{
+    position:fixed;
+    inset:0;
+    z-index:-3;
+    background:
+      radial-gradient(900px 520px at 10% 10%, rgba(83,113,255,.28), transparent 55%),
+      radial-gradient(900px 520px at 90% 20%, rgba(52,211,153,.18), transparent 55%),
+      radial-gradient(900px 520px at 40% 90%, rgba(124,77,255,.20), transparent 60%),
+      linear-gradient(180deg, rgba(5,10,24,1), rgba(2,6,23,1));
+  }
+
+  /* moving light blobs */
+  .blob{
+    position:fixed;
+    width:520px;
+    height:520px;
+    border-radius:999px;
+    filter: blur(70px);
+    opacity:.55;
+    z-index:-2;
+    mix-blend-mode: screen;
+    will-change: transform;
+  }
+  .blob.b1{ background: rgba(91,108,255,.75); left:-140px; top:-140px; animation: drift1 14s ease-in-out infinite; }
+  .blob.b2{ background: rgba(124,77,255,.70); right:-190px; top:10%; animation: drift2 16s ease-in-out infinite; }
+  .blob.b3{ background: rgba(52,211,153,.55); left:15%; bottom:-220px; animation: drift3 18s ease-in-out infinite; }
+
+  @keyframes drift1{
+    0%   { transform: translate(0,0) scale(1); }
+    50%  { transform: translate(220px,120px) scale(1.08); }
+    100% { transform: translate(0,0) scale(1); }
+  }
+  @keyframes drift2{
+    0%   { transform: translate(0,0) scale(1); }
+    50%  { transform: translate(-240px,160px) scale(1.12); }
+    100% { transform: translate(0,0) scale(1); }
+  }
+  @keyframes drift3{
+    0%   { transform: translate(0,0) scale(1); }
+    50%  { transform: translate(180px,-170px) scale(1.06); }
+    100% { transform: translate(0,0) scale(1); }
+  }
+
+  /* subtle animated shimmer layer */
+  .shimmer{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    opacity:.25;
+    background:
+      radial-gradient(600px 280px at 30% 10%, rgba(255,255,255,.08), transparent 60%),
+      radial-gradient(700px 320px at 80% 60%, rgba(255,255,255,.06), transparent 60%);
+    animation: shimmerMove 10s ease-in-out infinite alternate;
+    pointer-events:none;
+  }
+  @keyframes shimmerMove{
+    from { transform: translateY(0px); }
+    to   { transform: translateY(30px); }
+  }
+
+  /* =========================================================
+     Top bar (premium glass)
+     ========================================================= */
   .topbar{
     position:sticky;
     top:0;
     z-index:20;
     padding:12px 14px;
-    background:rgba(243,245,249,0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom:1px solid rgba(0,0,0,0.03);
+    background:rgba(2,6,23,0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom:1px solid rgba(255,255,255,0.10);
   }
   .toprow{
     max-width:980px;
@@ -52,14 +127,15 @@
     display:flex;
     align-items:center;
     gap:10px;
-    background:linear-gradient(180deg,#6d5bd0,#5a64d6);
+    background:linear-gradient(90deg, rgba(109,87,255,1), rgba(135,116,255,0.86));
     color:#fff;
-    border-radius:14px;
+    border-radius:16px;
     padding:12px 14px;
-    font-weight:900;
-    letter-spacing:0.5px;
+    font-weight:1000;
+    letter-spacing:.6px;
     min-width:140px;
-    box-shadow: 0 14px 28px rgba(88,94,210,.25);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 18px 50px rgba(109,87,255,.18);
   }
   .brand svg{width:22px;height:22px}
   .brand span{font-size:18px}
@@ -72,16 +148,20 @@
   .circleBtn{
     width:44px;height:44px;
     border-radius:999px;
-    border:1px solid var(--stroke);
-    background:#fff;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(0,0,0,.18);
     display:grid;
     place-items:center;
-    box-shadow:0 10px 24px rgba(2,6,23,.08);
+    box-shadow:0 16px 40px rgba(0,0,0,.35);
     cursor:pointer;
+    color:rgba(234,240,255,.85);
   }
-  .circleBtn svg{width:22px;height:22px; color:#64748b}
+  .circleBtn:hover{background:rgba(255,255,255,.08)}
+  .circleBtn svg{width:22px;height:22px}
 
-  /* page content */
+  /* =========================================================
+     Page content
+     ========================================================= */
   .wrap{
     max-width:980px;
     margin:0 auto;
@@ -97,30 +177,35 @@
   }
   .pageTitle{
     font-size:30px;
-    font-weight:900;
+    font-weight:1000;
     margin:0;
+    letter-spacing:-.5px;
   }
   .backBtn{
     border:none;
     cursor:pointer;
-    border-radius:10px;
+    border-radius:14px;
     padding:10px 14px;
-    font-weight:900;
-    color:var(--blue2);
-    background:#e8f1ff;
+    font-weight:1000;
+    color:#9bdcff;
+    background:rgba(56,189,248,.10);
+    border:1px solid rgba(56,189,248,.25);
     display:flex;
     align-items:center;
     gap:10px;
   }
+  .backBtn:hover{background:rgba(56,189,248,.14)}
   .backBtn svg{width:20px;height:20px}
 
   .card{
-    border:1px solid var(--stroke);
-    background:var(--card);
-    border-radius:var(--radius);
+    border:1px solid rgba(255,255,255,.12);
+    background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+    border-radius:22px;
     box-shadow:var(--shadow);
     padding:16px;
     overflow:hidden;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   /* profile header */
@@ -132,173 +217,174 @@
     width:110px;height:110px;
     margin:0 auto 10px;
     border-radius:999px;
-    background:#fff;
+    background:rgba(0,0,0,.22);
+    border:1px solid rgba(255,255,255,.12);
     display:grid;
     place-items:center;
   }
-  .profileIcon svg{
-    width:90px;height:90px;
-    opacity:.95;
-  }
+  .profileIcon svg{width:90px;height:90px;opacity:.95}
 
   .bigName{
     font-size:26px;
-    font-weight:900;
-    color:#94a3b8;
+    font-weight:1000;
+    color:rgba(234,240,255,.75);
     margin:0;
   }
   .bigEmail{
     margin:6px 0 0 0;
-    color:#94a3b8;
-    font-size:18px;
+    color:rgba(234,240,255,.55);
+    font-size:15px;
+    font-weight:900;
   }
 
-  /* form rows */
-  .field{
-    margin-top:16px;
-  }
+  .field{margin-top:16px;}
   .label{
-    font-size:18px;
-    font-weight:900;
-    color:#94a3b8;
+    font-size:16px;
+    font-weight:1000;
+    color:rgba(234,240,255,.65);
     margin:0 0 10px;
   }
-  .row{
-    display:flex;
-    gap:10px;
-    align-items:center;
-  }
+  .row{display:flex;gap:10px;align-items:center;}
   .input, select{
     flex:1;
     height:48px;
-    border:1px solid #d1d5db;
-    border-radius:6px;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;
     padding:10px 12px;
-    font-size:16px;
+    font-size:15px;
     outline:none;
-    background:#fff;
+    background:rgba(0,0,0,.22);
+    color:var(--text);
+    box-shadow:0 16px 40px rgba(0,0,0,.35);
   }
-  .input:disabled{
-    background:#f8fafc;
-    color:#334155;
+  .input::placeholder{color:rgba(234,240,255,.45)}
+  .input:disabled, select:disabled{
+    background:rgba(0,0,0,.18);
+    color:rgba(234,240,255,.75);
+    opacity:.9;
   }
 
   .miniBtn{
-    width:48px;
-    height:48px;
-    border:none;
-    border-radius:6px;
-    background:var(--blue);
+    width:48px;height:48px;
+    border:none;border-radius:14px;
+    background:linear-gradient(180deg, rgba(91,108,255,1), rgba(124,77,255,1));
     color:#fff;
     cursor:pointer;
     display:grid;
     place-items:center;
-    box-shadow:0 10px 22px rgba(37,99,235,.18);
+    box-shadow:0 18px 55px rgba(91,108,255,.22);
+    border:1px solid rgba(255,255,255,.12);
   }
+  .miniBtn:hover{filter:brightness(1.05)}
   .miniBtn svg{width:22px;height:22px}
-  .miniBtn:active{transform:translateY(1px)}
 
-  .saveBtn{
-    margin-top:18px;
-    width:100%;
-    height:56px;
-    border:none;
-    border-radius:6px;
-    background:var(--green);
-    color:#fff;
-    cursor:pointer;
-    font-weight:900;
-    font-size:18px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    box-shadow:0 14px 30px rgba(34,197,94,.18);
-  }
-  .saveBtn svg{width:22px;height:22px}
-  .saveBtn:active{transform:translateY(1px)}
-
-  /* change password section */
-  .sectionTitle{
-    font-size:26px;
-    font-weight:900;
-    color:#94a3b8;
-    margin:0 0 10px;
-  }
-  .note{
-    margin-top:8px;
-    font-size:14px;
-    color:#6b7280;
-  }
   .pwWrap{position:relative; flex:1;}
-  .pwWrap .input{padding-right:48px;}
+  .pwWrap .input{padding-right:52px;}
   .eyeBtn{
     position:absolute;
     right:10px;
     top:50%;
     transform:translateY(-50%);
     border:none;
-    background:transparent;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:12px;
+    width:38px;height:38px;
     cursor:pointer;
     display:grid;
     place-items:center;
-    width:34px;height:34px;
-    color:#64748b;
+    color:rgba(234,240,255,.85);
   }
-  .eyeBtn svg{width:22px;height:22px}
+  .eyeBtn:hover{background:rgba(255,255,255,.12)}
+  .eyeBtn svg{width:20px;height:20px}
 
+  .note{
+    margin-top:8px;
+    color:rgba(234,240,255,.55);
+    font-size:13px;
+    font-weight:900;
+  }
+
+  .saveBtn{
+    margin-top:18px;
+    width:100%;
+    height:56px;
+    border:none;
+    border-radius:16px;
+    background:linear-gradient(180deg, rgba(52,211,153,1), rgba(17,185,129,1));
+    color:#062015;
+    cursor:pointer;
+    font-weight:1000;
+    font-size:17px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    box-shadow:0 18px 55px rgba(34,197,94,.18);
+  }
+  .saveBtn:active{transform:translateY(1px)}
+  .saveBtn svg{width:22px;height:22px}
+
+  .sectionTitle{
+    font-size:24px;
+    font-weight:1000;
+    color:rgba(234,240,255,.70);
+    margin:0 0 10px;
+  }
   .blueBtn{
     margin-top:18px;
     width:100%;
     height:58px;
     border:none;
-    border-radius:6px;
-    background:linear-gradient(180deg,#2f6cf3,#245fe3);
-    color:#fff;
+    border-radius:16px;
+    background:linear-gradient(180deg, rgba(91,108,255,1), rgba(124,77,255,1));
+    color:white;
     cursor:pointer;
-    font-weight:900;
-    font-size:18px;
+    font-weight:1000;
+    font-size:17px;
     display:flex;
     align-items:center;
     justify-content:center;
     gap:10px;
-    box-shadow:0 14px 30px rgba(37,99,235,.22);
+    box-shadow:0 18px 55px rgba(91,108,255,.22);
   }
-  .blueBtn svg{width:22px;height:22px}
   .blueBtn:active{transform:translateY(1px)}
+  .blueBtn svg{width:22px;height:22px}
 
   .tips{
     margin-top:18px;
-    border-top:1px solid #eef2f7;
+    border-top:1px solid rgba(255,255,255,.10);
     padding-top:14px;
   }
   .tipsTitle{
-    font-weight:900;
-    color:#94a3b8;
-    font-size:18px;
+    font-weight:1000;
+    color:rgba(234,240,255,.65);
+    font-size:16px;
     margin:0 0 10px;
   }
-  ul{margin:0;padding-left:18px;color:#4b5563;line-height:1.7}
+  ul{margin:0;padding-left:18px;color:rgba(234,240,255,.55);line-height:1.7;font-weight:900;font-size:13px}
 
-  /* message */
   .msg{
     margin-top:12px;
     min-height:18px;
     text-align:center;
     font-size:14px;
-    color:#6b7280;
+    color:rgba(234,240,255,.65);
+    font-weight:900;
   }
-  .ok{color:#16a34a;font-weight:900}
-  .err{color:#ef4444;font-weight:900}
+  .ok{color:var(--ok);font-weight:1000}
+  .err{color:var(--err);font-weight:1000}
 
-  /* bottom nav */
+  /* bottom nav - glass */
   .bottomNav{
     position:fixed;
     left:0; right:0; bottom:0;
     z-index:50;
     padding:10px 14px 18px;
-    background:rgba(255,255,255,0.96);
-    border-top:1px solid rgba(0,0,0,0.06);
+    background:rgba(2,6,23,.78);
+    border-top:1px solid rgba(255,255,255,.12);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
   }
   .navWrap{
     max-width:980px;
@@ -309,8 +395,9 @@
     gap:10px;
     padding:10px 12px;
     border-radius:28px;
-    background:#fff;
-    box-shadow:0 18px 40px rgba(2,6,23,.10);
+    background:rgba(0,0,0,.22);
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 18px 40px rgba(0,0,0,.30);
   }
   .navItem{
     width:70px;
@@ -318,9 +405,9 @@
     flex-direction:column;
     align-items:center;
     gap:6px;
-    color:#9ca3af;
+    color:rgba(234,240,255,.55);
     font-size:12px;
-    font-weight:800;
+    font-weight:1000;
     text-decoration:none;
   }
   .navItem svg{width:22px;height:22px}
@@ -334,17 +421,23 @@
     box-shadow:0 18px 38px rgba(88,94,210,.26);
     color:#fff;
     text-decoration:none;
+    border:1px solid rgba(255,255,255,.12);
   }
   .home svg{width:30px;height:30px}
-  .active{color:#111827}
+  .active{color:#9bdcff}
 </style>
 </head>
 
 <body>
 
-<!-- ==============================
-     TOP BAR (like screenshot)
-================================ -->
+<!-- flowing background layers -->
+<div class="bgFlow"></div>
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<div class="blob b3"></div>
+<div class="shimmer"></div>
+
+<!-- TOP BAR -->
 <div class="topbar">
   <div class="toprow">
     <div class="brand">
@@ -360,7 +453,7 @@
           <path d="M12 21a9 9 0 1 1 9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </button>
-      <button class="circleBtn" title="Menu">
+      <button class="circleBtn" title="Menu" onclick="window.location.href='user-dashboard.html'">
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
         </svg>
@@ -380,13 +473,13 @@
     </button>
   </div>
 
-  <!-- PROFILE SETTINGS CARD -->
+  <!-- PROFILE CARD -->
   <div class="card">
     <div class="profileHead">
       <div class="profileIcon" aria-hidden="true">
         <svg viewBox="0 0 120 120" fill="none">
-          <path d="M60 22c19 0 34 15 34 34 0 14-8 26-20 31l6 14c3 7-7 12-11 5l-6-12H47c-9 0-16-7-16-16v-4C21 66 16 57 16 46c0-19 15-34 34-34Z" stroke="black" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M48 60l-8-8c-2-2-6-2-8 0s-2 6 0 8l13 13c2 2 6 2 8 0l30-30c2-2 2-6 0-8s-6-2-8 0L48 60Z" fill="black"/>
+          <path d="M60 22c19 0 34 15 34 34 0 14-8 26-20 31l6 14c3 7-7 12-11 5l-6-12H47c-9 0-16-7-16-16v-4C21 66 16 57 16 46c0-19 15-34 34-34Z" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".95"/>
+          <path d="M48 60l-8-8c-2-2-6-2-8 0s-2 6 0 8l13 13c2 2 6 2 8 0l30-30c2-2 2-6 0-8s-6-2-8 0L48 60Z" fill="white" opacity=".92"/>
         </svg>
       </div>
 
@@ -493,7 +586,6 @@
     <button class="saveBtn" onclick="saveProfile()">
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M5 21h14a2 2 0 0 0 2-2V8l-4-4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" fill="white" opacity=".95"/>
-        <path d="M7 21v-7h10v7" stroke="#16a34a" stroke-width="0"/>
       </svg>
       Save Profile Changes
     </button>
@@ -501,8 +593,9 @@
     <div id="msg" class="msg"></div>
   </div>
 
-  <!-- CHANGE PASSWORD CARD -->
   <div style="height:18px"></div>
+
+  <!-- CHANGE PASSWORD CARD -->
   <div class="card">
     <div class="sectionTitle">Change Password</div>
 
@@ -556,7 +649,6 @@
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M7 10V8a5 5 0 0 1 10 0v2" stroke="white" stroke-width="2.2"/>
         <path d="M6 10h12v10H6V10Z" fill="white" opacity=".95"/>
-        <path d="M12 14v3" stroke="#1d4ed8" stroke-width="0"/>
       </svg>
       Change Password
     </button>
@@ -599,7 +691,7 @@
 <script>
 /* ============================================================
    ✅ COINLUXORA AUTH GUARD (LOGIN + EMAIL VERIFIED REQUIRED)
-   Added because this is a PROTECTED PAGE.
+   (Auto-added - protected page)
    ============================================================ */
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
@@ -607,17 +699,26 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 (async function authGuard(){
   try{
-    const { data, error } = await supabaseClient.auth.getUser();
-    if(error || !data?.user){
+    const { data: sessionData } = await supabaseClient.auth.getSession();
+    if(!sessionData?.session){
       window.location.replace("login.html");
       return;
     }
-    const user = data.user;
+
+    const { data, error } = await supabaseClient.auth.getUser();
+    const user = data?.user;
+
+    if(error || !user){
+      window.location.replace("login.html");
+      return;
+    }
+
     if(!user.email_confirmed_at){
       await supabaseClient.auth.signOut();
       window.location.replace("verify.html?status=unverified");
       return;
     }
+
     window.COINLUXORA_USER = user;
     loadProfile(user);
   }catch(e){
@@ -631,18 +732,15 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 function goDashboard(){
   window.location.href="user-dashboard.html";
 }
-
 function toggleEdit(id){
   const el = document.getElementById(id);
   el.disabled = !el.disabled;
   if(!el.disabled) el.focus();
 }
-
 function toggleEye(id){
   const el = document.getElementById(id);
   el.type = (el.type === "password") ? "text" : "password";
 }
-
 function setMsg(type, text){
   const el = document.getElementById("msg");
   if(type==="ok") el.innerHTML = `<span class="ok">${text}</span>`;
@@ -654,14 +752,12 @@ function setMsg(type, text){
    Load profile
 ===================== */
 async function loadProfile(user){
-  // load from users table
-  const { data, error } = await supabaseClient
+  const { data } = await supabaseClient
     .from("users")
     .select("*")
     .eq("email", user.email)
     .single();
 
-  // fallback from auth metadata
   const full_name = data?.full_name || user.user_metadata?.full_name || "User";
   const phone = data?.phone || user.user_metadata?.phone || "";
   const country = data?.country || user.user_metadata?.country || "";
@@ -699,7 +795,6 @@ async function saveProfile(){
     return;
   }
 
-  // update users table
   const { error } = await supabaseClient
     .from("users")
     .upsert([{
@@ -715,14 +810,12 @@ async function saveProfile(){
     return;
   }
 
-  // update auth metadata too
   await supabaseClient.auth.updateUser({
     data: { full_name, phone, country }
   });
 
   document.getElementById("bigName").textContent = full_name;
 
-  // lock fields again
   ["name","phone","country","pin"].forEach(id => document.getElementById(id).disabled = true);
 
   setMsg("ok","Profile updated successfully ✅");
@@ -750,8 +843,6 @@ async function changePassword(){
     return;
   }
 
-  // Supabase does NOT require current password when logged in
-  // If you need current password validation, it must be done with re-login.
   const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
 
   if(error){
