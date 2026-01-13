@@ -109,32 +109,24 @@ body{
 }
 .headerActions{display:flex;gap:10px;align-items:center}
 
-/* ✅ Avatar button upgraded to support photo inside circle */
+/* ✅ Avatar button supports photo inside circle */
 .avatarBtn{
   width:46px;height:46px;border-radius:999px;
   border:1px solid rgba(255,255,255,.14);
   background:linear-gradient(180deg, rgba(124,77,255,1), rgba(109,87,255,1));
-  color:white;
-  font-weight:1000;
   cursor:pointer;
   box-shadow:0 16px 40px rgba(124,77,255,.32);
   display:grid;
   place-items:center;
   position:relative;
-  overflow:hidden; /* ✅ ensures image stays in circle */
+  overflow:hidden;
 }
 .avatarBtn:hover{filter:brightness(1.05)}
-.avatarFallback{
-  font-size:18px;
-  line-height:1;
-  z-index:2;
-}
+.avatarFallback{font-size:18px;line-height:1;z-index:2;}
 .avatarImgBtn{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover; /* ✅ fills circle without stretching */
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
   display:none;
   z-index:3;
 }
@@ -420,7 +412,7 @@ body{
 
   <div class="userTag">
     <div class="small">Logged in as</div>
-    <div id="sideEmail" style="font-weight:1000;margin-top:6px;">---</div>
+    <div id="sideName" style="font-weight:1000;margin-top:6px;">---</div>
   </div>
 
   <a class="sideItem activeLink" href="user-dashboard.html">🏠 Dashboard</a>
@@ -432,7 +424,6 @@ body{
 
   <div class="sideDivider"></div>
 
-  <!-- ✅ Settings is now only Profile page -->
   <a class="sideItem" href="profile.html">👤 Profile / Settings</a>
 
   <div style="height:12px"></div>
@@ -448,7 +439,6 @@ body{
     </div>
 
     <div class="headerActions">
-      <!-- ✅ Avatar opens profile (NOW SUPPORTS PHOTO) -->
       <button class="avatarBtn" onclick="goProfile()" title="Profile" aria-label="Profile">
         <span id="avatarFallback" class="avatarFallback">👤</span>
         <img id="avatarImgBtn" class="avatarImgBtn" alt="Avatar"/>
@@ -466,7 +456,7 @@ body{
           <div class="miniChip">🇳🇬 NG</div>
         </div>
         <div class="helloTitle">Hello! 🌙</div>
-        <div class="helloSub" id="email">Loading…</div>
+        <div class="helloSub" id="helloName">Loading…</div>
       </div>
     </div>
 
@@ -543,7 +533,6 @@ body{
 <script>
 /* ============================================================
    ✅ COINLUXORA AUTH GUARD (LOGIN + EMAIL VERIFIED REQUIRED)
-   FIXED: no flicker/loop, uses session first, then user check.
    ============================================================ */
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
@@ -556,7 +545,6 @@ let badgeChannel=null;
 
 (async function authGuard(){
   try{
-    // 1) session check first (fast + stable)
     const { data: sessionData } = await supabaseClient.auth.getSession();
     const session = sessionData?.session;
 
@@ -565,7 +553,6 @@ let badgeChannel=null;
       return;
     }
 
-    // 2) now validate user + verified
     const { data, error } = await supabaseClient.auth.getUser();
     const user = data?.user;
 
@@ -610,14 +597,14 @@ function hideGate(){
   if(g) g.style.display="none";
 }
 
-/* ✅ Avatar loader for dashboard circle button */
+/* ✅ Avatar into circle button */
 function setTopAvatar(avatarUrl){
   const fallback = document.getElementById("avatarFallback");
   const img = document.getElementById("avatarImgBtn");
   if(!fallback || !img) return;
 
   if(avatarUrl){
-    img.src = avatarUrl + "?t=" + Date.now(); // cache bust
+    img.src = avatarUrl + "?t=" + Date.now();
     img.style.display = "block";
     fallback.style.display = "none";
   }else{
@@ -627,28 +614,45 @@ function setTopAvatar(avatarUrl){
   }
 }
 
-async function loadAvatarForDashboard(){
+/* ✅ Name loader */
+function setNameEverywhere(fullName){
+  const nice = (fullName && fullName.trim()) ? fullName.trim() : "User";
+
+  const hello = document.getElementById("helloName");
+  const side  = document.getElementById("sideName");
+
+  if(hello) hello.innerHTML = `Logged in as: <span class="ok">${nice}</span>`;
+  if(side)  side.innerText = nice;
+}
+
+/* ✅ Load name + avatar from DB (fallback to metadata) */
+async function loadDashboardIdentity(){
   try{
-    // try DB first (users.avatar_url)
+    let fullName = "";
     let avatarUrl = "";
 
+    // DB first
     const { data: row, error } = await supabaseClient
       .from("users")
-      .select("avatar_url")
+      .select("full_name, avatar_url")
       .eq("email", currentUserEmail)
       .maybeSingle();
 
-    if(!error && row?.avatar_url) avatarUrl = row.avatar_url;
-
-    // fallback to auth metadata
-    if(!avatarUrl){
-      const u = window.COINLUXORA_USER;
-      avatarUrl = u?.user_metadata?.avatar_url || "";
+    if(!error && row){
+      fullName = row.full_name || "";
+      avatarUrl = row.avatar_url || "";
     }
 
+    // fallback metadata
+    const u = window.COINLUXORA_USER;
+    const md = u?.user_metadata || {};
+    if(!fullName) fullName = md.full_name || "User";
+    if(!avatarUrl) avatarUrl = md.avatar_url || "";
+
+    setNameEverywhere(fullName);
     setTopAvatar(avatarUrl);
   }catch(e){
-    // if anything fails, keep default icon
+    setNameEverywhere("User");
     setTopAvatar("");
   }
 }
@@ -737,14 +741,13 @@ function initWithUser(user){
   currentUserEmail=user.email;
   currentUserId=user.id;
 
-  document.getElementById("email").innerHTML=`Logged in as: <span class="ok">${currentUserEmail}</span>`;
-  document.getElementById("sideEmail").innerText=currentUserEmail;
+  // ID chip still ok
   document.getElementById("userIdChip").innerText = "ID: " + currentUserId.slice(0,6).toUpperCase();
 
   hideGate();
 
-  // ✅ load avatar into circle button
-  loadAvatarForDashboard();
+  // ✅ load name + avatar
+  loadDashboardIdentity();
 
   // load features
   loadBalance();
