@@ -37,9 +37,7 @@ body{
   background: var(--bg);
 }
 
-/* =========================================================
-   ✅ UPPER ECHELON BACKGROUND (FASTER THAN PROFILE)
-   ========================================================= */
+/* ===== UPPER ECHELON BACKGROUND ===== */
 .bgFlow{
   position:fixed; inset:0; z-index:-4;
   background:
@@ -207,19 +205,7 @@ body{
   justify-content:space-between;
   gap:12px;
 }
-.helloCard::after{
-  content:"";
-  position:absolute; inset:-40px;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,.18), transparent);
-  animation: cardSweep 5.8s ease-in-out infinite;
-  opacity:.45;
-}
-@keyframes cardSweep{
-  0%{transform:translateX(-40%)}
-  50%{transform:translateX(35%)}
-  100%{transform:translateX(110%)}
-}
-.helloLeft{display:flex;align-items:center;gap:12px; position:relative; z-index:2;}
+.helloLeft{display:flex;align-items:center;gap:12px;}
 .helloLogo{
   width:48px;height:48px;border-radius:18px;
   background:rgba(255,255,255,.20);
@@ -238,13 +224,12 @@ body{
 .helloTitle{font-weight:1000;font-size:18px}
 .helloSub{font-size:12px;font-weight:900;opacity:.92}
 
-/* right side */
+/* right */
 .helloRight{
   display:flex;
   flex-direction:column;
   align-items:flex-end;
   gap:8px;
-  position:relative; z-index:2;
 }
 .helloRightTop{display:flex;align-items:center;gap:10px}
 .idChip{
@@ -372,23 +357,11 @@ body{
   box-shadow:0 16px 40px rgba(0,0,0,.35);
 }
 
-/* converter */
-.convGrid{
-  margin-top:14px;
-  display:grid;
-  grid-template-columns: 1fr;
-  gap:12px;
-}
-.convRow{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.sel, .inp{
-  flex:1;
-  min-width:140px;
-  height:50px;
-  border-radius:16px;
+.convGrid{margin-top:14px;display:grid;gap:12px}
+.convRow{display:flex;gap:10px;flex-wrap:wrap}
+.sel,.inp{
+  flex:1;min-width:140px;
+  height:50px;border-radius:16px;
   border:1px solid rgba(255,255,255,.12);
   background:rgba(0,0,0,.22);
   color:var(--text);
@@ -397,6 +370,16 @@ body{
   outline:none;
   box-shadow:0 16px 40px rgba(0,0,0,.35);
 }
+.swapBtn{
+  width:54px;height:50px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-weight:1000;
+  cursor:pointer;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+.swapBtn:hover{filter:brightness(1.05)}
 .convBtn{
   width:100%;
   height:54px;
@@ -426,7 +409,48 @@ body{
   box-shadow:0 0 18px rgba(52,211,153,.55);
 }
 
-/* ===== SIDEBAR PREMIUM ===== */
+/* order book */
+.orderWrap{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.obCol{
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.22);
+  padding:12px;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+.obTitle{
+  font-weight:1000;
+  color:rgba(234,240,255,.85);
+  font-size:13px;
+  margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
+}
+.obList{
+  display:grid;
+  gap:8px;
+  max-height:240px;
+  overflow:auto;
+  padding-right:6px;
+}
+.obItem{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  font-weight:900;
+  font-size:12px;
+  color:rgba(234,240,255,.78);
+}
+@media(max-width:520px){
+  .orderWrap{grid-template-columns:1fr}
+}
+
+/* ===== SIDEBAR ===== */
 .overlay{
   position:fixed; inset:0;
   background:rgba(0,0,0,.65);
@@ -483,7 +507,6 @@ body{
 }
 .closeBtn:hover{background:rgba(255,255,255,.08)}
 
-/* user tag */
 .userTag{
   padding:12px 12px;
   border-radius:18px;
@@ -634,7 +657,7 @@ body{
 
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
-<!-- ✅ PREMIUM SIDEBAR -->
+<!-- SIDEBAR -->
 <div id="sidebar" class="sidebar">
   <div class="sideTop">
     <div class="sideBrand">
@@ -713,7 +736,6 @@ body{
     </div>
   </div>
 
-  <!-- ✅ Greeting + ID + OFF unchanged -->
   <div class="helloCard">
     <div class="helloLeft">
       <div class="helloLogo">📶</div>
@@ -776,30 +798,93 @@ body{
     <div id="planBox"></div>
   </div>
 
-  <!-- ✅ NEW: CRYPTO CONVERTER (Premium) -->
+  <!-- ✅ Crypto converter -->
   <div class="box">
     <h2>Crypto Converter</h2>
-    <div class="small">Convert BTC, ETH, USDT to USD in real-time.</div>
+    <div class="small">Convert any cryptocurrency ↔ any fiat currency in real time.</div>
 
     <div class="convGrid">
       <div class="convRow">
-        <select id="convCoin" class="sel">
-          <option value="bitcoin">Bitcoin (BTC)</option>
-          <option value="ethereum">Ethereum (ETH)</option>
-          <option value="tether">Tether (USDT)</option>
-        </select>
-
-        <input id="convAmount" class="inp" type="number" min="0" step="0.0001" placeholder="Enter amount e.g 0.5"/>
+        <select id="cryptoFrom" class="sel"></select>
+        <button class="swapBtn" onclick="swapCrypto()">⇄</button>
+        <select id="cryptoTo" class="sel"></select>
       </div>
 
-      <button class="convBtn" onclick="convertCrypto()">⚡ Convert to USD</button>
+      <div class="convRow">
+        <input id="cryptoAmount" class="inp" type="number" min="0" step="0.00000001" placeholder="Enter amount"/>
+      </div>
+
+      <button class="convBtn" onclick="convertCrypto()">⚡ Convert</button>
 
       <div class="card">
-        <div class="rateLine"><span class="rateDot"></span> <span id="convRate">Rate: --</span></div>
+        <div class="rateLine"><span class="rateDot"></span> <span id="cryptoRate">Rate: --</span></div>
         <div class="small" style="margin-top:10px;font-size:14px;">
-          Result: <strong id="convResult">$ --</strong>
+          Result: <strong id="cryptoResult">--</strong>
         </div>
-        <div class="small" style="margin-top:8px;opacity:.8;">Powered by CoinGecko Live Rates</div>
+        <div class="small" style="margin-top:10px;font-size:14px;">
+          Reverse: <strong id="cryptoReverse">--</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Fiat converter -->
+  <div class="box">
+    <h2>Fiat Currency Converter</h2>
+    <div class="small">Convert any fiat currency → any fiat currency with live FX rates.</div>
+
+    <div class="convGrid">
+      <div class="convRow">
+        <select id="fiatFrom" class="sel"></select>
+        <button class="swapBtn" onclick="swapFiat()">⇄</button>
+        <select id="fiatTo" class="sel"></select>
+      </div>
+
+      <div class="convRow">
+        <input id="fiatAmount" class="inp" type="number" min="0" step="0.01" placeholder="Enter amount"/>
+      </div>
+
+      <button class="convBtn" onclick="convertFiat()">💱 Convert Fiat</button>
+
+      <div class="card">
+        <div class="rateLine"><span class="rateDot"></span> <span id="fiatRate">Rate: --</span></div>
+        <div class="small" style="margin-top:10px;font-size:14px;">
+          Result: <strong id="fiatResult">--</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Order book -->
+  <div class="box">
+    <h2>Live Crypto Order Book</h2>
+    <div class="small">Realtime bids & asks (Binance).</div>
+
+    <div class="convRow" style="margin-top:12px">
+      <select id="obPair" class="sel">
+        <option value="BTCUSDT">BTC/USDT</option>
+        <option value="ETHUSDT">ETH/USDT</option>
+        <option value="BNBUSDT">BNB/USDT</option>
+        <option value="XRPUSDT">XRP/USDT</option>
+        <option value="SOLUSDT">SOL/USDT</option>
+      </select>
+      <button class="convBtn" style="height:50px" onclick="loadOrderBook()">📈 Refresh Order Book</button>
+    </div>
+
+    <div class="orderWrap">
+      <div class="obCol">
+        <div class="obTitle">
+          <span>🟥 Asks</span>
+          <span style="color:rgba(234,240,255,.55);font-size:12px">Price | Amount</span>
+        </div>
+        <div id="asks" class="obList"></div>
+      </div>
+      <div class="obCol">
+        <div class="obTitle">
+          <span>🟩 Bids</span>
+          <span style="color:rgba(234,240,255,.55);font-size:12px">Price | Amount</span>
+        </div>
+        <div id="bids" class="obList"></div>
       </div>
     </div>
   </div>
@@ -808,19 +893,9 @@ body{
 
 <div class="bottomNav">
   <div class="navItem navActive" onclick="goHome()"><span>🏠</span>Home</div>
-
-  <div class="navItem" onclick="goDepositAndClear()">
-    <div id="badgeDeposit" class="badge">0</div>
-    <span>💳</span>Deposit
-  </div>
-
-  <div class="navItem" onclick="goWithdrawAndClear()">
-    <div id="badgeWithdraw" class="badge">0</div>
-    <span>➡</span>Withdraw
-  </div>
-
+  <div class="navItem" onclick="goDepositAndClear()"><div id="badgeDeposit" class="badge">0</div><span>💳</span>Deposit</div>
+  <div class="navItem" onclick="goWithdrawAndClear()"><div id="badgeWithdraw" class="badge">0</div><span>➡</span>Withdraw</div>
   <div class="navItem" onclick="goPlans()"><span>💼</span>Plans</div>
-
   <div class="navItem" onclick="goProfile()"><span>👤</span>Profile</div>
 </div>
 
@@ -837,23 +912,16 @@ let currentUserEmail="";
 let currentUserId="";
 let badgeChannel=null;
 
+/* ===== auth ===== */
 (async function authGuard(){
   try{
     const { data: sessionData } = await supabaseClient.auth.getSession();
     const session = sessionData?.session;
-
-    if(!session){
-      window.location.replace("login.html");
-      return;
-    }
+    if(!session){ window.location.replace("login.html"); return; }
 
     const { data, error } = await supabaseClient.auth.getUser();
     const user = data?.user;
-
-    if(error || !user){
-      window.location.replace("login.html");
-      return;
-    }
+    if(error || !user){ window.location.replace("login.html"); return; }
 
     if(!user.email_confirmed_at){
       await supabaseClient.auth.signOut();
@@ -863,7 +931,6 @@ let badgeChannel=null;
 
     window.COINLUXORA_USER = user;
     initWithUser(user);
-
   }catch(e){
     window.location.replace("login.html");
   }
@@ -891,168 +958,110 @@ function hideGate(){
   if(g) g.style.display="none";
 }
 
-/* ✅ Greeting */
+/* ✅ greeting */
 function setGreeting(){
   const h = new Date().getHours();
-  let text = "Greetings";
-  let emoji = "✨";
-  if(h >= 5 && h < 12){ text="Good Morning"; emoji="🌞"; }
-  else if(h >= 12 && h < 17){ text="Good Afternoon"; emoji="☀️"; }
+  let text="Greetings", emoji="✨";
+  if(h>=5 && h<12){ text="Good Morning"; emoji="🌞"; }
+  else if(h>=12 && h<17){ text="Good Afternoon"; emoji="☀️"; }
   else { text="Good Evening"; emoji="🌙"; }
-
-  const el = document.getElementById("greetingTitle");
-  if(el) el.textContent = `${text} ${emoji}`;
+  document.getElementById("greetingTitle").textContent = `${text} ${emoji}`;
 }
 
-/* ✅ ISO -> flag */
+/* ✅ Date + Time */
+function startClock(){
+  const dtEl=document.getElementById("dateTimeNow");
+  const days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const tick=()=>{
+    const now=new Date();
+    const dayName=days[now.getDay()];
+    const day=String(now.getDate()).padStart(2,"0");
+    const mon=months[now.getMonth()];
+    const yr=now.getFullYear();
+    let hh=now.getHours();
+    const ampm=hh>=12?"PM":"AM";
+    hh=hh%12; hh=hh?hh:12;
+    const hhs=String(hh).padStart(2,"0");
+    const mm=String(now.getMinutes()).padStart(2,"0");
+    const ss=String(now.getSeconds()).padStart(2,"0");
+    dtEl.textContent=`${dayName}, ${day} ${mon} ${yr} | ${hhs}:${mm}:${ss} ${ampm}`;
+  };
+  tick(); setInterval(tick,1000);
+}
+
+/* avatar set */
+function setTopAvatar(avatarUrl){
+  const fallback=document.getElementById("avatarFallback");
+  const img=document.getElementById("avatarImgBtn");
+  if(avatarUrl){
+    img.src=avatarUrl+"?t="+Date.now();
+    img.style.display="block";
+    fallback.style.display="none";
+  }else{
+    img.style.display="none";
+    fallback.style.display="block";
+  }
+}
+function setSideAvatar(avatarUrl){
+  const fb=document.getElementById("sideAvatarFallback");
+  const img=document.getElementById("sideAvatarImg");
+  if(avatarUrl){
+    img.src=avatarUrl+"?t="+Date.now();
+    img.style.display="block";
+    fb.style.display="none";
+  }else{
+    img.style.display="none";
+    fb.style.display="block";
+  }
+}
+
+/* name */
+function setNameEverywhere(fullName){
+  const nice=(fullName && fullName.trim()) ? fullName.trim() : "User";
+  document.getElementById("helloName").innerHTML=`<span class="ok">${nice}</span>`;
+  document.getElementById("sideName").textContent=nice;
+}
+
+/* iso flag */
 function isoToFlag(iso){
-  if(!iso || iso.length !== 2) return "";
-  const code = iso.toUpperCase();
-  const A = 0x1F1E6;
-  const chars = [...code].map(c => A + c.charCodeAt(0) - 65);
-  return String.fromCodePoint(...chars);
+  if(!iso || iso.length!==2) return "";
+  const code=iso.toUpperCase();
+  const A=0x1F1E6;
+  return String.fromCodePoint(...[...code].map(c=>A + c.charCodeAt(0)-65));
 }
-
-/* ✅ country name -> ISO 2 */
+function setCountryChip(iso){
+  const el=document.getElementById("countryChip");
+  if(!el || !iso){ el.style.display="none"; el.textContent=""; return; }
+  const flag=isoToFlag(iso);
+  if(!flag){ el.style.display="none"; el.textContent=""; return; }
+  el.textContent=`${flag} ${iso}`;
+  el.style.display="inline-flex";
+}
 function countryNameToISO(name){
   if(!name) return "";
-  const n = name.trim().toLowerCase();
-  const map = {
-    "nigeria":"NG",
-    "united states":"US",
-    "united kingdom":"GB",
-    "canada":"CA",
-    "germany":"DE",
-    "france":"FR",
-    "south africa":"ZA",
-    "kenya":"KE",
-    "ghana":"GH",
-    "united arab emirates":"AE",
-    "saudi arabia":"SA",
-    "india":"IN",
-    "australia":"AU",
-    "brazil":"BR",
-    "mexico":"MX",
-    "japan":"JP",
-    "singapore":"SG"
+  const n=name.trim().toLowerCase();
+  const map={
+    "nigeria":"NG","united states":"US","united kingdom":"GB","canada":"CA",
+    "germany":"DE","france":"FR","south africa":"ZA","kenya":"KE","ghana":"GH",
+    "united arab emirates":"AE","saudi arabia":"SA","india":"IN","australia":"AU",
+    "brazil":"BR","mexico":"MX","japan":"JP","singapore":"SG"
   };
-  return map[n] || "";
+  return map[n]||"";
 }
-
-/* ✅ IP detect */
 async function detectCountryFromIP(){
   try{
-    const res = await fetch("https://ipapi.co/json/");
-    const data = await res.json();
-    if(data && data.country_code) return data.country_code.toUpperCase();
+    const res=await fetch("https://ipapi.co/json/");
+    const data=await res.json();
+    if(data?.country_code) return data.country_code.toUpperCase();
   }catch(e){}
   return "";
 }
 
-/* ✅ apply chip: blank if fail */
-function setCountryChip(iso){
-  const el = document.getElementById("countryChip");
-  if(!el) return;
-
-  if(!iso){
-    el.textContent = "";
-    el.style.display = "none";
-    return;
-  }
-
-  const flag = isoToFlag(iso);
-  if(!flag){
-    el.textContent = "";
-    el.style.display = "none";
-    return;
-  }
-
-  el.textContent = `${flag} ${iso}`;
-  el.style.display = "inline-flex";
-}
-
-/* ✅ Date + Time single line */
-function startClock(){
-  const dtEl = document.getElementById("dateTimeNow");
-  if(!dtEl) return;
-
-  const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-  const tick = ()=>{
-    const now = new Date();
-
-    const dayName = days[now.getDay()];
-    const day = String(now.getDate()).padStart(2,"0");
-    const mon = months[now.getMonth()];
-    const yr = now.getFullYear();
-
-    let hh = now.getHours();
-    const ampm = hh >= 12 ? "PM" : "AM";
-    hh = hh % 12;
-    hh = hh ? hh : 12;
-
-    const hhs = String(hh).padStart(2,"0");
-    const mm = String(now.getMinutes()).padStart(2,"0");
-    const ss = String(now.getSeconds()).padStart(2,"0");
-
-    dtEl.textContent = `${dayName}, ${day} ${mon} ${yr} | ${hhs}:${mm}:${ss} ${ampm}`;
-  };
-
-  tick();
-  setInterval(tick, 1000);
-}
-
-/* ✅ Avatar circle on top */
-function setTopAvatar(avatarUrl){
-  const fallback = document.getElementById("avatarFallback");
-  const img = document.getElementById("avatarImgBtn");
-  if(!fallback || !img) return;
-
-  if(avatarUrl){
-    img.src = avatarUrl + "?t=" + Date.now();
-    img.style.display = "block";
-    fallback.style.display = "none";
-  }else{
-    img.removeAttribute("src");
-    img.style.display = "none";
-    fallback.style.display = "block";
-  }
-}
-
-/* ✅ Sidebar avatar */
-function setSideAvatar(avatarUrl){
-  const fb = document.getElementById("sideAvatarFallback");
-  const img = document.getElementById("sideAvatarImg");
-  if(!fb || !img) return;
-
-  if(avatarUrl){
-    img.src = avatarUrl + "?t=" + Date.now();
-    img.style.display = "block";
-    fb.style.display = "none";
-  }else{
-    img.removeAttribute("src");
-    img.style.display = "none";
-    fb.style.display = "block";
-  }
-}
-
-/* ✅ Username everywhere */
-function setNameEverywhere(fullName){
-  const nice = (fullName && fullName.trim()) ? fullName.trim() : "User";
-  const hello = document.getElementById("helloName");
-  if(hello) hello.innerHTML = `<span class="ok">${nice}</span>`;
-  const side  = document.getElementById("sideName");
-  if(side) side.textContent = nice;
-}
-
-/* ✅ load name+avatar+country */
+/* identity */
 async function loadDashboardIdentity(){
   try{
-    let fullName = "";
-    let avatarUrl = "";
-    let countryName = "";
-
+    let fullName="", avatarUrl="", countryName="";
     const { data: row, error } = await supabaseClient
       .from("users")
       .select("full_name, avatar_url, country")
@@ -1060,21 +1069,21 @@ async function loadDashboardIdentity(){
       .maybeSingle();
 
     if(!error && row){
-      fullName = row.full_name || "";
-      avatarUrl = row.avatar_url || "";
-      countryName = row.country || "";
+      fullName=row.full_name||"";
+      avatarUrl=row.avatar_url||"";
+      countryName=row.country||"";
     }
 
-    const md = (window.COINLUXORA_USER?.user_metadata || {});
-    if(!fullName) fullName = md.full_name || "User";
-    if(!avatarUrl) avatarUrl = md.avatar_url || "";
+    const md=(window.COINLUXORA_USER?.user_metadata||{});
+    if(!fullName) fullName=md.full_name||"User";
+    if(!avatarUrl) avatarUrl=md.avatar_url||"";
 
     setNameEverywhere(fullName);
     setTopAvatar(avatarUrl);
     setSideAvatar(avatarUrl);
 
-    let iso = countryNameToISO(countryName);
-    if(!iso) iso = await detectCountryFromIP();
+    let iso=countryNameToISO(countryName);
+    if(!iso) iso=await detectCountryFromIP();
     setCountryChip(iso);
 
   }catch(e){
@@ -1085,64 +1094,198 @@ async function loadDashboardIdentity(){
   }
 }
 
-/* ===== converter ===== */
-let LAST_RATES = null;
+/* ===== Coin list + fiat list ===== */
+let ALL_COINS = [];
+let FIATS = [];
+let cryptoDirection = "crypto_to_fiat"; // or fiat_to_crypto
 
-async function getRates(){
-  const url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,tether&vs_currencies=usd";
-  const res = await fetch(url);
-  const data = await res.json();
-  LAST_RATES = data;
-  return data;
+async function loadCoinGeckoLists(){
+  try{
+    // all coins list
+    const coinRes = await fetch("https://api.coingecko.com/api/v3/coins/list");
+    const coins = await coinRes.json();
+    ALL_COINS = coins || [];
+
+    // supported vs_currencies
+    const fiatRes = await fetch("https://api.coingecko.com/api/v3/simple/supported_vs_currencies");
+    const fiats = await fiatRes.json();
+    FIATS = (fiats || []).map(x => String(x).toUpperCase());
+
+    // populate selects
+    const cryptoFrom = document.getElementById("cryptoFrom");
+    const cryptoTo = document.getElementById("cryptoTo");
+
+    cryptoFrom.innerHTML = ALL_COINS.slice(0, 2500).map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+    cryptoTo.innerHTML   = FIATS.map(f => `<option value="${f}">${f}</option>`).join("");
+
+    cryptoFrom.value = "bitcoin";
+    cryptoTo.value = "USD";
+
+    // fiat converter
+    const fiatFrom = document.getElementById("fiatFrom");
+    const fiatTo   = document.getElementById("fiatTo");
+    fiatFrom.innerHTML = FIATS.map(f => `<option value="${f}">${f}</option>`).join("");
+    fiatTo.innerHTML   = FIATS.map(f => `<option value="${f}">${f}</option>`).join("");
+    fiatFrom.value="USD";
+    fiatTo.value="NGN";
+  }catch(e){
+    // safe fallback list
+    const cryptoFrom = document.getElementById("cryptoFrom");
+    const cryptoTo = document.getElementById("cryptoTo");
+    cryptoFrom.innerHTML = `<option value="bitcoin">Bitcoin</option><option value="ethereum">Ethereum</option><option value="tether">Tether</option>`;
+    cryptoTo.innerHTML = `<option value="USD">USD</option><option value="NGN">NGN</option><option value="EUR">EUR</option>`;
+
+    document.getElementById("fiatFrom").innerHTML = `<option>USD</option><option>NGN</option><option>EUR</option>`;
+    document.getElementById("fiatTo").innerHTML = `<option>NGN</option><option>USD</option><option>EUR</option>`;
+  }
 }
 
-function fmtUSD(n){
-  if(isNaN(n)) return "--";
-  return "$" + Number(n).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
+/* ===== CRYPTO converter ===== */
+function swapCrypto(){
+  if(cryptoDirection === "crypto_to_fiat"){
+    cryptoDirection = "fiat_to_crypto";
+    // swap select labels meaning
+    // cryptoFrom becomes fiat, cryptoTo becomes crypto
+    const oldFrom = document.getElementById("cryptoFrom").value;
+    const oldTo   = document.getElementById("cryptoTo").value;
+
+    // rebuild selects
+    document.getElementById("cryptoFrom").innerHTML = FIATS.map(f => `<option value="${f}">${f}</option>`).join("");
+    document.getElementById("cryptoTo").innerHTML = ALL_COINS.slice(0, 2500).map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+
+    // set values
+    document.getElementById("cryptoFrom").value = oldTo || "USD";
+    document.getElementById("cryptoTo").value = oldFrom || "bitcoin";
+
+  }else{
+    cryptoDirection = "crypto_to_fiat";
+    const oldFrom = document.getElementById("cryptoFrom").value;
+    const oldTo   = document.getElementById("cryptoTo").value;
+
+    document.getElementById("cryptoFrom").innerHTML = ALL_COINS.slice(0, 2500).map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+    document.getElementById("cryptoTo").innerHTML = FIATS.map(f => `<option value="${f}">${f}</option>`).join("");
+
+    document.getElementById("cryptoFrom").value = oldTo || "bitcoin";
+    document.getElementById("cryptoTo").value = oldFrom || "USD";
+  }
+
+  // reset outputs
+  document.getElementById("cryptoRate").textContent = "Rate: --";
+  document.getElementById("cryptoResult").textContent = "--";
+  document.getElementById("cryptoReverse").textContent = "--";
 }
 
 async function convertCrypto(){
-  const coin = document.getElementById("convCoin").value;
-  const amount = Number(document.getElementById("convAmount").value || 0);
-
-  if(!amount || amount <= 0){
-    document.getElementById("convResult").textContent = "$ --";
-    document.getElementById("convRate").textContent = "Rate: --";
+  const amt = Number(document.getElementById("cryptoAmount").value || 0);
+  if(!amt || amt<=0){
+    document.getElementById("cryptoResult").textContent="--";
+    document.getElementById("cryptoReverse").textContent="--";
     return;
   }
 
+  const from = document.getElementById("cryptoFrom").value;
+  const to   = document.getElementById("cryptoTo").value;
+
   try{
-    const rates = LAST_RATES || await getRates();
-    const rate = Number(rates?.[coin]?.usd || 0);
+    if(cryptoDirection === "crypto_to_fiat"){
+      const url = `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(from)}&vs_currencies=${encodeURIComponent(to.toLowerCase())}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const rate = Number(data?.[from]?.[to.toLowerCase()] || 0);
 
-    if(!rate){
-      document.getElementById("convResult").textContent = "$ --";
-      document.getElementById("convRate").textContent = "Rate: unavailable";
-      return;
+      if(!rate) throw new Error("Rate missing");
+
+      const result = rate * amt;
+      document.getElementById("cryptoRate").textContent = `Rate: 1 ${from} = ${rate} ${to}`;
+      document.getElementById("cryptoResult").textContent = `${result.toLocaleString()} ${to}`;
+      document.getElementById("cryptoReverse").textContent = `1 ${to} ≈ ${(1/rate).toFixed(10)} ${from}`;
+
+    }else{
+      // fiat -> crypto
+      const url = `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(to)}&vs_currencies=${encodeURIComponent(from.toLowerCase())}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const rate = Number(data?.[to]?.[from.toLowerCase()] || 0); // 1 crypto in fiat
+
+      if(!rate) throw new Error("Rate missing");
+
+      const cryptoAmount = amt / rate;
+      document.getElementById("cryptoRate").textContent = `Rate: 1 ${to} = ${rate} ${from}`;
+      document.getElementById("cryptoResult").textContent = `${cryptoAmount.toFixed(10)} ${to}`;
+      document.getElementById("cryptoReverse").textContent = `1 ${to} ≈ ${rate} ${from}`;
     }
-
-    document.getElementById("convRate").textContent = `Rate: 1 ${coin.toUpperCase()} = ${fmtUSD(rate)} USD`;
-    document.getElementById("convResult").textContent = fmtUSD(rate * amount);
-
   }catch(e){
-    document.getElementById("convResult").textContent = "$ --";
-    document.getElementById("convRate").textContent = "Rate: failed to load";
+    document.getElementById("cryptoRate").textContent = "Rate: failed";
+    document.getElementById("cryptoResult").textContent = "--";
+    document.getElementById("cryptoReverse").textContent = "--";
   }
 }
 
-/* prefetch converter rates */
-(async ()=>{
-  try{ await getRates(); }catch(e){}
-})();
+/* ===== FIAT converter ===== */
+function swapFiat(){
+  const a = document.getElementById("fiatFrom");
+  const b = document.getElementById("fiatTo");
+  const tmp = a.value; a.value=b.value; b.value=tmp;
+  document.getElementById("fiatRate").textContent="Rate: --";
+  document.getElementById("fiatResult").textContent="--";
+}
 
-/* ===== existing plan/balance functions ===== */
+async function convertFiat(){
+  const amt = Number(document.getElementById("fiatAmount").value || 0);
+  if(!amt || amt<=0){
+    document.getElementById("fiatResult").textContent="--";
+    return;
+  }
+
+  const from = document.getElementById("fiatFrom").value;
+  const to   = document.getElementById("fiatTo").value;
+
+  try{
+    const res = await fetch(`https://api.exchangerate.host/convert?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&amount=${encodeURIComponent(amt)}`);
+    const data = await res.json();
+    const result = Number(data?.result || 0);
+    const rate = Number(data?.info?.rate || 0);
+
+    if(!rate) throw new Error("Rate missing");
+
+    document.getElementById("fiatRate").textContent = `Rate: 1 ${from} = ${rate} ${to}`;
+    document.getElementById("fiatResult").textContent = `${result.toLocaleString()} ${to}`;
+  }catch(e){
+    document.getElementById("fiatRate").textContent = "Rate: failed";
+    document.getElementById("fiatResult").textContent = "--";
+  }
+}
+
+/* ===== Order Book ===== */
+async function loadOrderBook(){
+  const pair = document.getElementById("obPair").value;
+  const asksEl = document.getElementById("asks");
+  const bidsEl = document.getElementById("bids");
+  asksEl.innerHTML = "<div class='obItem'>Loading…</div>";
+  bidsEl.innerHTML = "<div class='obItem'>Loading…</div>";
+
+  try{
+    const res = await fetch(`https://api.binance.com/api/v3/depth?symbol=${encodeURIComponent(pair)}&limit=20`);
+    const data = await res.json();
+
+    const asks = (data?.asks || []).slice(0,20);
+    const bids = (data?.bids || []).slice(0,20);
+
+    asksEl.innerHTML = asks.map(a => `<div class="obItem"><span>${Number(a[0]).toLocaleString()}</span><span>${Number(a[1]).toFixed(6)}</span></div>`).join("");
+    bidsEl.innerHTML = bids.map(b => `<div class="obItem"><span>${Number(b[0]).toLocaleString()}</span><span>${Number(b[1]).toFixed(6)}</span></div>`).join("");
+
+  }catch(e){
+    asksEl.innerHTML = "<div class='obItem'>Failed to load asks</div>";
+    bidsEl.innerHTML = "<div class='obItem'>Failed to load bids</div>";
+  }
+}
+
+/* ===== existing plan/balance ===== */
 async function loadBalance(){
   const { data } = await supabaseClient.from("users").select("*").eq("email", currentUserEmail).single();
   const bal = Number(data?.balance || 0).toFixed(2);
   document.getElementById("balance").innerHTML = "$" + bal;
 }
-
-/* ===== original plan loader (kept) ===== */
 function money(n){ return "$" + Number(n||0).toFixed(2); }
 function pill(status){
   const s=(status||"pending").toLowerCase();
@@ -1178,6 +1321,9 @@ async function loadActivePlan(){
     return;
   }
 
+  // ✅ removed "Plan details loaded ✅"
+  planMsg.innerHTML="";
+
   const plan=data[0];
   const amount=Number(plan.amount||0);
   const roi=Number(plan.roi_percent||0);
@@ -1191,7 +1337,6 @@ async function loadActivePlan(){
     daysLeft = daysBetween(new Date(), end);
   }
 
-  planMsg.innerHTML="<span class='ok'>Plan details loaded ✅</span>";
   planBox.innerHTML=`
     <div class="card">
       <strong>${plan.plan_name} Plan</strong> ${pill(plan.status)}
@@ -1205,7 +1350,7 @@ async function loadActivePlan(){
   `;
 }
 
-/* BADGES (kept unchanged, only minimal) */
+/* BADGES kept */
 function setBadge(id, count){
   const el=document.getElementById(id);
   if(!el) return;
@@ -1270,26 +1415,32 @@ async function clearBadge(badge_key){
   }catch(e){}
 }
 
+/* logout */
+async function logout(){
+  await supabaseClient.auth.signOut();
+  window.location.replace("login.html");
+}
+
 function initWithUser(user){
   currentUserEmail=user.email;
   currentUserId=user.id;
 
   setGreeting();
   startClock();
-  document.getElementById("userIdChip").innerText = "ID: " + currentUserId.slice(0,6).toUpperCase();
-  hideGate();
 
+  document.getElementById("userIdChip").innerText = "ID: " + currentUserId.slice(0,6).toUpperCase();
+
+  hideGate();
   loadDashboardIdentity();
+
   loadBalance();
   loadActivePlan();
   loadRealtimeBadgesOnce();
   subscribeToRealtimeBadges();
-}
 
-/* logout */
-async function logout(){
-  await supabaseClient.auth.signOut();
-  window.location.replace("login.html");
+  // load conversion lists + orderbook
+  loadCoinGeckoLists();
+  loadOrderBook();
 }
 </script>
 
