@@ -33,11 +33,11 @@ body{
 }
 .container{max-width:860px;margin:0 auto}
 
-/* ✅ TOP FLOAT NAV (sticky back left + menu right) */
+/* ✅ TOP FLOAT NAV */
 .topFloatNav{
   position:sticky;
   top:10px;
-  z-index:9999;
+  z-index:500; /* lower than sidebar */
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -70,40 +70,49 @@ body{
 }
 .menuBtn:hover{background:rgba(255,255,255,.10)}
 
-/* ✅ SIDEBAR + OVERLAY */
+/* ✅ SIDEBAR + OVERLAY (FIXED Z-INDEX + CLOSE BTN VISIBLE) */
 .overlay{
   position:fixed; inset:0;
   background:rgba(0,0,0,.65);
-  display:none; z-index:999;
+  display:none;
+  z-index:99998; /* ✅ very high */
   backdrop-filter: blur(6px);
 }
 .sidebar{
-  position:fixed; top:0; right:-320px;
-  width:290px; height:100vh;
+  position:fixed; top:0; right:-340px;
+  width:300px; height:100vh;
   background:linear-gradient(180deg, rgba(5,10,24,1), rgba(2,6,23,1));
   border-left:1px solid rgba(255,255,255,.12);
   padding:16px;
   transition:.28s ease;
-  z-index:1000;
+  z-index:99999; /* ✅ on top of everything */
   box-shadow:0 20px 90px rgba(0,0,0,.75);
 }
 .sidebar.open{ right:0; }
 .overlay.show{ display:block; }
 
 .sideTop{
-  display:flex;justify-content:space-between;align-items:center;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
   margin-bottom:14px;
 }
 .brand{font-weight:1000;font-size:18px;letter-spacing:.6px;}
 .closeBtn{
-  border-radius:12px;
-  padding:8px 12px;
+  width:44px;height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
   border:1px solid rgba(255,255,255,.14);
-  background:rgba(0,0,0,.22);
+  background:rgba(0,0,0,.25);
   color:white;
   font-weight:1000;
   cursor:pointer;
+  font-size:18px;
 }
+.closeBtn:hover{background:rgba(255,255,255,.08)}
+
 .userTag{
   padding:12px;border-radius:16px;
   border:1px solid rgba(255,255,255,.12);
@@ -151,7 +160,6 @@ body{
 .topBar .title{font-weight:1000;letter-spacing:.2px}
 .topBar .email{font-weight:900;color:rgba(255,255,255,.8);font-size:13px;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* ✅ STATS */
 .statsGrid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -193,7 +201,6 @@ body{
 .statValue{margin-top:8px;font-size:22px;font-weight:1000;letter-spacing:.2px}
 .statHint{margin-top:6px;color:rgba(255,255,255,.52);font-size:12px}
 
-/* Sections */
 .section{
   border:1px solid var(--border);
   border-radius:22px;
@@ -255,14 +262,12 @@ input:focus,select:focus{border-color:rgba(99,102,241,.55);box-shadow:0 0 0 4px 
 }
 .addr{font-weight:1000;margin-top:8px;word-break:break-all;font-size:14px}
 
-/* ✅ Copy button green effect */
 .copyGreen{
   background: linear-gradient(90deg, rgba(34,197,94,1), rgba(16,185,129,1)) !important;
   border-color: rgba(34,197,94,.60) !important;
   box-shadow: 0 14px 40px rgba(34,197,94,.18) !important;
 }
 
-/* Chips */
 .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .chip{
   padding:9px 14px;border-radius:999px;
@@ -272,7 +277,6 @@ input:focus,select:focus{border-color:rgba(99,102,241,.55);box-shadow:0 0 0 4px 
 }
 .chip.active{background:rgba(99,102,241,.25);border-color:rgba(99,102,241,.55)}
 
-/* Table */
 .tableWrap{
   margin-top:16px;overflow:auto;
   border-radius:18px;border:1px solid rgba(255,255,255,.12);
@@ -302,7 +306,6 @@ th{color:rgba(255,255,255,.65);font-weight:1000;font-size:13px}
 }
 .actionBtn:hover{background:rgba(255,255,255,.10)}
 
-/* Modal */
 .modal{
   position:fixed;inset:0;background:rgba(0,0,0,.75);
   display:none;align-items:center;justify-content:center;z-index:9999;
@@ -318,7 +321,7 @@ th{color:rgba(255,255,255,.65);font-weight:1000;font-size:13px}
 .modalTitle{margin:0 0 12px 0;font-size:20px;font-weight:1000}
 .modalRow{margin-bottom:10px;font-size:14px}
 .modalRow span{opacity:.65}
-.closeBtn{
+.closeBtn2{
   width:100%;margin-top:10px;padding:14px;border-radius:16px;
   border:1px solid rgba(255,255,255,.14);
   background:rgba(0,0,0,.28);
@@ -337,13 +340,13 @@ th{color:rgba(255,255,255,.65);font-weight:1000;font-size:13px}
 
 <body>
 
-<!-- ✅ OVERLAY + SIDEBAR MENU -->
+<!-- ✅ OVERLAY + SIDEBAR -->
 <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
-<div id="sidebar" class="sidebar">
+<div id="sidebar" class="sidebar" aria-hidden="true">
   <div class="sideTop">
     <div class="brand">COINLUXORA</div>
-    <button class="closeBtn" onclick="closeMenu()">✕</button>
+    <button class="closeBtn" onclick="closeMenu()" aria-label="Close menu">✕</button>
   </div>
 
   <div class="userTag">
@@ -367,7 +370,7 @@ th{color:rgba(255,255,255,.65);font-weight:1000;font-size:13px}
   <!-- ✅ STICKY TOP NAV -->
   <div class="topFloatNav">
     <button class="backBtn" onclick="goDashboard()">← Dashboard</button>
-    <button class="menuBtn" onclick="openMenu()">☰</button>
+    <button class="menuBtn" onclick="openMenu()" aria-label="Open menu">☰</button>
   </div>
 
   <div class="topBar">
@@ -530,7 +533,7 @@ th{color:rgba(255,255,255,.65);font-weight:1000;font-size:13px}
     <div id="detailsBody"></div>
 
     <button class="pdfBtn" id="downloadPdfBtn">Download Receipt (PDF)</button>
-    <button class="closeBtn" onclick="closeModal()">Close</button>
+    <button class="closeBtn2" onclick="closeModal()">Close</button>
   </div>
 </div>
 
@@ -553,18 +556,28 @@ let cache=[];
 let searchTerm="";
 let currentDetails=null;
 
+function goDashboard(){ window.location.href="user-dashboard.html"; }
+function setMsg(html){ document.getElementById("msg").innerHTML = html; }
+function showDepMsg(html){ document.getElementById("depMsg").innerHTML = html; }
+
+/* ✅ Sidebar open/close (fixed) */
 function openMenu(){
   document.getElementById("sidebar").classList.add("open");
   document.getElementById("overlay").classList.add("show");
+  document.getElementById("sidebar").setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden"; /* prevent background scroll */
 }
 function closeMenu(){
   document.getElementById("sidebar").classList.remove("open");
   document.getElementById("overlay").classList.remove("show");
+  document.getElementById("sidebar").setAttribute("aria-hidden","true");
+  document.body.style.overflow=""; /* restore scroll */
 }
 
-function goDashboard(){ window.location.href="user-dashboard.html"; }
-function setMsg(html){ document.getElementById("msg").innerHTML = html; }
-function showDepMsg(html){ document.getElementById("depMsg").innerHTML = html; }
+/* ✅ ESC key closes menu */
+document.addEventListener("keydown",(e)=>{
+  if(e.key==="Escape") closeMenu();
+});
 
 function statusPill(status){
   const s=(status||"pending").toLowerCase();
@@ -602,29 +615,26 @@ function renderDepositAddress(){
   document.getElementById("depAddress").innerText = found ? found.address : "No address configured";
 }
 
-/* ✅ Copy Address (green button + text change) */
-let copyResetTimer = null;
+/* ✅ Copy Address */
+let copyResetTimer=null;
 async function copyAddress(){
   const addr=document.getElementById("depAddress").innerText.trim();
-  const copyBtn = document.getElementById("copyBtn");
+  const copyBtn=document.getElementById("copyBtn");
 
   if(!addr || addr==="Loading…" || addr==="No address configured"){
-    if(copyBtn){
-      const oldText = copyBtn.innerText;
-      copyBtn.innerText = "No Address";
-      copyBtn.classList.add("copyGreen");
-      clearTimeout(copyResetTimer);
-      copyResetTimer=setTimeout(()=>{
-        copyBtn.innerText = oldText;
-        copyBtn.classList.remove("copyGreen");
-      }, 1400);
-    }
+    const oldText=copyBtn.innerText;
+    copyBtn.innerText="No Address";
+    copyBtn.classList.add("copyGreen");
+    clearTimeout(copyResetTimer);
+    copyResetTimer=setTimeout(()=>{
+      copyBtn.innerText=oldText;
+      copyBtn.classList.remove("copyGreen");
+    }, 1400);
     return;
   }
 
-  try{
-    await navigator.clipboard.writeText(addr);
-  }catch(e){
+  try{ await navigator.clipboard.writeText(addr); }
+  catch{
     const temp=document.createElement("textarea");
     temp.value=addr;
     document.body.appendChild(temp);
@@ -633,17 +643,14 @@ async function copyAddress(){
     temp.remove();
   }
 
-  if(copyBtn){
-    const oldText = copyBtn.innerText;
-    copyBtn.innerText = "Copied ✔️";
-    copyBtn.classList.add("copyGreen");
-
-    clearTimeout(copyResetTimer);
-    copyResetTimer=setTimeout(()=>{
-      copyBtn.innerText = oldText;
-      copyBtn.classList.remove("copyGreen");
-    }, 2000);
-  }
+  const oldText=copyBtn.innerText;
+  copyBtn.innerText="Copied ✔️";
+  copyBtn.classList.add("copyGreen");
+  clearTimeout(copyResetTimer);
+  copyResetTimer=setTimeout(()=>{
+    copyBtn.innerText=oldText;
+    copyBtn.classList.remove("copyGreen");
+  }, 2000);
 }
 
 /* Clear badge */
