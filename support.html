@@ -78,9 +78,9 @@ body{
 }
 .sidebar{
   position:fixed; top:0; right:-340px;
-  width:300px; height:100vh;
+  width:310px; height:100vh;
 
-  /* ✅ FIXED: match the same menu color style used in Withdraw/Plans */
+  /* keeps your current look */
   background:
     radial-gradient(900px 520px at 10% 0%, rgba(83,113,255,.10), transparent 55%),
     radial-gradient(900px 520px at 90% 0%, rgba(52,211,153,.08), transparent 55%),
@@ -96,13 +96,31 @@ body{
 .sidebar.open{ right:0; }
 .overlay.show{ display:block; }
 
+/* ✅ PREMIUM MENU HEADER */
 .sideTop{
   display:flex;
   justify-content:space-between;
   align-items:center;
   margin-bottom:14px;
 }
-.brand{font-weight:1000;font-size:18px;letter-spacing:.6px;}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:1000;
+  font-size:16px;
+  letter-spacing:.9px;
+}
+.brandLogo{
+  width:38px;height:38px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(135deg, rgba(91,108,255,.35), rgba(52,211,153,.20));
+  box-shadow:0 14px 50px rgba(0,0,0,.45);
+}
+.brandText{line-height:1.0}
+.brandText .sub{display:block;font-size:11px;color:rgba(234,240,255,.55);font-weight:900;margin-top:4px}
+
 .closeBtn{
   width:44px;height:44px;
   display:flex;
@@ -117,29 +135,97 @@ body{
   font-size:18px;
 }
 .closeBtn:hover{background:rgba(255,255,255,.08)}
+
+/* ✅ premium user card */
 .userTag{
-  padding:12px;border-radius:16px;
+  padding:12px;border-radius:18px;
   border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.06);
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.18));
+  box-shadow:0 18px 60px rgba(0,0,0,.50);
   margin-bottom:14px;
 }
-.sideSmall{color:var(--muted);font-size:13px;margin-top:0}
+.sideSmall{color:var(--muted);font-size:12px;margin-top:0;font-weight:1000}
+.userEmail{
+  font-weight:1000;
+  margin-top:8px;
+  font-size:14px;
+  color:rgba(234,240,255,.92);
+  word-break:break-word;
+}
+
+/* ✅ PREMIUM NAV LIST */
+.menuSectionTitle{
+  margin:12px 0 10px 0;
+  font-size:12px;
+  font-weight:1000;
+  letter-spacing:.5px;
+  color:rgba(234,240,255,.55);
+}
 .sideItem{
-  display:flex;gap:10px;align-items:center;
-  padding:12px;
+  position:relative;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:13px 14px;
   border:1px solid rgba(255,255,255,.12);
-  border-radius:16px;margin-bottom:10px;
+  border-radius:18px;
+  margin-bottom:10px;
   color:var(--text);
   background:rgba(0,0,0,.22);
   font-weight:1000;
   text-decoration:none;
+  overflow:hidden;
 }
-.sideItem:hover{background:rgba(255,255,255,.08)}
-.activeLink{border:1px solid rgba(56,189,248,.55);background:rgba(56,189,248,0.12);}
+.sideItem:before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  opacity:0;
+  transition:.25s ease;
+  background:radial-gradient(700px 220px at 10% 0%, rgba(91,108,255,.25), transparent 55%);
+}
+.sideItem:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,.08);
+}
+.sideItem:hover:before{opacity:1}
+.sideIcon{
+  width:38px;height:38px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  font-size:18px;
+}
+.sideLabel{position:relative}
+.sideArrow{
+  margin-left:auto;
+  opacity:.55;
+  font-weight:1000;
+  position:relative;
+}
+
+/* ✅ active item indicator */
+.activeLink{
+  border:1px solid rgba(56,189,248,.55);
+  background:rgba(56,189,248,0.10);
+}
+.activeLink .sideIcon{
+  background:rgba(56,189,248,0.16);
+  border-color:rgba(56,189,248,0.35);
+}
+.activeBar{
+  position:absolute;
+  left:0;top:10px;bottom:10px;
+  width:4px;border-radius:999px;
+  background:linear-gradient(180deg, #5b6cff, #34d399);
+  opacity:.95;
+}
+
+/* ✅ logout premium */
 .sideLogout{
   width:100%;
-  padding:14px;
-  border-radius:16px;
+  padding:15px 14px;
+  border-radius:18px;
   border:none;
   cursor:pointer;
   font-weight:1000;
@@ -147,6 +233,7 @@ body{
   background:linear-gradient(90deg, rgba(248,113,113,1), rgba(239,68,68,1));
   box-shadow:0 20px 70px rgba(239,68,68,.15);
 }
+.sideLogout:hover{filter:brightness(1.05)}
 
 /* Header */
 .topBar{
@@ -274,23 +361,62 @@ a:hover{text-decoration:underline}
 
 <div id="sidebar" class="sidebar" aria-hidden="true">
   <div class="sideTop">
-    <div class="brand">COINLUXORA</div>
+    <div class="brand">
+      <div class="brandLogo">⬡</div>
+      <div class="brandText">
+        COINLUXORA
+        <span class="sub">Premium Dashboard</span>
+      </div>
+    </div>
     <button class="closeBtn" onclick="closeMenu()" aria-label="Close menu">✕</button>
   </div>
 
   <div class="userTag">
     <div class="sideSmall">Logged in as</div>
-    <div id="sideEmail" style="font-weight:1000;margin-top:6px;">---</div>
+    <div id="sideEmail" class="userEmail">---</div>
   </div>
 
-  <a class="sideItem" href="user-dashboard.html">🏠 Dashboard</a>
-  <a class="sideItem" href="portfolio.html">📊 Portfolio</a>
-  <a class="sideItem" href="plans.html">💼 Investment Plans</a>
-  <a class="sideItem activeLink" href="support.html">🧑‍💻 Support / Contact</a>
-  <a class="sideItem" href="deposits.html">💳 Deposit</a>
-  <a class="sideItem" href="withdraw.html">➡ Withdraw Funds</a>
+  <div class="menuSectionTitle">MAIN MENU</div>
 
-  <div style="height:12px"></div>
+  <a class="sideItem" href="user-dashboard.html">
+    <div class="sideIcon">🏠</div>
+    <div class="sideLabel">Dashboard</div>
+    <div class="sideArrow">›</div>
+  </a>
+
+  <a class="sideItem" href="portfolio.html">
+    <div class="sideIcon">📊</div>
+    <div class="sideLabel">Portfolio</div>
+    <div class="sideArrow">›</div>
+  </a>
+
+  <a class="sideItem" href="plans.html">
+    <div class="sideIcon">💼</div>
+    <div class="sideLabel">Investment Plans</div>
+    <div class="sideArrow">›</div>
+  </a>
+
+  <a class="sideItem activeLink" href="support.html">
+    <div class="activeBar"></div>
+    <div class="sideIcon">🧑‍💻</div>
+    <div class="sideLabel">Support / Contact</div>
+    <div class="sideArrow">›</div>
+  </a>
+
+  <a class="sideItem" href="deposits.html">
+    <div class="sideIcon">💳</div>
+    <div class="sideLabel">Deposit</div>
+    <div class="sideArrow">›</div>
+  </a>
+
+  <a class="sideItem" href="withdraw.html">
+    <div class="sideIcon">➡</div>
+    <div class="sideLabel">Withdraw Funds</div>
+    <div class="sideArrow">›</div>
+  </a>
+
+  <div style="height:10px"></div>
+
   <button class="sideLogout" onclick="logout()">Logout</button>
 </div>
 
