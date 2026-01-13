@@ -78,26 +78,6 @@ body{
 
 .container{max-width:920px;margin:0 auto}
 
-/* ✅ ADDED: Sticky Menu Wrapper (ONLY CHANGE) */
-.stickyMenu{
-  position:sticky;
-  top:12px;
-  z-index:3000;
-  padding-bottom:10px;
-  margin-bottom:4px;
-  backdrop-filter: blur(14px);
-}
-.stickyMenu::before{
-  content:"";
-  position:absolute;
-  inset:-14px -14px -10px -14px;
-  background:rgba(5,10,24,.55);
-  border:1px solid rgba(255,255,255,.06);
-  border-radius:22px;
-  box-shadow:0 26px 70px rgba(0,0,0,.22);
-  z-index:-1;
-}
-
 /* ===== Loading Gate ===== */
 #authGate{
   position:fixed; inset:0; z-index:99999;
@@ -136,6 +116,44 @@ body{
   animation:spin 1s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============================================================
+   ✅ STICKY MENU POLISH (FIX OVERLAP + PREMIUM SCROLL)
+   - ONLY affects topRow wrapper
+   ============================================================ */
+.stickyMenu{
+  position:sticky;
+  top:12px;
+  z-index:3000;
+  margin-bottom:10px;     /* ✅ creates space between menu and hello card */
+}
+.stickyMenu::before{
+  content:"";
+  position:absolute;
+  inset:-10px -10px -8px -10px;
+  border-radius:26px;
+  background:rgba(5,10,24,.58);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 18px 70px rgba(0,0,0,.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  z-index:-1;
+  pointer-events:none;
+  opacity:0;
+  transform: translateY(-6px);
+  transition: .18s ease;
+}
+
+/* becomes visible once user scrolls a bit */
+.stickyMenu.isStuck::before{
+  opacity:1;
+  transform: translateY(0);
+}
+
+/* tighten the menu a little when stuck */
+.stickyMenu.isStuck .topRow{
+  margin-bottom:8px;
+}
 
 /* ===== TOP BAR ===== */
 .topRow{
@@ -267,6 +285,12 @@ body{
   box-shadow:0 16px 40px rgba(0,0,0,.35);
 }
 
+/* ✅ highlight polish on touch */
+.box, .balanceCard, .cryptoRow, .action, .card, .obCol, .chartWrap{
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== balanceCard ===== */
 .balanceCard{
   margin-top:14px;
   border-radius:24px;
@@ -521,7 +545,7 @@ body{
   display:flex;align-items:center;gap:10px;
   font-weight:1000;font-size:16px;letter-spacing:.9px;
   color:#fff;
-  padding:10px  12px;border-radius:16px;
+  padding:10px 12px;border-radius:16px;
   border:1px solid rgba(255,255,255,.10);
   background:linear-gradient(90deg, rgba(109,87,255,.85), rgba(124,77,255,.85));
   box-shadow:0 16px 50px rgba(109,87,255,.18);
@@ -828,8 +852,8 @@ body{
 
 <div class="container">
 
-  <!-- ✅ STICKY MENU WRAP (ONLY CHANGE) -->
-  <div class="stickyMenu">
+  <!-- ✅ STICKY WRAP -->
+  <div id="stickyMenu" class="stickyMenu">
     <div class="topRow">
       <div class="brand"><div class="brandIcon">📣</div>COIN</div>
       <div class="headerActions">
@@ -883,7 +907,6 @@ body{
     <div id="planBox"></div>
   </div>
 
-  <!-- ✅ TOP 10 MAJOR CRYPTO (ADDED BELOW ACTIVE PLAN) -->
   <div class="box">
     <h2>Top 10 Major Cryptos</h2>
     <div class="small">Live market prices (auto refresh every 20 seconds).</div>
@@ -891,7 +914,6 @@ body{
     <div id="top10List" class="crypto10Grid"></div>
   </div>
 
-  <!-- ✅ ADDED: TOP 10 FOREX PAIRS -->
   <div class="box">
     <h2>Top 10 Forex Pairs</h2>
     <div class="small">Live prices (auto refresh every 30 seconds).</div>
@@ -899,7 +921,6 @@ body{
     <div id="fxList" class="crypto10Grid"></div>
   </div>
 
-  <!-- ✅ ADDED: TOP STOCKS -->
   <div class="box">
     <h2>Top Stocks</h2>
     <div class="small">Live prices (auto refresh every 30 seconds).</div>
@@ -907,7 +928,6 @@ body{
     <div id="stocksList" class="crypto10Grid"></div>
   </div>
 
-  <!-- ✅ ADDED: TOP 10 FUTURES -->
   <div class="box">
     <h2>Top 10 Futures</h2>
     <div class="small">Live prices (auto refresh every 30 seconds).</div>
@@ -915,7 +935,6 @@ body{
     <div id="futuresList" class="crypto10Grid"></div>
   </div>
 
-  <!-- ✅ ADDED: TOP 10 INDICES -->
   <div class="box">
     <h2>Top 10 Indices</h2>
     <div class="small">Live prices (auto refresh every 30 seconds).</div>
@@ -923,7 +942,6 @@ body{
     <div id="indicesList" class="crypto10Grid"></div>
   </div>
 
-  <!-- ✅ Crypto Converter -->
   <div class="box">
     <h2>Crypto Converter</h2>
     <div class="small">Search & convert from ALL coins to ALL fiat currencies.</div>
@@ -952,7 +970,6 @@ body{
     </div>
   </div>
 
-  <!-- ✅ Fiat Converter -->
   <div class="box">
     <h2>Fiat Currency Converter</h2>
     <div class="small">Search & convert from ALL fiat currencies to ALL fiat currencies.</div>
@@ -977,7 +994,6 @@ body{
     </div>
   </div>
 
-  <!-- ✅ Order Book -->
   <div class="box">
     <h2>Live Crypto Order Book</h2>
     <div class="small">Auto refresh every 3 seconds. Binance → OKX → Bybit fallback.</div>
@@ -1004,7 +1020,6 @@ body{
       </div>
     </div>
 
-    <!-- ✅ Mini chart -->
     <div class="chartWrap">
       <div class="chartHead">
         <span>Mini Candlestick Chart</span>
@@ -1016,7 +1031,6 @@ body{
 
 </div>
 
-<!-- DOCK -->
 <div class="dock">
   <div class="dockInner">
     <div class="dockBar">
@@ -1031,12 +1045,27 @@ body{
 
 <script>
 /* ============================================================
+   ✅ STICKY MENU POLISH SCRIPT
+   - adds blur background only after scroll
+   ============================================================ */
+(function(){
+  const sticky = document.getElementById("stickyMenu");
+  if(!sticky) return;
+  const onScroll = ()=>{
+    if(window.scrollY > 14) sticky.classList.add("isStuck");
+    else sticky.classList.remove("isStuck");
+  };
+  onScroll();
+  window.addEventListener("scroll", onScroll, {passive:true});
+})();
+
+/* ============================================================
    ✅ AUTH GUARD
    ============================================================ */
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 const EDGE_CLEAR_BADGE_URL = `${SUPABASE_URL}/functions/v1/clear_badge`;
-const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const supabaseClient=supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUserEmail="";
 let currentUserId="";
@@ -1131,7 +1160,6 @@ const INDEX_SYMBOLS = [
 let marketTimer=null;
 
 function parseCSVLine(line){
-  // split CSV respecting commas in quotes
   const out=[];
   let cur="", inQ=false;
   for(let i=0;i<line.length;i++){
@@ -1145,7 +1173,6 @@ function parseCSVLine(line){
 }
 
 async function fetchStooqQuote(symbol){
-  // Stooq expects lowercase
   const s=String(symbol||"").toLowerCase();
   const url = `https://stooq.com/q/l/?s=${encodeURIComponent(s)}&f=sd2t2ohlcv&h&e=csv`;
   const res = await fetch(url);
@@ -1154,32 +1181,18 @@ async function fetchStooqQuote(symbol){
   if(lines.length < 2) throw new Error("no csv");
   const hdr=parseCSVLine(lines[0]);
   const row=parseCSVLine(lines[1]);
-
-  // map
   const m={};
   hdr.forEach((k,idx)=>m[k]=row[idx]);
-
-  // if "N/A"
   if(!m.Close || m.Close==="N/A") throw new Error("na");
-
   const close=Number(m.Close||0);
   const open=Number(m.Open||0);
   const chg = open ? ((close-open)/open)*100 : 0;
-
-  return {
-    close,
-    open,
-    chg
-  };
+  return { close, open, chg };
 }
 
 function logoForMarket(type, sym){
-  // Stock logos via Clearbit (works well for big tickers)
-  // Only for STOCKS; others use emoji.
   if(type==="stock"){
     const t = sym.replace(".US","").replace(".us","");
-    // best effort (not perfect but safe)
-    // use "logo.clearbit.com" with common domains for top companies:
     const domainMap={
       AAPL:"apple.com", MSFT:"microsoft.com", NVDA:"nvidia.com", AMZN:"amazon.com",
       GOOGL:"abc.xyz", META:"meta.com", TSLA:"tesla.com", V:"visa.com",
@@ -1198,16 +1211,10 @@ function buildMarketRow(type, title, symbol, price, chg){
   const chgClass = up ? "up" : "down";
   const sign = up ? "+" : "";
   let leftIcon="";
-
   if(type==="fx") leftIcon="💱";
   if(type==="future") leftIcon="🧾";
   if(type==="index") leftIcon="📌";
-
-  // Use same crypto UI row
-  const logoHTML = (type==="stock")
-    ? logoForMarket(type, symbol)
-    : "";
-
+  const logoHTML = (type==="stock") ? logoForMarket(type, symbol) : "";
   return `
     <div class="cryptoRow">
       <div class="cryptoLeft">
@@ -1219,7 +1226,6 @@ function buildMarketRow(type, title, symbol, price, chg){
           <span class="cryptoSym">${symbol}</span>
         </div>
       </div>
-
       <div class="cryptoRight">
         <div class="cryptoPrice">${Number(price).toLocaleString(undefined,{maximumFractionDigits:6})}</div>
         <div class="cryptoChg ${chgClass}">${sign}${Number(chg).toFixed(2)}%</div>
@@ -1236,19 +1242,12 @@ async function loadMarketList(type, items, msgId, listId){
   try{
     msg.textContent="Loading…";
     const results=[];
-
     for(const it of items){
       try{
-        // stooq symbol for fx pairs (format: eurusd)
-        // for our fx list we send raw EURUSD -> eurusd
-        const stooqSym = (type==="fx")
-          ? `${it.sym}` // eurusd style
-          : it.sym;
-
+        const stooqSym = (type==="fx") ? `${it.sym}` : it.sym;
         const q = await fetchStooqQuote(stooqSym);
         results.push({ ...it, close:q.close, chg:q.chg });
       }catch{
-        // show row as unavailable
         results.push({ ...it, close:null, chg:0, fail:true });
       }
     }
@@ -1292,16 +1291,13 @@ async function loadTop10MajorCryptos(){
 
   try{
     msg.textContent="Loading…";
-
     const url =
       `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${encodeURIComponent(TOP10_IDS.join(","))}&order=market_cap_desc&per_page=10&page=1&sparkline=false`;
     const res=await fetch(url);
     const data=await res.json();
 
     if(!Array.isArray(data) || data.length===0) throw new Error("No data");
-
     msg.textContent="";
-
     list.innerHTML = data.map(c=>{
       const chg=Number(c.price_change_percentage_24h||0);
       const chgClass = chg>=0 ? "up" : "down";
@@ -1615,8 +1611,6 @@ function nfmt(n, dp=2){
 
 /* ==============================
    ✅ SEARCHABLE DROPDOWN (ALL ITEMS)
-   - Search by name/symbol/code
-   - No slicing / no limited list
    ============================== */
 function mountDropdown(elId, items, getLabel, getSearch, onPick, initial){
   const root=document.getElementById(elId);
@@ -1651,7 +1645,6 @@ function mountDropdown(elId, items, getLabel, getSearch, onPick, initial){
       renderItems = items.filter(x => getSearch(x).includes(q));
     }
 
-    // render only "visible window" chunk for performance but keep ALL scrolling
     const MAX = Math.min(renderItems.length, 600);
     const slice = renderItems.slice(0, MAX);
 
@@ -1719,7 +1712,6 @@ const FAVORITES = [
 ];
 
 async function loadCoinGeckoLists(){
-  // load fiats
   try{
     const fiatRes = await fetch("https://api.coingecko.com/api/v3/simple/supported_vs_currencies");
     const fiats = await fiatRes.json();
@@ -1728,12 +1720,10 @@ async function loadCoinGeckoLists(){
     FIATS = ["USD","NGN","EUR","GBP","CAD","AUD","JPY","CNY","INR"];
   }
 
-  // load all coins (name + symbol)
   try{
     const coinRes = await fetch("https://api.coingecko.com/api/v3/coins/list?include_platform=false");
     const coins = await coinRes.json();
 
-    // build map for favorites first
     const favMap = new Map(FAVORITES.map(f=>[f.id,f]));
     const list = [];
     for(const c of (coins||[])){
@@ -1742,7 +1732,6 @@ async function loadCoinGeckoLists(){
       const sym = (c.symbol||"").toLowerCase();
       list.push({ id:c.id, label:`${c.name}${sym?` (${sym.toUpperCase()})`:""}`, icon:"◈", symbol:sym });
     }
-
     ALL_COINS = [...FAVORITES, ...list];
   }catch{
     ALL_COINS = [...FAVORITES];
@@ -1750,7 +1739,6 @@ async function loadCoinGeckoLists(){
 
   const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$", symbol:f.toLowerCase() }));
 
-  // mount dropdowns with full search
   mountDropdown(
     "ddCryptoA",
     ALL_COINS,
@@ -1790,7 +1778,6 @@ async function loadCoinGeckoLists(){
   await loadFxRates();
 }
 
-/* FX rates */
 async function loadFxRates(){
   try{
     const res = await fetch("https://open.er-api.com/v6/latest/USD");
@@ -1802,7 +1789,6 @@ async function loadFxRates(){
   }
 }
 
-/* swap crypto direction */
 function swapCrypto(){
   cryptoDirection = (cryptoDirection === "crypto_to_fiat") ? "fiat_to_crypto" : "crypto_to_fiat";
 
@@ -1810,7 +1796,6 @@ function swapCrypto(){
   selectedCryptoA = selectedCryptoB;
   selectedCryptoB = tmp;
 
-  // rebuild dropdowns
   const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$", symbol:f.toLowerCase() }));
 
   if(cryptoDirection === "crypto_to_fiat"){
@@ -1823,7 +1808,6 @@ function swapCrypto(){
     mountDropdown("ddCryptoB", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{selectedCryptoB=x;}, selectedCryptoB);
 
   }else{
-    // fiat -> crypto
     selectedCryptoA = {id:"USD",label:"USD",icon:"$",symbol:"usd"};
     if(!selectedCryptoB?.id || selectedCryptoB.id.length<=4) selectedCryptoB = FAVORITES[0];
 
@@ -1836,7 +1820,6 @@ function swapCrypto(){
   document.getElementById("cryptoReverse").textContent="--";
 }
 
-/* crypto convert */
 async function convertCrypto(){
   const amt = Number(document.getElementById("cryptoAmount").value || 0);
   if(!amt || amt<=0){
@@ -1883,7 +1866,6 @@ async function convertCrypto(){
   }
 }
 
-/* swap fiat */
 function swapFiat(){
   const tmp = selectedFiatA;
   selectedFiatA = selectedFiatB;
@@ -1897,7 +1879,6 @@ function swapFiat(){
   document.getElementById("fiatResult").textContent="--";
 }
 
-/* fiat convert */
 async function convertFiat(){
   const amt = Number(document.getElementById("fiatAmount").value || 0);
   if(!amt || amt<=0){
@@ -1928,10 +1909,8 @@ async function convertFiat(){
   }
 }
 
-/* ========== ORDER BOOK FIXED WITH FALLBACKS ========== */
 function parsePairForProviders(pair){
-  // pair example BTCUSDT
-  const base=pair.replace("USDT","").replace("USD",""); // BTC
+  const base=pair.replace("USDT","").replace("USD","");
   return {
     binance: pair,
     okx: `${base}-USDT`,
@@ -1976,7 +1955,6 @@ async function loadOrderBook(force=false){
   try{
     let book=null;
 
-    // try Binance → OKX → Bybit
     try{ book = await tryBinanceOrderBook(meta.binance); }
     catch(e1){
       try{ book = await tryOKXOrderBook(meta.okx); }
@@ -1988,7 +1966,6 @@ async function loadOrderBook(force=false){
     const asks=(book.asks||[]).slice(0,20);
     const bids=(book.bids||[]).slice(0,20);
 
-    // normalize OKX/Bybit shapes
     const aNorm = asks.map(x => [x[0], x[1]]);
     const bNorm = bids.map(x => [x[0], x[1]]);
 
@@ -2001,13 +1978,11 @@ async function loadOrderBook(force=false){
   }
 }
 
-/* auto refresh every 3s */
 function startOrderAutoRefresh(){
   if(orderTimer) clearInterval(orderTimer);
   orderTimer=setInterval(()=>loadOrderBook(false), 3000);
 }
 
-/* mini candlestick widget */
 function loadChart(){
   const pair=document.getElementById("obPair").value;
   const base=pair.replace("USDT","").toUpperCase();
@@ -2021,14 +1996,10 @@ document.getElementById("obPair").addEventListener("change",()=>{
   loadChart();
 });
 
-/* balance / plan */
 async function loadBalance(){
   const { data } = await supabaseClient.from("users").select("*").eq("email", currentUserEmail).single();
-
-  /* ✅ FIXED: comma thousands formatting ($1,000.00) */
   const balNum = Number(data?.balance || 0);
   const bal = balNum.toLocaleString(undefined,{ minimumFractionDigits:2, maximumFractionDigits:2 });
-
   document.getElementById("balance").innerHTML = "$" + bal;
 }
 function money(n){ return "$" + Number(n||0).toFixed(2); }
@@ -2066,7 +2037,6 @@ async function loadActivePlan(){
   }
 
   planMsg.innerHTML="";
-
   const plan=data[0];
   const amount=Number(plan.amount||0);
   const roi=Number(plan.roi_percent||0);
@@ -2093,7 +2063,6 @@ async function loadActivePlan(){
   `;
 }
 
-/* badges */
 function setBadge(elId, count){
   const el=document.getElementById(elId);
   if(!el) return;
@@ -2156,13 +2125,11 @@ async function clearBadge(badge_key){
   }catch(e){}
 }
 
-/* logout */
 async function logout(){
   await supabaseClient.auth.signOut();
   window.location.replace("login.html");
 }
 
-/* init */
 function initWithUser(user){
   currentUserEmail=user.email;
   currentUserId=user.id;
@@ -2179,11 +2146,9 @@ function initWithUser(user){
   loadRealtimeBadgesOnce();
   subscribeToRealtimeBadges();
 
-  // ✅ top 10 cryptos (added)
   loadTop10MajorCryptos();
   startTop10AutoRefresh();
 
-  // ✅ NEW: markets
   loadAllMarkets();
   startMarketAutoRefresh();
 
