@@ -282,7 +282,7 @@ body{
 }
 
 /* ✅ highlight polish on touch */
-.box, .balanceCard, .cryptoRow, .action, .card, .chartWrap{
+.box, .balanceCard, .cryptoRow, .action, .card, .chartWrap, .obRow{
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -357,7 +357,7 @@ body{
   cursor:pointer;
   box-shadow:0 16px 40px rgba(0,0,0,.35);
 }
-swapBtn:hover{filter:brightness(1.05)}
+.swapBtn:hover{filter:brightness(1.05)}
 .convBtn{
   width:100%;
   height:54px;
@@ -470,6 +470,110 @@ swapBtn:hover{filter:brightness(1.05)}
   font-size:13px;
 }
 .chartFrame{width:100%;height:340px;border:0;display:block}
+
+/* ===== ORDER BOOK (NEW) ===== */
+.orderBookWrap{
+  margin-top:12px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.12);
+  overflow:hidden;
+  background:rgba(0,0,0,.22);
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+}
+.obHead{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 12px;
+  border-bottom:1px solid rgba(255,255,255,.10);
+  font-weight:1000;
+  color:rgba(234,240,255,.78);
+  font-size:13px;
+}
+.obStatus{
+  display:flex;gap:8px;align-items:center;font-weight:1000;font-size:12px;color:rgba(234,240,255,.70);
+}
+.pulseDot{
+  width:9px;height:9px;border-radius:999px;background:rgba(34,197,94,1);
+  box-shadow:0 0 18px rgba(34,197,94,.55);
+  animation:pulse 1.3s ease-in-out infinite;
+}
+@keyframes pulse{0%{transform:scale(.85);opacity:.7}50%{transform:scale(1.1);opacity:1}100%{transform:scale(.85);opacity:.7}}
+
+.obGrid{
+  display:grid;
+  grid-template-columns: 1fr 90px 1fr;
+  gap:10px;
+  padding:12px;
+}
+@media (max-width:720px){
+  .obGrid{ grid-template-columns:1fr; }
+}
+.obCol{
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:16px;
+  overflow:hidden;
+  background:rgba(0,0,0,.18);
+}
+.obColHead{
+  display:flex;justify-content:space-between;gap:10px;
+  padding:10px 10px;
+  font-weight:1000;font-size:12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  color:rgba(234,240,255,.75);
+}
+.obRows{
+  max-height:320px;
+  overflow:auto;
+}
+.obRow{
+  position:relative;
+  display:grid;
+  grid-template-columns: 1.15fr 1fr 1fr;
+  gap:10px;
+  padding:8px 10px;
+  font-weight:1000;
+  font-size:12px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.obRow:last-child{border-bottom:none}
+.obRow span{z-index:2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.obRow .p{color:#f87171}
+.obRow.ask .p{color:#f87171}
+.obRow.bid .p{color:#22c55e}
+.obRow .bgBar{
+  position:absolute; inset:0;
+  z-index:1;
+  opacity:.14;
+}
+.obRow.ask .bgBar{ background:linear-gradient(90deg, rgba(248,113,113,.0), rgba(248,113,113,.55)); transform-origin:right; }
+.obRow.bid .bgBar{ background:linear-gradient(90deg, rgba(34,197,94,.55), rgba(34,197,94,.0)); transform-origin:left; }
+.obMid{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px 0;
+}
+.midPrice{
+  font-weight:1000;
+  font-size:15px;
+}
+.spreadPill{
+  font-size:11px;
+  font-weight:1000;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.08);
+  color:rgba(234,240,255,.80);
+}
+.obFoot{
+  padding:10px 12px;
+  border-top:1px solid rgba(255,255,255,.10);
+  display:flex;justify-content:space-between;gap:10px;
+  color:rgba(234,240,255,.65);
+  font-size:12px;font-weight:900;
+}
 
 /* ===== SIDEBAR ===== */
 .overlay{
@@ -945,6 +1049,39 @@ swapBtn:hover{filter:brightness(1.05)}
       </div>
       <iframe id="tvChart" class="chartFrame"></iframe>
     </div>
+
+    <!-- ✅ ORDER BOOK UI (ADDED BELOW MINI CHART) -->
+    <div class="orderBookWrap">
+      <div class="obHead">
+        <span>Order Book</span>
+        <div class="obStatus">
+          <span class="pulseDot"></span>
+          <span id="obStatusTxt">Connecting…</span>
+        </div>
+      </div>
+
+      <div class="obGrid">
+        <div class="obCol">
+          <div class="obColHead"><span>Asks</span><span>Price / Amount / Total</span></div>
+          <div id="obAsks" class="obRows"></div>
+        </div>
+
+        <div class="obMid">
+          <div class="midPrice" id="obMidPrice">--</div>
+          <div class="spreadPill" id="obSpread">Spread: --</div>
+        </div>
+
+        <div class="obCol">
+          <div class="obColHead"><span>Bids</span><span>Price / Amount / Total</span></div>
+          <div id="obBids" class="obRows"></div>
+        </div>
+      </div>
+
+      <div class="obFoot">
+        <div id="obExchange">Source: --</div>
+        <div id="obUpdated">Updated: --</div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -977,7 +1114,7 @@ swapBtn:hover{filter:brightness(1.05)}
 })();
 
 /* ============================================================
-   ✅ AUTH GUARD
+   ✅ AUTH GUARD  (ADDED/EXISTING)
    ============================================================ */
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
@@ -1000,6 +1137,9 @@ let selectedFiatA={ id:"USD", label:"USD", icon:"$" };
 let selectedFiatB={ id:"NGN", label:"NGN", icon:"₦" };
 
 let top10Timer=null;
+
+/* Order book timer */
+let obTimer=null;
 
 /* ============================================================
    ✅ TOP 10 MAJOR CRYPTO
@@ -1025,6 +1165,9 @@ function fmtMoneySmart(n){
   if(num >= 1000) return "$" + num.toLocaleString(undefined,{maximumFractionDigits:2});
   if(num >= 1) return "$" + num.toLocaleString(undefined,{maximumFractionDigits:4});
   return "$" + num.toLocaleString(undefined,{maximumFractionDigits:8});
+}
+function nfmt(n, dp=2){
+  return Number(n).toLocaleString(undefined,{minimumFractionDigits:dp, maximumFractionDigits:dp});
 }
 
 async function loadTop10MajorCryptos(){
@@ -1073,6 +1216,183 @@ async function loadTop10MajorCryptos(){
 function startTop10AutoRefresh(){
   if(top10Timer) clearInterval(top10Timer);
   top10Timer=setInterval(loadTop10MajorCryptos, 20000);
+}
+
+/* ============================================================
+   ✅ ORDER BOOK (WORKING with fallback + proxy)
+   ============================================================ */
+function setOBStatus(text, ok=true){
+  const el=document.getElementById("obStatusTxt");
+  if(!el) return;
+  el.textContent=text;
+  el.style.color = ok ? "rgba(234,240,255,.75)" : "rgba(248,113,113,1)";
+}
+function setOBMeta(exchangeName){
+  const ex=document.getElementById("obExchange");
+  const up=document.getElementById("obUpdated");
+  if(ex) ex.textContent = "Source: " + (exchangeName || "--");
+  if(up) up.textContent = "Updated: " + new Date().toLocaleTimeString();
+}
+
+function parseBinanceOB(json){
+  const asks=(json?.asks||[]).map(a=>({p:Number(a[0]), q:Number(a[1])})).filter(x=>x.p>0 && x.q>0);
+  const bids=(json?.bids||[]).map(b=>({p:Number(b[0]), q:Number(b[1])})).filter(x=>x.p>0 && x.q>0);
+  return {asks, bids};
+}
+function parseOKXOB(json){
+  const d=json?.data?.[0];
+  const asks=(d?.asks||[]).map(a=>({p:Number(a[0]), q:Number(a[1])})).filter(x=>x.p>0 && x.q>0);
+  const bids=(d?.bids||[]).map(b=>({p:Number(b[0]), q:Number(b[1])})).filter(x=>x.p>0 && x.q>0);
+  return {asks, bids};
+}
+function parseBybitOB(json){
+  const r=json?.result;
+  const asks=(r?.a||r?.asks||[]).map(a=>({p:Number(a[0]), q:Number(a[1])})).filter(x=>x.p>0 && x.q>0);
+  const bids=(r?.b||r?.bids||[]).map(b=>({p:Number(b[0]), q:Number(b[1])})).filter(x=>x.p>0 && x.q>0);
+  return {asks, bids};
+}
+
+function renderOB(asks, bids){
+  const aEl=document.getElementById("obAsks");
+  const bEl=document.getElementById("obBids");
+  if(!aEl || !bEl) return;
+
+  const depthA=asks.slice(0,18);
+  const depthB=bids.slice(0,18);
+
+  const maxAsk = Math.max(...depthA.map(x=>x.q), 0.0000001);
+  const maxBid = Math.max(...depthB.map(x=>x.q), 0.0000001);
+
+  // asks should display top->bottom (higher price at top in UI)
+  const asksSorted=[...depthA].sort((x,y)=>y.p-x.p);
+  const bidsSorted=[...depthB].sort((x,y)=>y.p-x.p);
+
+  let askTotal=0;
+  aEl.innerHTML = asksSorted.map(x=>{
+    askTotal += x.q;
+    const w = Math.min(100, (x.q/maxAsk)*100);
+    return `
+      <div class="obRow ask">
+        <div class="bgBar" style="transform:scaleX(${w/100});"></div>
+        <span class="p">${nfmt(x.p, x.p<1?8:2)}</span>
+        <span>${nfmt(x.q, x.q<1?6:4)}</span>
+        <span>${nfmt(askTotal, askTotal<1?6:4)}</span>
+      </div>
+    `;
+  }).join("") || `<div class="small" style="padding:10px">No asks</div>`;
+
+  let bidTotal=0;
+  bEl.innerHTML = bidsSorted.map(x=>{
+    bidTotal += x.q;
+    const w = Math.min(100, (x.q/maxBid)*100);
+    return `
+      <div class="obRow bid">
+        <div class="bgBar" style="transform:scaleX(${w/100});"></div>
+        <span class="p">${nfmt(x.p, x.p<1?8:2)}</span>
+        <span>${nfmt(x.q, x.q<1?6:4)}</span>
+        <span>${nfmt(bidTotal, bidTotal<1?6:4)}</span>
+      </div>
+    `;
+  }).join("") || `<div class="small" style="padding:10px">No bids</div>`;
+
+  const bestAsk = asks.length ? Math.min(...asks.map(x=>x.p)) : 0;
+  const bestBid = bids.length ? Math.max(...bids.map(x=>x.p)) : 0;
+
+  const mid = (bestAsk && bestBid) ? ((bestAsk + bestBid)/2) : 0;
+  const spread = (bestAsk && bestBid) ? (bestAsk - bestBid) : 0;
+
+  const midEl=document.getElementById("obMidPrice");
+  const spEl=document.getElementById("obSpread");
+  if(midEl) midEl.textContent = mid ? nfmt(mid, mid<1?8:2) : "--";
+  if(spEl) spEl.textContent = spread ? `Spread: ${nfmt(spread, spread<1?8:4)}` : "Spread: --";
+}
+
+function normalizePairForOKX(pair){
+  // BTCUSDT => BTC-USDT
+  const base = pair.replace("USDT","").toUpperCase();
+  return `${base}-USDT`;
+}
+function normalizePairForBybit(pair){
+  // Keep BTCUSDT format
+  return pair.toUpperCase();
+}
+function makeCORSUrl(url){
+  // Only used if direct fetch fails. Uses a public proxy (best-effort).
+  return `https://cors.isomorphic-git.org/${url}`;
+}
+
+async function fetchJSON(url, useProxy=false){
+  const target = useProxy ? makeCORSUrl(url) : url;
+  const res = await fetch(target, { cache:"no-store" });
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  return await res.json();
+}
+
+async function loadOrderBookOnce(){
+  const pair = document.getElementById("obPair")?.value || "BTCUSDT";
+
+  // Try Binance
+  try{
+    setOBStatus("Loading from Binance…", true);
+    const url = `https://api.binance.com/api/v3/depth?symbol=${encodeURIComponent(pair)}&limit=20`;
+    const json = await fetchJSON(url, false);
+    const {asks,bids} = parseBinanceOB(json);
+    if(!asks.length || !bids.length) throw new Error("Empty");
+    renderOB(asks,bids);
+    setOBStatus("Live", true);
+    setOBMeta("Binance");
+    return;
+  }catch(e){}
+
+  // OKX fallback
+  try{
+    setOBStatus("Loading from OKX…", true);
+    const instId = normalizePairForOKX(pair);
+    const url = `https://www.okx.com/api/v5/market/books?instId=${encodeURIComponent(instId)}&sz=20`;
+    const json = await fetchJSON(url, false);
+    const {asks,bids} = parseOKXOB(json);
+    if(!asks.length || !bids.length) throw new Error("Empty");
+    renderOB(asks,bids);
+    setOBStatus("Live", true);
+    setOBMeta("OKX");
+    return;
+  }catch(e){}
+
+  // Bybit fallback
+  try{
+    setOBStatus("Loading from Bybit…", true);
+    const symbol = normalizePairForBybit(pair);
+    const url = `https://api.bybit.com/v5/market/orderbook?category=spot&symbol=${encodeURIComponent(symbol)}&limit=20`;
+    const json = await fetchJSON(url, false);
+    const {asks,bids} = parseBybitOB(json);
+    if(!asks.length || !bids.length) throw new Error("Empty");
+    renderOB(asks,bids);
+    setOBStatus("Live", true);
+    setOBMeta("Bybit");
+    return;
+  }catch(e){}
+
+  // FINAL CORS PROXY fallback
+  try{
+    setOBStatus("Network blocked — using proxy…", false);
+    const url = `https://api.binance.com/api/v3/depth?symbol=${encodeURIComponent(pair)}&limit=20`;
+    const json = await fetchJSON(url, true);
+    const {asks,bids} = parseBinanceOB(json);
+    if(!asks.length || !bids.length) throw new Error("Empty");
+    renderOB(asks,bids);
+    setOBStatus("Live (proxy)", true);
+    setOBMeta("Binance (Proxy)");
+    return;
+  }catch(e){
+    setOBStatus("Failed (CORS/Network)", false);
+    setOBMeta("--");
+  }
+}
+
+function startOrderBook(){
+  if(obTimer) clearInterval(obTimer);
+  loadOrderBookOnce();
+  obTimer=setInterval(loadOrderBookOnce, 3000);
 }
 
 /* ===== auth ===== */
@@ -1245,6 +1565,7 @@ async function loadDashboardIdentity(){
     setNameEverywhere(fullName);
     setTopAvatar(avatarUrl);
     setSideAvatar(avatarUrl);
+
     const iso = await resolveCountryISO(countryName);
     const niceName = (countryName && countryName.trim()) ? countryName.trim() : isoToCountryName(iso);
     setCountryChip(iso, niceName);
@@ -1254,10 +1575,6 @@ async function loadDashboardIdentity(){
     setSideAvatar("");
     setCountryChip("");
   }
-}
-
-function nfmt(n, dp=2){
-  return Number(n).toLocaleString(undefined,{minimumFractionDigits:dp, maximumFractionDigits:dp});
 }
 
 /* ==============================
@@ -1511,6 +1828,7 @@ function loadChart(){
 }
 document.getElementById("obPair").addEventListener("change",()=>{
   loadChart();
+  startOrderBook();
 });
 
 async function loadBalance(){
@@ -1668,6 +1986,7 @@ function initWithUser(user){
 
   loadCoinGeckoLists().then(async ()=>{
     loadChart();
+    startOrderBook(); // ✅ start order book after chart
   });
 }
 </script>
