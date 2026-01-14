@@ -282,7 +282,7 @@ body{
 }
 
 /* ✅ highlight polish on touch */
-.box, .balanceCard, .cryptoRow, .action, .card, .obCol, .chartWrap{
+.box, .balanceCard, .cryptoRow, .action, .card, .chartWrap{
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -451,45 +451,6 @@ swapBtn:hover{filter:brightness(1.05)}
 }
 .ddItem:hover{background:rgba(255,255,255,.06)}
 .ddItem small{color:rgba(234,240,255,.55);font-weight:900}
-
-/* ===== order book ===== */
-.orderWrap{
-  margin-top:12px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-.obCol{
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(0,0,0,.22);
-  padding:12px;
-  box-shadow:0 16px 40px rgba(0,0,0,.35);
-}
-.obTitle{
-  font-weight:1000;
-  color:rgba(234,240,255,.85);
-  font-size:13px;
-  margin-bottom:10px;
-  display:flex;
-  justify-content:space-between;
-}
-.obList{
-  display:grid;
-  gap:8px;
-  max-height:260px;
-  overflow:auto;
-  padding-right:6px;
-}
-.obItem{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  font-weight:900;
-  font-size:12px;
-  color:rgba(234,240,255,.78);
-}
-@media(max-width:520px){.orderWrap{grid-template-columns:1fr}}
 
 /* ===== mini chart ===== */
 .chartWrap{
@@ -975,18 +936,6 @@ swapBtn:hover{filter:brightness(1.05)}
         <option value="XRPUSDT">XRP/USDT</option>
         <option value="SOLUSDT">SOL/USDT</option>
       </select>
-      <button class="convBtn" style="height:50px" onclick="loadOrderBook(true)">🔄 Refresh Now</button>
-    </div>
-
-    <div class="orderWrap">
-      <div class="obCol">
-        <div class="obTitle"><span>🟥 Asks</span><span style="color:rgba(234,240,255,.55);font-size:12px">Price | Amount</span></div>
-        <div id="asks" class="obList"></div>
-      </div>
-      <div class="obCol">
-        <div class="obTitle"><span>🟩 Bids</span><span style="color:rgba(234,240,255,.55);font-size:12px">Price | Amount</span></div>
-        <div id="bids" class="obList"></div>
-      </div>
     </div>
 
     <div class="chartWrap">
@@ -1050,7 +999,7 @@ let selectedCryptoB={ id:"USD", label:"USD", icon:"$", symbol:"usd" };
 let selectedFiatA={ id:"USD", label:"USD", icon:"$" };
 let selectedFiatB={ id:"NGN", label:"NGN", icon:"₦" };
 
-let orderTimer=null;
+let top10Timer=null;
 
 /* ============================================================
    ✅ TOP 10 MAJOR CRYPTO
@@ -1067,7 +1016,6 @@ const TOP10_IDS = [
   "cardano",
   "tron"
 ];
-let top10Timer=null;
 
 /* ============================================================
    ✅ helpers
@@ -1552,69 +1500,7 @@ async function convertFiat(){
   }
 }
 
-/* ===== order book ===== */
-function parsePairForProviders(pair){
-  const base=pair.replace("USDT","").replace("USD","");
-  return { binance: pair, okx: `${base}-USDT`, bybit: `${base}USDT` };
-}
-async function tryBinanceOrderBook(symbol){
-  const res = await fetch(`https://api.binance.com/api/v3/depth?symbol=${encodeURIComponent(symbol)}&limit=20`);
-  const data = await res.json();
-  if(!data?.asks || !data?.bids) throw new Error("binance invalid");
-  return { asks:data.asks, bids:data.bids, source:"Binance" };
-}
-async function tryOKXOrderBook(instId){
-  const res = await fetch(`https://www.okx.com/api/v5/market/books?instId=${encodeURIComponent(instId)}&sz=20`);
-  const data = await res.json();
-  const book = data?.data?.[0];
-  if(!book?.asks || !book?.bids) throw new Error("okx invalid");
-  return { asks:book.asks, bids:book.bids, source:"OKX" };
-}
-async function tryBybitOrderBook(symbol){
-  const res = await fetch(`https://api.bybit.com/v5/market/orderbook?category=spot&symbol=${encodeURIComponent(symbol)}&limit=20`);
-  const data = await res.json();
-  const book = data?.result;
-  if(!book?.a || !book?.b) throw new Error("bybit invalid");
-  return { asks:book.a, bids:book.b, source:"Bybit" };
-}
-
-async function loadOrderBook(force=false){
-  const pair=document.getElementById("obPair").value;
-  const asksEl=document.getElementById("asks");
-  const bidsEl=document.getElementById("bids");
-  const meta=parsePairForProviders(pair);
-
-  if(force){
-    asksEl.innerHTML="<div class='obItem'>Loading…</div>";
-    bidsEl.innerHTML="<div class='obItem'>Loading…</div>";
-  }
-
-  try{
-    let book=null;
-    try{ book = await tryBinanceOrderBook(meta.binance); }
-    catch(e1){
-      try{ book = await tryOKXOrderBook(meta.okx); }
-      catch(e2){ book = await tryBybitOrderBook(meta.bybit); }
-    }
-
-    const asks=(book.asks||[]).slice(0,20);
-    const bids=(book.bids||[]).slice(0,20);
-
-    const aNorm = asks.map(x => [x[0], x[1]]);
-    const bNorm = bids.map(x => [x[0], x[1]]);
-
-    asksEl.innerHTML=aNorm.map(a=>`<div class="obItem"><span>${Number(a[0]).toLocaleString()}</span><span>${Number(a[1]).toFixed(6)}</span></div>`).join("") || "<div class='obItem'>No asks</div>";
-    bidsEl.innerHTML=bNorm.map(b=>`<div class="obItem"><span>${Number(b[0]).toLocaleString()}</span><span>${Number(b[1]).toFixed(6)}</span></div>`).join("") || "<div class='obItem'>No bids</div>";
-
-  }catch(e){
-    asksEl.innerHTML="<div class='obItem'>Order book blocked / unavailable</div>";
-    bidsEl.innerHTML="<div class='obItem'>Try changing pair</div>";
-  }
-}
-function startOrderAutoRefresh(){
-  if(orderTimer) clearInterval(orderTimer);
-  orderTimer=setInterval(()=>loadOrderBook(false), 3000);
-}
+/* ===== chart ===== */
 function loadChart(){
   const pair=document.getElementById("obPair").value;
   const base=pair.replace("USDT","").toUpperCase();
@@ -1624,7 +1510,6 @@ function loadChart(){
   frame.src = `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${encodeURIComponent(tvSymbol)}&interval=60&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=rgba(0,0,0,0)&studies=[]&theme=dark&style=1&timezone=Etc/UTC&withdateranges=1&hideideas=1`;
 }
 document.getElementById("obPair").addEventListener("change",()=>{
-  loadOrderBook(true);
   loadChart();
 });
 
@@ -1782,9 +1667,7 @@ function initWithUser(user){
   startTop10AutoRefresh();
 
   loadCoinGeckoLists().then(async ()=>{
-    await loadOrderBook(true);
     loadChart();
-    startOrderAutoRefresh();
   });
 }
 </script>
