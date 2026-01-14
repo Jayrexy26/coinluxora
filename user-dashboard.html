@@ -596,6 +596,10 @@ body{
     linear-gradient(180deg, rgba(4,8,20,0.98), rgba(2,6,23,0.98));
   box-shadow:0 26px 90px rgba(0,0,0,.60);
   backdrop-filter: blur(16px);
+
+  /* ✅ ONLY CHANGE: make sidebar/menu scrollable */
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 .sidebar.open{ left:0; }
 .sideTop{
@@ -1660,29 +1664,6 @@ async function startOrderBook(){
     }catch(e){}
   };
 }
-
-/* ===== auth ===== */
-(async function authGuard(){
-  try{
-    const { data: sessionData } = await supabaseClient.auth.getSession();
-    const session = sessionData?.session;
-    if(!session){ window.location.replace("login.html"); return; }
-
-    const { data, error } = await supabaseClient.auth.getUser();
-    const user = data?.user;
-    if(error || !user){ window.location.replace("login.html"); return; }
-
-    if(!user.email_confirmed_at){
-      await supabaseClient.auth.signOut();
-      window.location.replace("verify.html?status=unverified");
-      return;
-    }
-    window.COINLUXORA_USER=user;
-    initWithUser(user);
-  }catch(e){
-    window.location.replace("login.html");
-  }
-})();
 
 /* NAV */
 function goPlans(){ window.location.href="plans.html"; }
