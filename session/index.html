@@ -142,6 +142,8 @@
       cursor:pointer;
       transition:transform .06s ease, opacity .2s ease;
       user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .key:active{ transform:scale(.98); }
     .key.ghost{
@@ -230,30 +232,30 @@
     <div class="dots" id="dots"></div>
 
     <div class="pad" id="pad">
-      <button class="key" data-num="7">7</button>
-      <button class="key" data-num="0">0</button>
-      <button class="key" data-num="1">1</button>
+      <button type="button" class="key" data-num="7">7</button>
+      <button type="button" class="key" data-num="0">0</button>
+      <button type="button" class="key" data-num="1">1</button>
 
-      <button class="key" data-num="2">2</button>
-      <button class="key" data-num="3">3</button>
-      <button class="key" data-num="8">8</button>
+      <button type="button" class="key" data-num="2">2</button>
+      <button type="button" class="key" data-num="3">3</button>
+      <button type="button" class="key" data-num="8">8</button>
 
-      <button class="key" data-num="4">4</button>
-      <button class="key" data-num="5">5</button>
-      <button class="key" data-num="6">6</button>
+      <button type="button" class="key" data-num="4">4</button>
+      <button type="button" class="key" data-num="5">5</button>
+      <button type="button" class="key" data-num="6">6</button>
 
-      <button class="key" data-num="9">9</button>
-      <button class="key ghost" id="backspace">⌫</button>
-      <button class="key ghost" id="clear">Clear</button>
+      <button type="button" class="key" data-num="9">9</button>
+      <button type="button" class="key ghost" id="backspace">⌫</button>
+      <button type="button" class="key ghost" id="clear">Clear</button>
     </div>
 
     <div class="verifyWrap">
-      <button class="btn" id="verifyBtn" disabled>VERIFY</button>
+      <button type="button" class="btn" id="verifyBtn" disabled>VERIFY</button>
       <div class="hint" id="hint"></div>
     </div>
 
     <div class="smallActions">
-      <button class="linkBtn" id="logoutBtn">Log out</button>
+      <button type="button" class="linkBtn" id="logoutBtn">Log out</button>
     </div>
     <div class="footerSpace"></div>
   </div>
@@ -329,7 +331,7 @@
     // Must be logged in to use this page
     const { data: { user: u } } = await supabase.auth.getUser();
     if(!u){
-      window.location.href = "/login.html"; // change if your login page path differs
+      window.location.href = "/login.html";
       return;
     }
     user = u;
@@ -346,14 +348,12 @@
       .maybeSingle();
 
     if(error){
-      // if table missing or policy issue
       setHint("PIN system not ready. Please try again.", true);
       console.error(error);
       return;
     }
 
     if(!data){
-      // No pin yet → create mode
       mode = "create";
       pinHashFromDb = null;
       titleText.textContent = "Secure Authentication";
@@ -382,8 +382,6 @@
 
       if(input.length === 4){
         setVerifyReady(true);
-
-        // For quick UX: auto verify after 4 digits
         setTimeout(()=> verifyBtn.click(), 120);
       } else {
         setVerifyReady(false);
@@ -414,7 +412,6 @@
 
     try{
       if(mode === "create"){
-        // Save new pin hash
         const newHash = await sha256(input + ":" + user.id);
 
         const { error } = await supabase
@@ -429,13 +426,11 @@
         }
 
         setHint("PIN created successfully ✅");
-        // After creating, send user to dashboard
         setTimeout(()=>{
           window.location.href = "/user-dashboard.html";
         }, 450);
 
       } else {
-        // Verify existing pin
         const attemptHash = await sha256(input + ":" + user.id);
 
         if(attemptHash !== pinHashFromDb){
@@ -464,7 +459,6 @@
     window.location.href = "/login.html";
   });
 
-  // run
   init();
 </script>
 
