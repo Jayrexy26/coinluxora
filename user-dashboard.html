@@ -597,10 +597,24 @@ body{
   box-shadow:0 26px 90px rgba(0,0,0,.60);
   backdrop-filter: blur(16px);
 
-  /* ✅ ONLY CHANGE: make sidebar/menu scrollable */
+  /* ✅ scrollable menu */
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
+
+  /* ✅ ONLY ADDED: premium thin scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.18) rgba(0,0,0,0);
 }
+.sidebar::-webkit-scrollbar{width:8px}
+.sidebar::-webkit-scrollbar-track{background:transparent}
+.sidebar::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.16);
+  border-radius:999px;
+  border:2px solid rgba(0,0,0,0);
+  background-clip:padding-box;
+}
+.sidebar::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.22)}
+
 .sidebar.open{ left:0; }
 .sideTop{
   display:flex;align-items:center;justify-content:space-between;
@@ -1664,6 +1678,29 @@ async function startOrderBook(){
     }catch(e){}
   };
 }
+
+/* ===== auth ===== */
+(async function authGuard(){
+  try{
+    const { data: sessionData } = await supabaseClient.auth.getSession();
+    const session = sessionData?.session;
+    if(!session){ window.location.replace("login.html"); return; }
+
+    const { data, error } = await supabaseClient.auth.getUser();
+    const user = data?.user;
+    if(error || !user){ window.location.replace("login.html"); return; }
+
+    if(!user.email_confirmed_at){
+      await supabaseClient.auth.signOut();
+      window.location.replace("verify.html?status=unverified");
+      return;
+    }
+    window.COINLUXORA_USER=user;
+    initWithUser(user);
+  }catch(e){
+    window.location.replace("login.html");
+  }
+})();
 
 /* NAV */
 function goPlans(){ window.location.href="plans.html"; }
