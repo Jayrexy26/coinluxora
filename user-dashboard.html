@@ -199,10 +199,15 @@
     }
     .iconBtn:hover{background:rgba(255,255,255,.08)}
 
-    /* ✅ NEW: hide top-left COIN + avatar + menu button when menu open */
+    /* ============================================================
+      ✅ NEW: HIDE TOP LEFT + PROFILE + MENU BUTTON + DOCK WHEN MENU OPENS
+    ============================================================ */
     body.menuOpen #stickyMenu{
       visibility:hidden;
       pointer-events:none;
+    }
+    body.menuOpen .dock{
+      display:none;
     }
 
     /* ===== HELLO CARD ===== */
@@ -1401,9 +1406,6 @@
       "ripple","usd-coin","dogecoin","cardano","tron"
     ];
 
-    /* ============================================================
-      ✅ helpers
-    ============================================================ */
     function fmtMoneySmart(n){
       const num=Number(n||0);
       if(num >= 1000) return "$" + num.toLocaleString(undefined,{maximumFractionDigits:2});
@@ -1461,8 +1463,7 @@
     }
 
     /* ============================================================
-      ✅ ORDER BOOK — MULTI WS FALLBACK (FIXED FOR MOBILE NETWORKS)
-      (UNCHANGED)
+      ✅ ORDER BOOK — MULTI WS FALLBACK (UNCHANGED)
     ============================================================ */
     let obWS=null;
     let obReconnectTimer=null;
@@ -1754,6 +1755,7 @@
     function goSupportAndClear(){ clearBadge("notifications"); window.location.href="support.html"; }
     function goDashboard(){ window.scrollTo({top:0,behavior:"smooth"}); }
 
+    /* ✅ UPDATED: menu open/close toggles */
     function openMenu(){
       document.getElementById("sidebar").classList.add("open");
       document.getElementById("overlay").classList.add("show");
@@ -1764,6 +1766,7 @@
       document.getElementById("overlay").classList.remove("show");
       document.body.classList.remove("menuOpen");
     }
+
     function hideGate(){
       const g=document.getElementById("authGate");
       if(g) g.style.display="none";
@@ -1837,7 +1840,6 @@
       document.getElementById("sideName").textContent=nice;
     }
 
-    /* ========= COUNTRY CHIP ========= */
     function isoToFlag(iso){
       if(!iso || iso.length!==2) return "";
       const code=iso.toUpperCase();
@@ -1874,7 +1876,7 @@
       const n=normalizeCountryText(raw);
       const map={ "nigeria":"NG","ng":"NG","nigerian":"NG","united states":"US","united states of america":"US","usa":"US","us":"US","america":"US","united kingdom":"GB","great britain":"GB","britain":"GB","england":"GB","uk":"GB","gb":"GB","canada":"CA","germany":"DE","france":"FR","south africa":"ZA","kenya":"KE","ghana":"GH","united arab emirates":"AE","uae":"AE","dubai":"AE","saudi arabia":"SA","india":"IN","australia":"AU","brazil":"BR","mexico":"MX","japan":"JP","singapore":"SG" };
       if(map[n]) return map[n];
-      for(const key of Object.keys(map)){ if(n.includes(key)) return map[key]; }
+      for(const key of Object.keys(map)){ if(n.includes(key)) return map[n]; }
       return "";
     }
 
@@ -1930,9 +1932,6 @@
       }
     }
 
-    /* ==============================
-      ✅ SEARCHABLE DROPDOWN (ALL ITEMS)
-    ============================== */
     function mountDropdown(elId, items, getLabel, getSearch, onPick, initial){
       const root=document.getElementById(elId);
       root.innerHTML = `
@@ -2178,7 +2177,6 @@
       }
     }
 
-    /* ===== chart ===== */
     function loadChart(){
       const pair=document.getElementById("obPair").value;
       const base=pair.replace("USDT","").toUpperCase();
@@ -2194,7 +2192,6 @@
       startOrderBook();
     });
 
-    /* ===== balance / plan / badges / logout ... (UNCHANGED) ===== */
     async function loadBalance(){
       const { data } = await supabaseClient.from("users").select("*").eq("email", currentUserEmail).single();
       const balNum = Number(data?.balance || 0);
@@ -2361,15 +2358,12 @@
       startNewsAutoRefresh();
 
       loadCoinGeckoLists().then(async ()=>{
-        mountOBPairs(); /* ✅ order book pair searchable dropdown */
+        mountOBPairs();
         loadChart();
         startOrderBook();
       });
     }
 
-    /* ============================================================
-      ✅ AUTH GUARD (ONE BLOCK) + EMAIL VERIFIED
-    ============================================================ */
     (async function authGuard(){
       try{
         const { data: sessionData } = await supabaseClient.auth.getSession();
