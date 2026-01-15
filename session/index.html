@@ -310,7 +310,6 @@
     }
   }
 
-  // ✅ Keypad click works on your device
   pad.addEventListener("click", (e)=>{
     const btn = e.target.closest("button");
     if(!btn) return;
@@ -353,12 +352,17 @@
     try{
       supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      const { data: { user: u } } = await supabaseClient.auth.getUser();
-      if(!u){
+      // ✅ avoid redirect loop: delay + getSession (more reliable)
+      await new Promise(r => setTimeout(r, 150));
+      const { data: sessData } = await supabaseClient.auth.getSession();
+      const session = sessData?.session;
+
+      if(!session?.user){
         window.location.href = "/login.html";
         return;
       }
-      user = u;
+
+      user = session.user;
 
       userEmail.textContent = user.email || "";
       userName.textContent = (user.user_metadata?.full_name || user.user_metadata?.name || "User");
@@ -397,7 +401,6 @@
   verifyBtn.addEventListener("click", async ()=>{
     if(input.length !== 4) return;
 
-    // if supabase init failed
     if(!supabaseClient || !user){
       setHint("PIN system not ready. Refresh the page.", true);
       return;
