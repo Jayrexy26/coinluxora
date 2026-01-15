@@ -10,13 +10,11 @@
   <style>
     :root{
       --bg:#050a18;
-      --card:#0b1226;
       --stroke:rgba(255,255,255,.10);
       --text:#eaf0ff;
       --muted:rgba(234,240,255,.65);
       --danger:#ef4444;
     }
-
     *{ box-sizing:border-box; }
     body{
       margin:0;
@@ -24,7 +22,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      background: radial-gradient(1200px 800px at 50% 20%, rgba(139,211,255,.10), transparent 55%) , var(--bg);
+      background: var(--bg);
       font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
       padding:24px;
@@ -38,63 +36,24 @@
       padding:22px 22px 18px;
       box-shadow:0 16px 50px rgba(0,0,0,.45);
       position:relative;
-      overflow:hidden;
-      isolation:isolate;
     }
 
-    .card:before{
-      content:"";
-      position:absolute;
-      inset:-120px -160px auto -160px;
-      height:260px;
-      background:radial-gradient(circle at 50% 40%, rgba(139,211,255,.18), transparent 60%);
-      pointer-events:none;
-      z-index:0;
-    }
+    h1{ margin:0; font-size:1.6rem; }
+    .sub{ margin:8px 0 0; color:var(--muted); }
 
-    .layer{ position:relative; z-index:2; }
-
-    .top{
-      display:flex;
-      align-items:center;
-      gap:14px;
-    }
-
-    .avatar{
-      width:54px;
-      height:54px;
-      border-radius:50%;
-      border:1px solid var(--stroke);
+    /* DEBUG LINE */
+    .debug{
+      margin:12px 0 16px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
       background:rgba(255,255,255,.06);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-    }
-    .avatar svg{ width:34px; height:34px; opacity:.9; }
-
-    .who{ display:flex; flex-direction:column; gap:2px; }
-    .name{ font-weight:700; letter-spacing:.2px; }
-    .email{ font-size:.92rem; color:var(--muted); }
-
-    .divider{
-      height:1px;
-      background:var(--stroke);
-      margin:18px 0 16px;
+      color:rgba(255,255,255,.85);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      overflow:auto;
     }
 
-    h1{
-      margin:0;
-      font-size:1.75rem;
-      letter-spacing:.2px;
-    }
-    .sub{
-      margin:8px 0 0;
-      color:var(--muted);
-      font-size:1.02rem;
-    }
-
-    /* ✅ Rounded PIN boxes */
     .pinBoxes{
       margin:18px 0 18px;
       display:flex;
@@ -110,7 +69,6 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      box-shadow:0 12px 35px rgba(0,0,0,.25);
     }
     .pinDot{
       width:14px;
@@ -132,8 +90,6 @@
       gap:14px;
       max-width:320px;
       margin:0 auto 18px;
-      position:relative;
-      z-index:5;
     }
 
     .key{
@@ -149,52 +105,16 @@
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
     }
-    .key:active{ transform:scale(.98); }
-
     .key.ghost{
       background:transparent;
       color:rgba(255,255,255,.75);
     }
 
-    .btn{
-      width:100%;
-      height:52px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.10);
-      color:rgba(234,240,255,.55);
-      font-weight:800;
-      letter-spacing:.6px;
-      cursor:not-allowed;
-    }
-    .btn.ready{
-      background:rgba(255,255,255,.16);
-      color:var(--text);
-      cursor:pointer;
-    }
-
     .hint{
       text-align:center;
-      margin:12px 0 0;
+      margin:10px 0 0;
       color:rgba(234,240,255,.60);
-      font-size:.95rem;
       min-height:20px;
-    }
-
-    .smallActions{
-      display:flex;
-      justify-content:center;
-      gap:12px;
-      margin-top:10px;
-      flex-wrap:wrap;
-    }
-    .linkBtn{
-      background:transparent;
-      border:none;
-      color:rgba(139,211,255,.90);
-      cursor:pointer;
-      font-weight:700;
-      font-size:.95rem;
     }
 
     .danger{ color:var(--danger) !important; }
@@ -204,159 +124,64 @@
 <body>
 
   <div class="card">
-    <div class="layer">
+    <h1>Secure Authentication</h1>
+    <div class="sub" id="subText">Please verify your 4-digit PIN code</div>
 
-      <div class="top">
-        <div class="avatar">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M12 12c2.76 0 5-2.24 5-5S14.76 2 12 2 7 4.24 7 7s2.24 5 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" fill="currentColor" opacity=".85"/>
-          </svg>
-        </div>
-        <div class="who">
-          <div class="name" id="userName">Loading...</div>
-          <div class="email" id="userEmail"></div>
-        </div>
-      </div>
+    <div class="debug" id="debug">DEBUG: page loaded...</div>
 
-      <div class="divider"></div>
-
-      <h1>Secure Authentication</h1>
-      <div class="sub" id="subText">Please verify your 4-digit PIN code</div>
-
-      <div class="pinBoxes" id="pinBoxes">
-        <div class="pinBox"><div class="pinDot"></div></div>
-        <div class="pinBox"><div class="pinDot"></div></div>
-        <div class="pinBox"><div class="pinDot"></div></div>
-        <div class="pinBox"><div class="pinDot"></div></div>
-      </div>
-
-      <div class="pad" id="pad">
-        <button type="button" class="key" data-num="7">7</button>
-        <button type="button" class="key" data-num="0">0</button>
-        <button type="button" class="key" data-num="1">1</button>
-
-        <button type="button" class="key" data-num="2">2</button>
-        <button type="button" class="key" data-num="3">3</button>
-        <button type="button" class="key" data-num="8">8</button>
-
-        <button type="button" class="key" data-num="4">4</button>
-        <button type="button" class="key" data-num="5">5</button>
-        <button type="button" class="key" data-num="6">6</button>
-
-        <button type="button" class="key" data-num="9">9</button>
-        <button type="button" class="key ghost" data-action="backspace">⌫</button>
-        <button type="button" class="key ghost" data-action="clear">Clear</button>
-      </div>
-
-      <div>
-        <button type="button" class="btn" id="verifyBtn" disabled>VERIFY</button>
-        <div class="hint" id="hint"></div>
-      </div>
-
-      <div class="smallActions">
-        <button type="button" class="linkBtn" id="logoutBtn">Log out</button>
-      </div>
-
+    <div class="pinBoxes" id="pinBoxes">
+      <div class="pinBox"><div class="pinDot"></div></div>
+      <div class="pinBox"><div class="pinDot"></div></div>
+      <div class="pinBox"><div class="pinDot"></div></div>
+      <div class="pinBox"><div class="pinDot"></div></div>
     </div>
+
+    <div class="pad" id="pad">
+      <button type="button" class="key" data-num="7">7</button>
+      <button type="button" class="key" data-num="0">0</button>
+      <button type="button" class="key" data-num="1">1</button>
+
+      <button type="button" class="key" data-num="2">2</button>
+      <button type="button" class="key" data-num="3">3</button>
+      <button type="button" class="key" data-num="8">8</button>
+
+      <button type="button" class="key" data-num="4">4</button>
+      <button type="button" class="key" data-num="5">5</button>
+      <button type="button" class="key" data-num="6">6</button>
+
+      <button type="button" class="key" data-num="9">9</button>
+      <button type="button" class="key ghost" data-action="backspace">⌫</button>
+      <button type="button" class="key ghost" data-action="clear">Clear</button>
+    </div>
+
+    <div class="hint" id="hint"></div>
   </div>
 
 <script>
-  const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4NzE2MjUsImV4cCI6MjA1MjQ0NzYyNX0.RGOC9l-xiYk8gwQpC_XoB9XJrTz8g5og35s5t7XUL5o";
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  let mode = "verify";
-  let input = "";
-  let pinHashFromDb = null;
-  let user = null;
-
-  const subText = document.getElementById("subText");
-  const hint = document.getElementById("hint");
-  const verifyBtn = document.getElementById("verifyBtn");
-  const userName = document.getElementById("userName");
-  const userEmail = document.getElementById("userEmail");
-  const logoutBtn = document.getElementById("logoutBtn");
+  // ✅ ultra-safe: errors won't stop input logic
+  const debug = document.getElementById("debug");
   const pad = document.getElementById("pad");
+  const hint = document.getElementById("hint");
   const pinBoxes = Array.from(document.querySelectorAll(".pinBox"));
 
-  function setHint(msg, isDanger=false){
-    hint.textContent = msg || "";
-    hint.classList.toggle("danger", !!isDanger);
-  }
+  let input = "";
 
-  function setVerifyReady(ready){
-    verifyBtn.disabled = !ready;
-    verifyBtn.classList.toggle("ready", !!ready);
+  function dbg(msg){
+    debug.textContent = msg;
   }
 
   function renderPinBoxes(){
     pinBoxes.forEach((box, i)=>{
       box.classList.toggle("filled", i < input.length);
     });
-    setVerifyReady(input.length === 4);
   }
 
-  function resetInput(){
-    input = "";
-    renderPinBoxes();
-    setHint("");
+  function setHint(msg, danger=false){
+    hint.textContent = msg || "";
+    hint.classList.toggle("danger", !!danger);
   }
 
-  async function sha256(str){
-    const data = new TextEncoder().encode(str);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-  }
-
-  async function init(){
-    const { data: { user: u } } = await supabase.auth.getUser();
-    if(!u){
-      window.location.href = "/login.html";
-      return;
-    }
-    user = u;
-
-    userEmail.textContent = user.email || "";
-    userName.textContent = (user.user_metadata?.full_name || user.user_metadata?.name || "User");
-
-    const { data, error } = await supabase
-      .from("user_pins")
-      .select("pin_hash")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if(error){
-      setHint("PIN system not ready. Please try again.", true);
-      console.error(error);
-      return;
-    }
-
-    if(!data){
-      mode = "create";
-      pinHashFromDb = null;
-      subText.textContent = "Create your new 4-digit PIN";
-      setHint("Create a PIN you'll remember.");
-    } else {
-      mode = "verify";
-      pinHashFromDb = data.pin_hash;
-      subText.textContent = "Please verify your 4-digit PIN code";
-      setHint("");
-    }
-
-    resetInput();
-  }
-
-  function addDigit(n){
-    if(input.length >= 4) return;
-    input += String(n);
-    renderPinBoxes();
-    if(input.length === 4){
-      setTimeout(()=> verifyBtn.click(), 120);
-    }
-  }
-
-  // ✅ ONLY CLICK (works on your device!)
+  // ✅ keypad ALWAYS works regardless of Supabase
   pad.addEventListener("click", (e)=>{
     const btn = e.target.closest("button");
     if(!btn) return;
@@ -365,72 +190,41 @@
     const action = btn.getAttribute("data-action");
 
     if(num !== null){
-      addDigit(num);
+      if(input.length >= 4) return;
+      input += String(num);
+      renderPinBoxes();
+      dbg(`DEBUG: tapped=${num} | input=${input}`);
       return;
     }
 
     if(action === "backspace"){
-      if(input.length === 0) return;
       input = input.slice(0, -1);
       renderPinBoxes();
+      dbg(`DEBUG: backspace | input=${input}`);
       return;
     }
 
     if(action === "clear"){
-      resetInput();
+      input = "";
+      renderPinBoxes();
+      dbg(`DEBUG: clear | input=${input}`);
       return;
     }
   });
 
-  verifyBtn.addEventListener("click", async ()=>{
-    if(input.length !== 4) return;
+  // ✅ start debug
+  dbg("DEBUG: listeners attached ✅ Tap keypad now...");
 
-    verifyBtn.disabled = true;
-    verifyBtn.classList.remove("ready");
-
-    try{
-      if(mode === "create"){
-        const newHash = await sha256(input + ":" + user.id);
-
-        const { error } = await supabase
-          .from("user_pins")
-          .insert([{ user_id: user.id, pin_hash: newHash }]);
-
-        if(error){
-          setHint("Unable to create PIN. Try again.", true);
-          console.error(error);
-          resetInput();
-          return;
-        }
-
-        setHint("PIN created successfully ✅");
-        setTimeout(()=> window.location.href = "/user-dashboard.html", 450);
-
-      } else {
-        const attemptHash = await sha256(input + ":" + user.id);
-
-        if(attemptHash !== pinHashFromDb){
-          setHint("Incorrect PIN. Try again.", true);
-          resetInput();
-          return;
-        }
-
-        setHint("Verified ✅");
-        setTimeout(()=> window.location.href = "/user-dashboard.html", 280);
-      }
-    }catch(err){
-      console.error(err);
-      setHint("Something went wrong. Try again.", true);
-      resetInput();
-    }
-  });
-
-  logoutBtn.addEventListener("click", async ()=>{
-    await supabase.auth.signOut();
-    window.location.href = "/login.html";
-  });
-
-  init();
+  // Optional: try supabase init but don't break keypad if error
+  try{
+    const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY4NzE2MjUsImV4cCI6MjA1MjQ0NzYyNX0.RGOC9l-xiYk8gwQpC_XoB9XJrTz8g5og35s5t7XUL5o";
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    setHint("Supabase init ✅", false);
+  }catch(err){
+    console.log(err);
+    setHint("Supabase init failed (but keypad still works)", true);
+  }
 </script>
 
 </body>
