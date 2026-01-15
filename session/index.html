@@ -70,7 +70,21 @@
       align-items:center;
       justify-content:center;
       overflow:hidden;
+      position:relative;
+      flex:0 0 auto;
     }
+
+    /* ✅ Profile image */
+    .avatar img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:none;
+    }
+
+    /* default icon */
     .avatar svg{ width:34px; height:34px; opacity:.9; }
 
     .who{ display:flex; flex-direction:column; gap:2px; }
@@ -207,11 +221,16 @@
     <div class="layer">
 
       <div class="top">
-        <div class="avatar">
-          <svg viewBox="0 0 24 24" fill="none">
+        <div class="avatar" id="avatarBox">
+          <!-- ✅ image will show only if user has a photo -->
+          <img id="avatarImg" alt="Profile"/>
+
+          <!-- default icon -->
+          <svg id="avatarIcon" viewBox="0 0 24 24" fill="none">
             <path d="M12 12c2.76 0 5-2.24 5-5S14.76 2 12 2 7 4.24 7 7s2.24 5 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" fill="currentColor" opacity=".85"/>
           </svg>
         </div>
+
         <div class="who">
           <div class="name" id="userName">Loading...</div>
           <div class="email" id="userEmail"></div>
@@ -272,6 +291,10 @@
   const userEmail = document.getElementById("userEmail");
   const logoutBtn = document.getElementById("logoutBtn");
   const pinBoxes = Array.from(document.querySelectorAll(".pinBox"));
+
+  // ✅ avatar refs
+  const avatarImg = document.getElementById("avatarImg");
+  const avatarIcon = document.getElementById("avatarIcon");
 
   let input = "";
   let mode = "verify";
@@ -339,8 +362,6 @@
   // Supabase logic AFTER UI ✅
   // ---------------------------
   const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
-
-  // ✅ UPDATED ANON KEY (YOUR LATEST KEY)
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 
   async function sha256(str){
@@ -348,6 +369,29 @@
     const hashBuffer = await crypto.subtle.digest("SHA-256", data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  // ✅ set avatar photo if exists
+  function applyAvatarPhoto(u){
+    const meta = u?.user_metadata || {};
+    const photo =
+      meta.avatar_url ||
+      meta.picture ||
+      meta.photoURL ||
+      meta.profile_photo ||
+      "";
+
+    if(photo){
+      avatarImg.src = photo;
+      avatarImg.style.display = "block";
+      avatarIcon.style.display = "none";
+
+      // fallback if image fails
+      avatarImg.onerror = () => {
+        avatarImg.style.display = "none";
+        avatarIcon.style.display = "block";
+      };
+    }
   }
 
   async function init(){
@@ -366,8 +410,10 @@
 
       user = session.user;
 
+      // ✅ Apply user name/email/photo
       userEmail.textContent = user.email || "";
       userName.textContent = (user.user_metadata?.full_name || user.user_metadata?.name || "User");
+      applyAvatarPhoto(user);
 
       const { data, error } = await supabaseClient
         .from("user_pins")
