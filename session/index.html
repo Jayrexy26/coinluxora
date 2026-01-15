@@ -106,7 +106,6 @@
       font-size:1.02rem;
     }
 
-    /* ✅ ONLY ROUND DOTS */
     .pinDotsWrap{
       display:flex;
       justify-content:center;
@@ -138,7 +137,6 @@
       transform:scale(1.08);
     }
 
-    /* ✅ shake animation like iPhone */
     @keyframes shake{
       0%{ transform:translateX(0); }
       15%{ transform:translateX(-10px); }
@@ -155,7 +153,6 @@
       box-shadow:0 0 0 4px rgba(239,68,68,.14);
     }
 
-    /* ✅ LOCK TIMER BOX */
     .lockTimer{
       width:100%;
       max-width:360px;
@@ -219,7 +216,6 @@
       color:rgba(255,255,255,.75);
     }
 
-    /* ✅ lock keypad */
     .pad.locked{
       opacity:.40;
       pointer-events:none;
@@ -242,7 +238,6 @@
       font-size:.95rem;
     }
 
-    /* ✅ POPUP */
     .overlay{
       position:fixed;
       inset:0;
@@ -353,7 +348,6 @@
           <div class="dot"></div>
         </div>
 
-        <!-- ✅ NEW lock timer UI -->
         <div class="lockTimer" id="lockTimer">
           <div class="t1">Too many incorrect attempts 🔒</div>
           <div class="t2" id="lockTimeText">05:00</div>
@@ -414,7 +408,6 @@
   const modalTitle = document.getElementById("modalTitle");
   const modalSub = document.getElementById("modalSub");
 
-  // ✅ lock timer refs
   const lockTimer = document.getElementById("lockTimer");
   const lockTimeText = document.getElementById("lockTimeText");
 
@@ -425,15 +418,14 @@
   let supabaseClient = null;
   let isBusy = false;
 
-  /* =========================================================
-     ✅ PIN ATTEMPT LIMITER (5 tries + 5 min countdown)
-     ========================================================= */
+  // ✅ limiter
   const MAX_TRIES = 5;
   const LOCK_MINUTES = 5;
   let lockInterval = null;
+  let limiterId = "guest"; // ✅ stable key id
 
-  function triesKey(){ return `coinluxora_pin_tries_${user?.id || "guest"}`; }
-  function lockKey(){ return `coinluxora_pin_lock_${user?.id || "guest"}`; }
+  function triesKey(){ return `coinluxora_pin_tries_${limiterId}`; }
+  function lockKey(){  return `coinluxora_pin_lock_${limiterId}`; }
 
   function getTries(){
     const t = parseInt(localStorage.getItem(triesKey()) || "0", 10);
@@ -483,6 +475,7 @@
         setTries(0);
         unlockKeypad();
         resetInput();
+        isBusy = false;
         return;
       }
 
@@ -493,13 +486,9 @@
     lockInterval = setInterval(tick, 250);
   }
 
-  function isLocked(){
-    const until = getLockUntil();
-    return until && until > Date.now();
-  }
-
   function enforceLockIfNeeded(){
-    if(isLocked()){
+    const until = getLockUntil();
+    if(until && until > Date.now()){
       startCountdown();
       return true;
     }
@@ -532,6 +521,7 @@
     if(isBusy) return;
     if(enforceLockIfNeeded()) return;
     if(input.length >= 4) return;
+
     input += String(n);
     renderDots();
 
@@ -578,7 +568,7 @@
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M20 6 9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>`;
-    }else{
+    } else {
       statusCircle.innerHTML = `
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M6 6l12 12M18 6 6 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
@@ -632,11 +622,13 @@
 
       user = session.user;
 
+      // ✅ stable limiter key
+      limiterId = (user.email || user.id || "guest").toLowerCase().replace(/[^a-z0-9@._-]/g,"_");
+
       userEmail.textContent = user.email || "";
       userName.textContent = (user.user_metadata?.full_name || user.user_metadata?.name || "User");
       applyAvatarPhoto(user);
 
-      // ✅ enforce lock (persist after refresh)
       enforceLockIfNeeded();
 
       const { data, error } = await supabaseClient
@@ -689,7 +681,7 @@
           return;
         }
 
-        // ✅ after create: reset limiter counters
+        // ✅ reset limiter
         setTries(0);
         setLockUntil(0);
         unlockKeypad();
@@ -701,15 +693,14 @@
         const attemptHash = await sha256(input + ":" + user.id);
 
         if(attemptHash !== pinHashFromDb){
-          // ❌ incorrect pin -> limiter
           let tries = getTries() + 1;
           setTries(tries);
 
+          shakeDots();
+
           if(tries >= MAX_TRIES){
             resetInput();
-            shakeDots();
             showPopup("err", "Too Many Attempts 🔒", "Please wait 5 minutes and try again.");
-
             lockFor5Minutes();
 
             setTimeout(()=>{
@@ -719,8 +710,6 @@
             return;
           }
 
-          // normal incorrect
-          shakeDots();
           showPopup("err", "Incorrect PIN ❌", `${MAX_TRIES - tries} tries left. Please try again.`);
 
           setTimeout(()=>{
@@ -731,7 +720,7 @@
           return;
         }
 
-        // ✅ correct: reset limiter
+        // ✅ correct
         setTries(0);
         setLockUntil(0);
         unlockKeypad();
