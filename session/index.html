@@ -10,13 +10,11 @@
   <style>
     :root{
       --bg:#050a18;
-      --card:#0b1226;
       --stroke:rgba(255,255,255,.10);
       --text:#eaf0ff;
       --muted:rgba(234,240,255,.65);
       --danger:#ef4444;
       --ok:#22c55e;
-      --accent:#8bd3ff;
     }
 
     *{ box-sizing:border-box; }
@@ -108,36 +106,25 @@
       font-size:1.02rem;
     }
 
-    /* PIN boxes */
-    .pinBoxes{
-      margin:18px 0 18px;
+    /* ✅ ONLY ROUND DOTS (NO SQUARE BOXES) */
+    .pinDots{
+      margin:22px 0 20px;
       display:flex;
       justify-content:center;
-      gap:14px;
+      gap:18px;
     }
-    .pinBox{
-      width:56px;
-      height:56px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(255,255,255,.06);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow:0 12px 35px rgba(0,0,0,.25);
-    }
-    .pinDot{
-      width:14px;
-      height:14px;
+    .dot{
+      width:16px;
+      height:16px;
       border-radius:999px;
-      background:transparent;
-      border:1px solid rgba(255,255,255,.30);
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.20);
       transition:.12s ease;
     }
-    .pinBox.filled .pinDot{
+    .dot.filled{
       background:rgba(255,255,255,.92);
       border-color:rgba(255,255,255,.92);
-      transform:scale(1.06);
+      transform:scale(1.08);
     }
 
     .pad{
@@ -234,7 +221,7 @@
       position:absolute;
       inset:-120px -140px auto -140px;
       height:240px;
-      background:radial-gradient(circle at 50% 45%, rgba(34,197,94,.22), transparent 60%);
+      background:radial-gradient(circle at 50% 45%, rgba(255,255,255,.12), transparent 60%);
       pointer-events:none;
     }
 
@@ -244,19 +231,29 @@
       text-align:center;
     }
 
-    .checkCircle{
+    .statusCircle{
       width:66px;
       height:66px;
       border-radius:999px;
       margin:6px auto 12px;
-      border:1px solid rgba(34,197,94,.35);
-      background:rgba(34,197,94,.18);
       display:flex;
       align-items:center;
       justify-content:center;
+      box-shadow:0 16px 55px rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.08);
+    }
+    .statusCircle.ok{
+      border-color:rgba(34,197,94,.35);
+      background:rgba(34,197,94,.18);
       box-shadow:0 16px 55px rgba(34,197,94,.18);
     }
-    .checkCircle svg{ width:34px; height:34px; }
+    .statusCircle.err{
+      border-color:rgba(239,68,68,.40);
+      background:rgba(239,68,68,.16);
+      box-shadow:0 16px 55px rgba(239,68,68,.16);
+    }
+    .statusCircle svg{ width:34px; height:34px; }
 
     .modalTitle{
       font-weight:900;
@@ -278,7 +275,7 @@
     <div class="layer">
 
       <div class="top">
-        <div class="avatar" id="avatarBox">
+        <div class="avatar">
           <img id="avatarImg" alt="Profile"/>
           <svg id="avatarIcon" viewBox="0 0 24 24" fill="none">
             <path d="M12 12c2.76 0 5-2.24 5-5S14.76 2 12 2 7 4.24 7 7s2.24 5 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" fill="currentColor" opacity=".85"/>
@@ -296,11 +293,12 @@
       <h1>Secure Authentication</h1>
       <div class="sub" id="subText">Please verify your 4-digit PIN code</div>
 
-      <div class="pinBoxes">
-        <div class="pinBox"><div class="pinDot"></div></div>
-        <div class="pinBox"><div class="pinDot"></div></div>
-        <div class="pinBox"><div class="pinDot"></div></div>
-        <div class="pinBox"><div class="pinDot"></div></div>
+      <!-- ✅ only dots now -->
+      <div class="pinDots" id="pinDots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
       </div>
 
       <div class="pad" id="pad">
@@ -332,39 +330,32 @@
     </div>
   </div>
 
-  <!-- ✅ Verified popup -->
+  <!-- ✅ Popup -->
   <div class="overlay" id="overlay">
     <div class="modal">
       <div class="modalInner">
-        <div class="checkCircle">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M20 6 9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <h2 class="modalTitle" id="modalTitle">Verified ✔️</h2>
-        <div class="modalSub" id="modalSub">Redirecting you to your dashboard...</div>
+        <div class="statusCircle" id="statusCircle"></div>
+        <h2 class="modalTitle" id="modalTitle"></h2>
+        <div class="modalSub" id="modalSub"></div>
       </div>
     </div>
   </div>
 
 <script>
-  // ---------------------------
-  // UI + keypad ALWAYS attach first ✅
-  // ---------------------------
   const pad = document.getElementById("pad");
   const verifyBtn = document.getElementById("verifyBtn");
   const subText = document.getElementById("subText");
   const userName = document.getElementById("userName");
   const userEmail = document.getElementById("userEmail");
   const logoutBtn = document.getElementById("logoutBtn");
-  const pinBoxes = Array.from(document.querySelectorAll(".pinBox"));
 
-  // avatar refs
+  const dots = Array.from(document.querySelectorAll(".dot"));
+
   const avatarImg = document.getElementById("avatarImg");
   const avatarIcon = document.getElementById("avatarIcon");
 
-  // modal refs
   const overlay = document.getElementById("overlay");
+  const statusCircle = document.getElementById("statusCircle");
   const modalTitle = document.getElementById("modalTitle");
   const modalSub = document.getElementById("modalSub");
 
@@ -380,23 +371,21 @@
     verifyBtn.classList.toggle("ready", !!ready);
   }
 
-  function renderPinBoxes(){
-    pinBoxes.forEach((box, i)=>{
-      box.classList.toggle("filled", i < input.length);
-    });
+  function renderDots(){
+    dots.forEach((d, i)=> d.classList.toggle("filled", i < input.length));
     setVerifyReady(input.length === 4 && !isBusy);
   }
 
   function resetInput(){
     input = "";
-    renderPinBoxes();
+    renderDots();
   }
 
   function addDigit(n){
     if(isBusy) return;
     if(input.length >= 4) return;
     input += String(n);
-    renderPinBoxes();
+    renderDots();
     if(input.length === 4){
       setTimeout(()=> verifyBtn.click(), 120);
     }
@@ -417,7 +406,7 @@
     if(action === "backspace"){
       if(isBusy) return;
       input = input.slice(0, -1);
-      renderPinBoxes();
+      renderDots();
       return;
     }
 
@@ -428,15 +417,31 @@
     }
   });
 
-  function showVerifiedPopup(titleText="Verified ✔️", sub="Redirecting you to your dashboard..."){
-    modalTitle.textContent = titleText;
+  function showPopup(type, title, sub){
+    statusCircle.className = "statusCircle " + type;
+    modalTitle.textContent = title;
     modalSub.textContent = sub;
+
+    if(type === "ok"){
+      statusCircle.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M20 6 9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
+    }else{
+      statusCircle.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M6 6l12 12M18 6 6 18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>`;
+    }
+
     overlay.classList.add("show");
   }
 
-  // ---------------------------
-  // Supabase logic
-  // ---------------------------
+  function hidePopup(){
+    overlay.classList.remove("show");
+  }
+
+  // Supabase
   const SUPABASE_URL = "https://xdcscknfomlzwysczegc.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 
@@ -449,13 +454,7 @@
 
   function applyAvatarPhoto(u){
     const meta = u?.user_metadata || {};
-    const photo =
-      meta.avatar_url ||
-      meta.picture ||
-      meta.photoURL ||
-      meta.profile_photo ||
-      "";
-
+    const photo = meta.avatar_url || meta.picture || meta.photoURL || meta.profile_photo || "";
     if(photo){
       avatarImg.src = photo;
       avatarImg.style.display = "block";
@@ -494,7 +493,6 @@
 
       if(error){
         console.error(error);
-        // no bottom message as requested — just keep page usable
         return;
       }
 
@@ -511,7 +509,6 @@
       resetInput();
     }catch(err){
       console.error(err);
-      // no bottom message as requested
     }
   }
 
@@ -538,20 +535,25 @@
           return;
         }
 
-        showVerifiedPopup("PIN Created ✔️", "Redirecting you to your dashboard...");
+        showPopup("ok", "PIN Created ✔️", "Redirecting you to your dashboard...");
         setTimeout(()=> window.location.href = "/user-dashboard.html", 650);
 
       } else {
         const attemptHash = await sha256(input + ":" + user.id);
 
         if(attemptHash !== pinHashFromDb){
-          // wrong pin → just reset silently (no bottom verify box)
-          isBusy = false;
-          resetInput();
+          // ❌ incorrect pin popup
+          showPopup("err", "Incorrect PIN ❌", "Please try again.");
+          setTimeout(()=>{
+            hidePopup();
+            isBusy = false;
+            resetInput();
+          }, 900);
           return;
         }
 
-        showVerifiedPopup("Verified ✔️", "Redirecting you to your dashboard...");
+        // ✅ correct
+        showPopup("ok", "Verified ✔️", "Redirecting you to your dashboard...");
         setTimeout(()=> window.location.href = "/user-dashboard.html", 520);
       }
     }catch(err){
