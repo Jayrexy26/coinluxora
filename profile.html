@@ -456,6 +456,73 @@
   }
 
   /* =========================================================
+     ✅ POPUP (SAME STYLE AS VERIFIED ✔️)
+     ========================================================= */
+  .popOverlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:9999999;
+    padding:18px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .popOverlay.show{ display:flex; }
+
+  .popModal{
+    width:min(420px, 100%);
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(11,18,38,.92);
+    box-shadow:0 28px 90px rgba(0,0,0,.60);
+    padding:20px 18px 18px;
+    position:relative;
+    overflow:hidden;
+  }
+  .popModal:before{
+    content:"";
+    position:absolute;
+    inset:-120px -140px auto -140px;
+    height:240px;
+    background:radial-gradient(circle at 50% 45%, rgba(255,255,255,.12), transparent 60%);
+    pointer-events:none;
+  }
+  .popInner{
+    position:relative;
+    z-index:2;
+    text-align:center;
+  }
+  .popCircle{
+    width:66px;height:66px;
+    border-radius:999px;
+    margin:6px auto 12px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 16px 55px rgba(0,0,0,.25);
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(255,255,255,.08);
+  }
+  .popCircle.ok{
+    border-color:rgba(34,197,94,.35);
+    background:rgba(34,197,94,.18);
+    box-shadow:0 16px 55px rgba(34,197,94,.18);
+  }
+  .popCircle svg{width:34px;height:34px;}
+  .popTitle{
+    margin:0;
+    font-weight:1000;
+    font-size:1.5rem;
+    letter-spacing:.2px;
+  }
+  .popSub{
+    margin:10px 0 0;
+    color:rgba(234,240,255,.72);
+    font-size:1.02rem;
+  }
+
+  /* =========================================================
      ✅ ADVANCED BOTTOM NAV
      ========================================================= */
   .dock{
@@ -623,15 +690,13 @@
       </div>
     </div>
 
-    <!-- ✅ PIN SECTION: Removed editable pin input (security) -->
+    <!-- ✅ PIN SECTION -->
     <div class="field">
       <div class="label">PIN:</div>
       <div class="row">
         <input class="input" type="password" disabled value="****"/>
       </div>
       <div class="note">PIN is required for logins, withdrawals and security approvals.</div>
-
-      <!-- ✅ new change PIN button -->
       <button id="changePinBtn" type="button" class="pinBtn">🔐 Change PIN</button>
     </div>
 
@@ -726,6 +791,21 @@
   </div>
 </div>
 
+<!-- ✅ POPUP -->
+<div class="popOverlay" id="popOverlay">
+  <div class="popModal">
+    <div class="popInner">
+      <div class="popCircle ok" id="popCircle">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M20 6 9 17l-5-5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="popTitle" id="popTitle">Success ✔️</h2>
+      <div class="popSub" id="popSub">Updated.</div>
+    </div>
+  </div>
+</div>
+
 <!-- ✅ ADVANCED BOTTOM NAV -->
 <div class="dock">
   <div class="dockInner">
@@ -742,9 +822,6 @@
 </div>
 
 <script>
-/* ============================================================
-   ✅ COINLUXORA AUTH GUARD (LOGIN + EMAIL VERIFIED REQUIRED)
-   ============================================================ */
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -984,6 +1061,20 @@ document.getElementById("avatarInput").addEventListener("change", async (e)=>{
 });
 
 /* ============================================================
+   ✅ POPUP helpers (Verified-style)
+   ============================================================ */
+const popOverlay = document.getElementById("popOverlay");
+const popTitle = document.getElementById("popTitle");
+const popSub = document.getElementById("popSub");
+
+function showPopup(title, sub){
+  popTitle.textContent = title;
+  popSub.textContent = sub;
+  popOverlay.classList.add("show");
+  setTimeout(()=> popOverlay.classList.remove("show"), 1150);
+}
+
+/* ============================================================
    ✅ CHANGE PIN (SECURE - user_pins table)
    ============================================================ */
 const changePinBtn = document.getElementById("changePinBtn");
@@ -1011,7 +1102,6 @@ function openPinModal(){
   setPinMsg("");
   setTimeout(()=> oldPinEl.focus(), 150);
 }
-
 function closePinModal(){
   pinOverlayEl.classList.remove("show");
   pinOverlayEl.setAttribute("aria-hidden","true");
@@ -1100,8 +1190,9 @@ savePinBtn.addEventListener("click", async ()=>{
       return;
     }
 
-    setPinMsg("PIN updated successfully ✅", "ok");
-    setTimeout(closePinModal, 650);
+    // ✅ close modal & show verified-style popup
+    closePinModal();
+    showPopup("PIN Changed ✔️", "Your new PIN has been saved successfully.");
 
   }catch(err){
     console.error(err);
