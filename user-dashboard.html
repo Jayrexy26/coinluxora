@@ -105,6 +105,16 @@
       backdrop-filter: blur(14px);
       text-align:center;
     }
+
+    /* ✅ LOGO IMAGE STYLE */
+    .logoImg{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+    }
+
+    /* ✅ Gate logo now image */
     .gateLogo{
       width:62px;height:62px;border-radius:18px;
       margin:0 auto 10px;
@@ -112,7 +122,7 @@
       border:1px solid rgba(255,255,255,.14);
       background:linear-gradient(180deg, rgba(109,87,255,1), rgba(124,77,255,1));
       box-shadow:0 18px 50px rgba(109,87,255,.28);
-      font-size:28px;font-weight:1000;
+      overflow:hidden;
     }
     .gateTxt{font-weight:1000}
     .gateSub{margin-top:6px;color:rgba(234,240,255,.70);font-weight:900;font-size:13px}
@@ -173,13 +183,16 @@
       box-shadow:0 18px 50px rgba(109,87,255,.25);
       min-width:140px;
     }
+
+    /* ✅ top-left icon now image holder */
     .brandIcon{
       width:34px;height:34px;border-radius:12px;
       background:rgba(255,255,255,.18);
       border:1px solid rgba(255,255,255,.22);
       display:grid;place-items:center;
-      font-weight:1000;
+      overflow:hidden;
     }
+
     .headerActions{display:flex;gap:10px;align-items:center}
 
     /* ✅ Avatar */
@@ -231,11 +244,14 @@
       display:flex;align-items:center;justify-content:space-between;gap:12px;
     }
     .helloLeft{display:flex;align-items:center;gap:12px;}
+
+    /* ✅ hello logo now image holder */
     .helloLogo{
       width:48px;height:48px;border-radius:18px;
       background:rgba(255,255,255,.20);
       border:1px solid rgba(255,255,255,.22);
       display:grid;place-items:center;
+      overflow:hidden;
       font-weight:1000;
     }
     .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
@@ -433,6 +449,7 @@
       background:rgba(255,255,255,.06);
       display:grid;place-items:center;
       font-size:14px;
+      overflow:hidden;
     }
     .ddName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .ddPanel{
@@ -653,13 +670,16 @@
       box-shadow:0 16px 50px rgba(109,87,255,.18);
       min-width:170px;
     }
+
+    /* ✅ sidebar icon now image holder */
     .sideBrandIcon{
       width:30px;height:30px;border-radius:12px;
       display:grid;place-items:center;
       background:rgba(255,255,255,.16);
       border:1px solid rgba(255,255,255,.20);
-      font-weight:1000;
+      overflow:hidden;
     }
+
     .closeBtn{
       background:rgba(0,0,0,.22);
       border:1px solid rgba(255,255,255,.14);
@@ -676,7 +696,7 @@
       padding:12px 12px;
       border-radius:18px;
       border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,,255,.03));
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
       box-shadow:0 18px 55px rgba(0,0,0,.35);
       margin:10px 0 14px;
       display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -811,9 +831,10 @@
       cursor:pointer;user-select:none;
       flex:0 0 auto;
       pointer-events:auto;
+      overflow:hidden;
     }
-    .dockHome span{font-size:28px;color:white}
     .dockHome:hover{filter:brightness(1.05)}
+    .dockHome img{width:48px;height:48px;object-fit:contain;display:block}
 
     .dockBadge{
       position:absolute;
@@ -952,7 +973,10 @@
   <!-- Loading -->
   <div id="authGate">
     <div class="gateCard">
-      <div class="gateLogo">📣</div>
+      <!-- ✅ LOGO IMPLEMENTED -->
+      <div class="gateLogo">
+        <img class="logoImg" src="assets/vgm-logo.png" alt="Veloci Global Markets Logo">
+      </div>
       <div class="gateTxt">Veloci Global Markets</div>
       <div class="gateSub">Precision trading. Real-time execution.</div>
       <div class="spinner"></div>
@@ -964,9 +988,11 @@
   <!-- Sidebar -->
   <div id="sidebar" class="sidebar">
     <div class="sideTop">
-      <!-- ✅ CHANGED: "VGM" -> "Veloci Markets" AND icon inside box now "◈" -->
       <div class="sideBrand">
-        <div class="sideBrandIcon">◈</div>
+        <!-- ✅ LOGO IMPLEMENTED -->
+        <div class="sideBrandIcon">
+          <img class="logoImg" src="assets/vgm-logo.png" alt="Veloci Markets Logo">
+        </div>
         Veloci Markets
       </div>
       <button class="closeBtn" onclick="closeMenu()">✕</button>
@@ -995,11 +1021,15 @@
   </div>
 
   <div class="container">
-    <!-- ✅ STICKY WRAP -->
     <div id="stickyMenu" class="stickyMenu">
       <div class="topRow">
-        <!-- ✅ CHANGED: top-left icon box now "◈" not "V" -->
-        <div class="brand"><div class="brandIcon">◈</div>VGM</div>
+        <div class="brand">
+          <!-- ✅ LOGO IMPLEMENTED -->
+          <div class="brandIcon">
+            <img class="logoImg" src="assets/vgm-logo.png" alt="VGM Logo">
+          </div>
+          VGM
+        </div>
 
         <div class="headerActions">
           <button class="avatarBtn" onclick="goProfile()" title="Profile">
@@ -1013,7 +1043,11 @@
 
     <div class="helloCard">
       <div class="helloLeft">
-        <div class="helloLogo">💫</div>
+        <!-- ✅ LOGO IMPLEMENTED -->
+        <div class="helloLogo">
+          <img class="logoImg" src="assets/vgm-logo.png" alt="VGM Logo">
+        </div>
+
         <div>
           <div class="chips">
             <div class="miniChip">🟢 active</div>
@@ -1158,7 +1192,6 @@
       </div>
     </div>
 
-    <!-- ✅ NEWS ADDED AFTER ORDER BOOK -->
     <div class="box">
       <h2>Live Crypto News</h2>
       <div class="small">Latest crypto headlines (auto refresh every 60 seconds).</div>
@@ -1168,6 +1201,7 @@
 
   </div>
 
+  <!-- ✅ dock now shows logo -->
   <div class="dock">
     <div class="dockInner">
       <div class="dockBar">
@@ -1179,7 +1213,11 @@
           <div id="badgeWithdrawDock" class="dockBadge">0</div>
           <div class="ico">➡</div><div>Withdraw</div>
         </div>
-        <div class="dockHome" onclick="goDashboard()"><span>🏠</span></div>
+
+        <div class="dockHome" onclick="goDashboard()">
+          <img src="assets/vgm-logo.png" alt="VGM Home">
+        </div>
+
         <div class="dockItem" onclick="goPlans()"><div class="ico">💼</div><div>Plans</div></div>
         <div class="dockItem" onclick="goProfile()"><div class="ico">👤</div><div>Profile</div></div>
       </div>
@@ -1333,7 +1371,7 @@
       wrap.innerHTML = `
         <button class="ddBtn" type="button" id="obPairBtn">
           <div class="ddLeft">
-            <div class="ddIcon">◈</div>
+            <div class="ddIcon"><img class="logoImg" src="assets/vgm-logo.png" alt="VGM"></div>
             <div class="ddName" id="obPairName">BTC/USDT</div>
           </div>
           <div>▾</div>
@@ -1757,7 +1795,6 @@
     function goSupportAndClear(){ clearBadge("notifications"); window.location.href="support.html"; }
     function goDashboard(){ window.scrollTo({top:0,behavior:"smooth"}); }
 
-    /* ✅ UPDATED: menu open/close toggles */
     function openMenu(){
       document.getElementById("sidebar").classList.add("open");
       document.getElementById("overlay").classList.add("show");
@@ -1774,7 +1811,6 @@
       if(g) g.style.display="none";
     }
 
-    /* greeting */
     function setGreeting(){
       const h = new Date().getHours();
       let text="Greetings", emoji="✨";
@@ -1810,7 +1846,6 @@
       setInterval(tick,1000);
     }
 
-    /* avatar */
     function setTopAvatar(avatarUrl){
       const fallback=document.getElementById("avatarFallback");
       const img=document.getElementById("avatarImgBtn");
@@ -1939,7 +1974,7 @@
       root.innerHTML = `
         <button class="ddBtn" type="button">
           <div class="ddLeft">
-            <div class="ddIcon">◈</div>
+            <div class="ddIcon"><img class="logoImg" src="assets/vgm-logo.png" alt="VGM"></div>
             <div class="ddName">Select</div>
           </div>
           <div>▾</div>
