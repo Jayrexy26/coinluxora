@@ -78,7 +78,7 @@
 
     .container{max-width:920px;margin:0 auto}
 
-    /* ✅ DESKTOP WIDE VIEW (ONLY ADDED) */
+    /* ✅ DESKTOP WIDE VIEW */
     @media (min-width: 1100px){
       .container{max-width:1250px;}
     }
@@ -114,7 +114,6 @@
       display:block;
     }
 
-    /* ✅ Gate logo now image */
     .gateLogo{
       width:62px;height:62px;border-radius:18px;
       margin:0 auto 10px;
@@ -136,8 +135,7 @@
     @keyframes spin{to{transform:rotate(360deg)}}
 
     /* ============================================================
-      ✅ STICKY MENU POLISH (FIX OVERLAP + PREMIUM SCROLL)
-      - ONLY affects topRow wrapper
+      ✅ STICKY MENU POLISH
     ============================================================ */
     .stickyMenu{
       position:sticky;
@@ -175,37 +173,34 @@
       gap:12px; margin-bottom:14px;
     }
 
-    /* ============================================================
-      ✅ TOP LOGO STANDS ALONE (NO BOX)
-    ============================================================ */
+    /* ✅ NEW: logo stands alone big (no box, no VGM text) */
     .brand{
       display:flex;
       align-items:center;
-      gap:10px;
-      padding:0;                 /* removed padding */
-      border:none;               /* removed border */
-      background:transparent;    /* removed gradient box */
-      color:white;
-      font-weight:1000;
-      letter-spacing:.6px;
-      box-shadow:none;           /* removed shadow */
-      min-width:auto;
+      gap:0;
+      padding:0;
+      border:none;
+      background:transparent;
+      box-shadow:none;
+      min-width:unset;
     }
     .brandIcon{
-      width:40px;height:40px;border-radius:14px;
-      background:transparent;
-      border:none;
-      display:grid;place-items:center;
+      width:78px;
+      height:78px;
+      border-radius:22px;
       overflow:hidden;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 18px 55px rgba(0,0,0,.45);
     }
-    .brandIcon img{
-      width:40px;height:40px;object-fit:contain;display:block;
-      filter: drop-shadow(0 14px 30px rgba(109,87,255,.25));
+    @media(max-width:520px){
+      .brandIcon{width:66px;height:66px;border-radius:20px;}
     }
 
     .headerActions{display:flex;gap:10px;align-items:center}
 
-    /* ✅ Avatar */
     .avatarBtn{
       width:46px;height:46px;border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
@@ -230,9 +225,7 @@
     }
     .iconBtn:hover{background:rgba(255,255,255,.08)}
 
-    /* ============================================================
-      ✅ NEW: HIDE TOP LEFT + PROFILE + MENU BUTTON + DOCK WHEN MENU OPENS
-    ============================================================ */
+    /* ✅ Hide topRow + dock when menu open */
     body.menuOpen #stickyMenu{
       visibility:hidden;
       pointer-events:none;
@@ -255,18 +248,14 @@
     }
     .helloLeft{display:flex;align-items:center;gap:12px;}
 
-    /* ============================================================
-      ✅ helloCard icon changed to VERIFIED SHIELD (premium)
-    ============================================================ */
+    /* ✅ REPLACED hello small logo with shield/verified icon */
     .helloLogo{
       width:48px;height:48px;border-radius:18px;
-      background:rgba(255,255,255,.22);
+      background:rgba(255,255,255,.20);
       border:1px solid rgba(255,255,255,.22);
       display:grid;place-items:center;
-      overflow:hidden;
       font-weight:1000;
       font-size:22px;
-      box-shadow:0 16px 40px rgba(0,0,0,.18);
     }
 
     .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
@@ -332,7 +321,6 @@
       box-shadow:0 16px 40px rgba(0,0,0,.35);
     }
 
-    /* ✅ highlight polish on touch */
     .box, .balanceCard, .cryptoRow, .action, .card, .chartWrap, .obRow{
       -webkit-tap-highlight-color: transparent;
     }
@@ -651,12 +639,8 @@
         linear-gradient(180deg, rgba(4,8,20,0.98), rgba(2,6,23,0.98));
       box-shadow:0 26px 90px rgba(0,0,0,.60);
       backdrop-filter: blur(16px);
-
-      /* ✅ scrollable menu */
       overflow-y:auto;
       -webkit-overflow-scrolling:touch;
-
-      /* ✅ ONLY ADDED: premium thin scrollbar */
       scrollbar-width: thin;
       scrollbar-color: rgba(255,255,255,.18) rgba(0,0,0,0);
     }
@@ -675,24 +659,25 @@
       display:flex;align-items:center;justify-content:space-between;
       gap:10px;margin-bottom:12px;
     }
-    .sideBrand{
-      display:flex;align-items:center;gap:10px;
-      font-weight:1000;font-size:16px;letter-spacing:.9px;
-      color:#fff;
-      padding:10px 12px;border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(90deg, rgba(109,87,255,.85), rgba(124,77,255,.85));
-      box-shadow:0 16px 50px rgba(109,87,255,.18);
-      min-width:170px;
-    }
 
-    /* ✅ sidebar icon now image holder */
+    /* ✅ NEW sidebar logo: big + alone (no text, no box style) */
+    .sideBrand{
+      display:flex;
+      align-items:center;
+      gap:0;
+      padding:0;
+      border:none;
+      background:transparent;
+      box-shadow:none;
+      min-width:unset;
+    }
     .sideBrandIcon{
-      width:30px;height:30px;border-radius:12px;
+      width:92px;height:92px;border-radius:26px;
       display:grid;place-items:center;
-      background:rgba(255,255,255,.16);
-      border:1px solid rgba(255,255,255,.20);
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
       overflow:hidden;
+      box-shadow:0 18px 60px rgba(0,0,0,.55);
     }
 
     .closeBtn{
@@ -713,7 +698,7 @@
       border:1px solid rgba(255,255,255,.10);
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
       box-shadow:0 18px 55px rgba(0,0,0,.35);
-      margin:10px 0 14px;
+      margin:14px 0 14px;
       display:flex;align-items:center;justify-content:space-between;gap:12px;
     }
     .userTagLeft{min-width:0}
@@ -836,7 +821,7 @@
     .dockItem:hover{background:rgba(255,255,255,.06)}
     .dockActive{color:#9bdcff;background:rgba(56,189,248,.10)}
 
-    /* ✅ keep the center button but as HOME icon (not logo) */
+    /* ✅ home button stays HOME icon */
     .dockHome{
       width:78px;height:78px;border-radius:26px;
       background:linear-gradient(180deg, rgba(109,87,255,1), rgba(91,108,255,1));
@@ -849,8 +834,8 @@
       pointer-events:auto;
       overflow:hidden;
       color:#fff;
+      font-size:28px;
       font-weight:1000;
-      font-size:26px;
     }
     .dockHome:hover{filter:brightness(1.05)}
 
@@ -872,9 +857,7 @@
       border:1px solid rgba(255,255,255,.18);
     }
 
-    /* ============================================================
-      ✅ TOP 10 CRYPTO LIST (ADDED)
-    ============================================================ */
+    /* ===== TOP 10 CRYPTO LIST ===== */
     .crypto10Grid{
       margin-top:12px;
       display:grid;
@@ -939,9 +922,7 @@
     .cryptoChg.up{color:rgba(34,197,94,1)}
     .cryptoChg.down{color:rgba(248,113,113,1)}
 
-    /* ============================================================
-      ✅ NEWS (ADDED)
-    ============================================================ */
+    /* ===== NEWS ===== */
     .newsGrid{margin-top:12px;display:grid;gap:10px}
     .newsItem{
       display:flex;
@@ -991,7 +972,6 @@
   <!-- Loading -->
   <div id="authGate">
     <div class="gateCard">
-      <!-- ✅ LOGO IMPLEMENTED -->
       <div class="gateLogo">
         <img class="logoImg" src="assets/vgm-logo.png" alt="Veloci Global Markets Logo">
       </div>
@@ -1007,11 +987,9 @@
   <div id="sidebar" class="sidebar">
     <div class="sideTop">
       <div class="sideBrand">
-        <!-- ✅ LOGO IMPLEMENTED -->
         <div class="sideBrandIcon">
-          <img class="logoImg" src="assets/vgm-logo.png" alt="Veloci Markets Logo">
+          <img class="logoImg" src="assets/vgm-logo.png" alt="VGM Logo">
         </div>
-        Veloci Markets
       </div>
       <button class="closeBtn" onclick="closeMenu()">✕</button>
     </div>
@@ -1042,11 +1020,9 @@
     <div id="stickyMenu" class="stickyMenu">
       <div class="topRow">
         <div class="brand">
-          <!-- ✅ LOGO ONLY ONCE (STANDALONE) -->
           <div class="brandIcon">
             <img class="logoImg" src="assets/vgm-logo.png" alt="VGM Logo">
           </div>
-          VGM
         </div>
 
         <div class="headerActions">
@@ -1061,10 +1037,7 @@
 
     <div class="helloCard">
       <div class="helloLeft">
-        <!-- ✅ VERIFIED SHIELD ICON -->
-        <div class="helloLogo" title="Verified & secured">
-          🛡️
-        </div>
+        <div class="helloLogo" title="Verified & Secure">🛡️</div>
 
         <div>
           <div class="chips">
@@ -1216,10 +1189,9 @@
       <div id="newsMsg" class="small">Loading…</div>
       <div id="newsList" class="newsGrid"></div>
     </div>
-
   </div>
 
-  <!-- ✅ dock center is HOME icon again -->
+  <!-- DOCK -->
   <div class="dock">
     <div class="dockInner">
       <div class="dockBar">
@@ -1227,6 +1199,7 @@
           <div id="badgeDepositDock" class="dockBadge">0</div>
           <div class="ico">💳</div><div>Deposit</div>
         </div>
+
         <div class="dockItem" onclick="goWithdrawAndClear()">
           <div id="badgeWithdrawDock" class="dockBadge">0</div>
           <div class="ico">➡</div><div>Withdraw</div>
@@ -1256,7 +1229,7 @@
     })();
 
     /* ============================================================
-      ✅ AUTH GUARD  (ADDED/EXISTING)
+      ✅ AUTH GUARD
     ============================================================ */
     const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
     const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
@@ -1281,7 +1254,7 @@
     let top10Timer=null;
 
     /* ============================================================
-      ✅ NEWS (ADDED)
+      ✅ NEWS
     ============================================================ */
     let newsTimer=null;
     const NEWS_RSS_URL="https://cryptopanic.com/news/rss/";
@@ -1387,7 +1360,7 @@
       wrap.innerHTML = `
         <button class="ddBtn" type="button" id="obPairBtn">
           <div class="ddLeft">
-            <div class="ddIcon"><img class="logoImg" src="assets/vgm-logo.png" alt="VGM"></div>
+            <div class="ddIcon">◈</div>
             <div class="ddName" id="obPairName">BTC/USDT</div>
           </div>
           <div>▾</div>
@@ -1990,7 +1963,7 @@
       root.innerHTML = `
         <button class="ddBtn" type="button">
           <div class="ddLeft">
-            <div class="ddIcon"><img class="logoImg" src="assets/vgm-logo.png" alt="VGM"></div>
+            <div class="ddIcon">◈</div>
             <div class="ddName">Select</div>
           </div>
           <div>▾</div>
@@ -2192,11 +2165,9 @@
 
     function swapFiat(){
       const tmp = selectedFiatA; selectedFiatA = selectedFiatB; selectedFiatB = tmp;
-
       const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$", symbol:f.toLowerCase() }));
       mountDropdown("ddFiatA", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{selectedFiatA=x;}, selectedFiatA);
       mountDropdown("ddFiatB", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{selectedFiatB=x;}, selectedFiatB);
-
       document.getElementById("fiatRate").textContent="Rate: --";
       document.getElementById("fiatResult").textContent="--";
     }
