@@ -105,16 +105,6 @@
       backdrop-filter: blur(14px);
       text-align:center;
     }
-
-    /* ✅ LOGO IMAGE STYLE */
-    .logoImg{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      display:block;
-    }
-
-    /* ✅ Gate logo now image */
     .gateLogo{
       width:62px;height:62px;border-radius:18px;
       margin:0 auto 10px;
@@ -136,7 +126,7 @@
     @keyframes spin{to{transform:rotate(360deg)}}
 
     /* ============================================================
-      ✅ STICKY MENU POLISH
+      ✅ STICKY MENU (HEIGHT MUST NOT CHANGE)
     ============================================================ */
     .stickyMenu{
       position:sticky;
@@ -164,42 +154,42 @@
       opacity:1;
       transform: translateY(0);
     }
-    .stickyMenu.isStuck .topRow{
-      margin-bottom:8px;
-    }
 
     /* ===== TOP BAR ===== */
     .topRow{
       display:flex; align-items:center; justify-content:space-between;
-      gap:12px; margin-bottom:14px;
+      gap:12px;
+      margin-bottom:14px;
+      height:56px;              /* ✅ fixed bar height */
+      min-height:56px;
     }
 
-    /* ✅ NEW: TOP LOGO HOLDER (NO BOX) */
-    .topLogoLink{
+    /* ✅ TOP LEFT LOGO ONLY — DOES NOT AFFECT BAR HEIGHT */
+    .topLogoWrap{
       display:flex;
       align-items:center;
       justify-content:flex-start;
+      gap:0;
+      padding:0;
+      border:none;
+      background:transparent;
+      box-shadow:none;
       cursor:pointer;
       user-select:none;
+      height:56px;              /* match bar height */
+      overflow:hidden;
+      max-width:360px;
     }
-    .brandLogoWide{
-      height:86px;              /* 🔥 MORE MAGNIFIED */
+    .topLogoSVG{
+      height:40px;              /* ✅ logo size but doesn't stretch bar */
       width:auto;
-      max-width:520px;          /* 🔥 VERY WIDE */
       display:block;
-      object-fit:contain;
-      filter:
-        drop-shadow(0 24px 46px rgba(0,0,0,.60))
-        drop-shadow(0 0 32px rgba(91,108,255,.24));
-      transform: translateY(2px);
+      margin-left:2px;
+      filter: drop-shadow(0 14px 32px rgba(109,87,255,.18));
     }
-
-    /* mobile safe but still big */
     @media(max-width:520px){
-      .brandLogoWide{
-        height:66px;
-        max-width:360px;
-      }
+      .topLogoWrap{max-width:260px;}
+      .topLogoSVG{height:36px;}
     }
 
     .headerActions{display:flex;gap:10px;align-items:center}
@@ -229,9 +219,7 @@
     }
     .iconBtn:hover{background:rgba(255,255,255,.08)}
 
-    /* ============================================================
-      ✅ HIDE TOP LEFT + PROFILE + MENU BUTTON + DOCK WHEN MENU OPENS
-    ============================================================ */
+    /* ✅ HIDE TOP + DOCK WHEN MENU OPENS */
     body.menuOpen #stickyMenu{
       visibility:hidden;
       pointer-events:none;
@@ -254,16 +242,23 @@
     }
     .helloLeft{display:flex;align-items:center;gap:12px;}
 
-    /* ✅ verified icon (NOT logo) */
-    .verifiedIcon{
+    /* ✅ VERIFIED SHIELD ICON */
+    .verifiedShield{
       width:48px;height:48px;border-radius:18px;
-      background:rgba(255,255,255,.18);
+      background:rgba(255,255,255,.20);
       border:1px solid rgba(255,255,255,.22);
       display:grid;place-items:center;
       font-weight:1000;
-      font-size:22px;
-      box-shadow:0 18px 50px rgba(0,0,0,.20);
+      overflow:hidden;
+      position:relative;
     }
+    .verifiedShield::after{
+      content:"";
+      position:absolute; inset:-20px;
+      background: radial-gradient(circle at 20% 10%, rgba(255,255,255,.18), transparent 55%);
+      pointer-events:none;
+    }
+    .verifiedShield svg{width:26px;height:26px;display:block;filter:drop-shadow(0 10px 22px rgba(0,0,0,.35));}
 
     .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
     .miniChip{
@@ -290,7 +285,8 @@
       width:46px;height:46px;border-radius:999px;border:none;
       cursor:pointer;
       background:rgba(239,68,68,0.95);
-      color:#fff;font-weight:1000;
+      color:#fff;
+      font-weight:1000;
       box-shadow:0 16px 40px rgba(239,68,68,.22);
     }
     .datetimeChip{
@@ -325,6 +321,10 @@
       padding:12px;
       background:rgba(0,0,0,.22);
       box-shadow:0 16px 40px rgba(0,0,0,.35);
+    }
+
+    .box, .balanceCard, .cryptoRow, .action, .card, .chartWrap, .obRow{
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* ===== balanceCard ===== */
@@ -581,7 +581,6 @@
     }
     .obRow:last-child{border-bottom:none}
     .obRow span{z-index:2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .obRow .p{color:#f87171}
     .obRow.ask .p{color:#f87171}
     .obRow.bid .p{color:#22c55e}
     .obRow .bgBar{
@@ -641,8 +640,10 @@
         linear-gradient(180deg, rgba(4,8,20,0.98), rgba(2,6,23,0.98));
       box-shadow:0 26px 90px rgba(0,0,0,.60);
       backdrop-filter: blur(16px);
+
       overflow-y:auto;
       -webkit-overflow-scrolling:touch;
+
       scrollbar-width: thin;
       scrollbar-color: rgba(255,255,255,.18) rgba(0,0,0,0);
     }
@@ -658,35 +659,27 @@
     .sidebar.open{ left:0; }
 
     .sideTop{
-      display:flex;align-items:center;justify-content:space-between;
-      gap:10px;margin-bottom:8px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
     }
 
-    /* ✅ sidebar logo stands alone big (NO BOX) */
-    .sideLogoWrap{
+    /* ✅ SIDEBAR LOGO: INLINE SVG, SHARP */
+    .sideLogoSolo{
+      width:100%;
       display:flex;
-      flex-direction:column;
-      align-items:flex-start;
-      gap:8px;
-      padding:6px 0;
-      cursor:pointer;
-      user-select:none;
+      align-items:center;
+      justify-content:flex-start;
+      padding:0;
     }
-    .sideLogoWide{
-      height:92px;             /* 🔥 MORE MAGNIFIED */
-      width:auto;
-      max-width:260px;
+    .sideLogoSolo svg{
+      width:230px;
+      max-width:100%;
+      height:70px;
       display:block;
-      object-fit:contain;
-      filter:
-        drop-shadow(0 24px 46px rgba(0,0,0,.62))
-        drop-shadow(0 0 36px rgba(91,108,255,.22));
-    }
-    .sideLogoSub{
-      font-weight:900;
-      font-size:12px;
-      color:rgba(234,240,255,.62);
-      margin-left:2px;
+      filter: drop-shadow(0 16px 40px rgba(109,87,255,.18));
     }
 
     .closeBtn{
@@ -699,7 +692,6 @@
       display:grid;place-items:center;
       font-weight:1000;
       flex:0 0 auto;
-      margin-top:10px;
     }
     .closeBtn:hover{background:rgba(255,255,255,.08)}
 
@@ -832,6 +824,7 @@
     .dockItem:hover{background:rgba(255,255,255,.06)}
     .dockActive{color:#9bdcff;background:rgba(56,189,248,.10)}
 
+    /* ✅ KEEP HOME AS HOME ICON */
     .dockHome{
       width:78px;height:78px;border-radius:26px;
       background:linear-gradient(180deg, rgba(109,87,255,1), rgba(91,108,255,1));
@@ -842,6 +835,7 @@
       cursor:pointer;user-select:none;
       flex:0 0 auto;
       pointer-events:auto;
+      overflow:hidden;
     }
     .dockHome span{font-size:28px;color:white}
     .dockHome:hover{filter:brightness(1.05)}
@@ -864,105 +858,57 @@
       border:1px solid rgba(255,255,255,.18);
     }
 
-    /* TOP 10 CRYPTO */
-    .crypto10Grid{
-      margin-top:12px;
-      display:grid;
-      gap:10px;
-    }
+    /* ✅ TOP 10 CRYPTO LIST */
+    .crypto10Grid{margin-top:12px;display:grid;gap:10px}
     .cryptoRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px;
-      border-radius:18px;
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;padding:12px;border-radius:18px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(0,0,0,.22);
       box-shadow:0 16px 40px rgba(0,0,0,.35);
     }
-    .cryptoLeft{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width:0;
-    }
+    .cryptoLeft{display:flex;align-items:center;gap:12px;min-width:0}
     .cryptoLogo{
-      width:42px;
-      height:42px;
-      border-radius:14px;
+      width:42px;height:42px;border-radius:14px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.06);
-      display:grid;
-      place-items:center;
-      overflow:hidden;
-      flex:0 0 auto;
+      display:grid;place-items:center;
+      overflow:hidden;flex:0 0 auto;
     }
-    .cryptoLogo img{width:100%;height:100%;object-fit:cover;display:block;}
-    .cryptoName{
-      font-weight:1000;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
+    .cryptoLogo img{width:100%;height:100%;object-fit:cover;display:block}
+    .cryptoName{font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .cryptoSym{
-      display:block;
-      font-size:12px;
-      font-weight:1000;
-      color:rgba(234,240,255,.55);
-      margin-top:2px;
+      display:block;font-size:12px;font-weight:1000;
+      color:rgba(234,240,255,.55);margin-top:2px;
     }
-    .cryptoRight{
-      text-align:right;
-      flex:0 0 auto;
-    }
-    .cryptoPrice{
-      font-weight:1000;
-      font-size:14px;
-    }
-    .cryptoChg{
-      margin-top:4px;
-      font-weight:1000;
-      font-size:12px;
-      color:rgba(234,240,255,.65);
-    }
+    .cryptoRight{text-align:right;flex:0 0 auto}
+    .cryptoPrice{font-weight:1000;font-size:14px}
+    .cryptoChg{margin-top:4px;font-weight:1000;font-size:12px;color:rgba(234,240,255,.65)}
     .cryptoChg.up{color:rgba(34,197,94,1)}
     .cryptoChg.down{color:rgba(248,113,113,1)}
 
-    /* NEWS */
+    /* ✅ NEWS */
     .newsGrid{margin-top:12px;display:grid;gap:10px}
     .newsItem{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      padding:12px;
-      border-radius:18px;
+      display:flex;flex-direction:column;gap:8px;
+      padding:12px;border-radius:18px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(0,0,0,.22);
       box-shadow:0 16px 40px rgba(0,0,0,.35);
-      text-decoration:none;
-      color:rgba(234,240,255,.92);
+      text-decoration:none;color:rgba(234,240,255,.92);
     }
     .newsItem:hover{background:rgba(255,255,255,.06)}
     .newsTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
     .newsTitle{font-weight:1000;font-size:14px;line-height:1.25}
     .newsMeta{
-      font-weight:900;
-      font-size:12px;
-      color:rgba(234,240,255,.55);
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap
+      font-weight:900;font-size:12px;color:rgba(234,240,255,.55);
+      display:flex;gap:8px;align-items:center;flex-wrap:wrap
     }
     .newsTag{
-      padding:4px 10px;
-      border-radius:999px;
+      padding:4px 10px;border-radius:999px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.08);
-      font-weight:1000;
-      font-size:11px;
-      color:rgba(234,240,255,.80)
+      font-weight:1000;font-size:11px;color:rgba(234,240,255,.80)
     }
     .newsBottom{font-weight:900;font-size:12px;color:rgba(234,240,255,.65)}
   </style>
@@ -976,12 +922,45 @@
   <div class="blob b4"></div>
   <div class="shimmer"></div>
 
+  <!-- ✅ INLINE SVG LOGO (SHARP) -->
+  <template id="vgmLogoSVG">
+    <svg viewBox="0 0 820 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Veloci Global Markets">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#9bdcff"/>
+          <stop offset="0.35" stop-color="#6d57ff"/>
+          <stop offset="0.7" stop-color="#7c4dff"/>
+          <stop offset="1" stop-color="#ff4da6"/>
+        </linearGradient>
+        <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="6" result="b"/>
+          <feMerge>
+            <feMergeNode in="b"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- emblem -->
+      <g transform="translate(14,18)" filter="url(#glow)">
+        <path d="M70 0 L130 34 V102 C130 128 107 150 70 160 C33 150 10 128 10 102 V34 Z" fill="url(#g1)" opacity=".92"/>
+        <path d="M48 78 L64 94 L98 58" fill="none" stroke="#050a18" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+
+      <!-- logotype -->
+      <g transform="translate(175,30)">
+        <path d="M0 0 H34 L68 84 L102 0 H136 L86 120 H50 Z" fill="#eaf0ff"/>
+        <path d="M160 0 H194 V120 H160 Z" fill="#eaf0ff" opacity=".92"/>
+        <path d="M230 0 H274 L326 74 L378 0 H422 V120 H392 V46 L326 132 L260 46 V120 H230 Z" fill="#eaf0ff"/>
+        <rect x="0" y="138" width="430" height="10" rx="5" fill="url(#g1)" opacity=".9"/>
+      </g>
+    </svg>
+  </template>
+
   <!-- Loading -->
   <div id="authGate">
     <div class="gateCard">
-      <div class="gateLogo">
-        <img class="logoImg" src="assets/vgm-logo.png" alt="Veloci Global Markets Logo">
-      </div>
+      <div class="gateLogo" id="gateLogoMount"></div>
       <div class="gateTxt">Veloci Global Markets</div>
       <div class="gateSub">Precision trading. Real-time execution.</div>
       <div class="spinner"></div>
@@ -993,9 +972,8 @@
   <!-- Sidebar -->
   <div id="sidebar" class="sidebar">
     <div class="sideTop">
-      <div class="sideLogoWrap" onclick="goDashboard()" title="Home">
-        <img class="sideLogoWide" src="assets/vgm-logo.png" alt="Veloci Markets Logo">
-        <div class="sideLogoSub">Veloci Global Markets</div>
+      <div style="flex:1;min-width:0">
+        <div class="sideLogoSolo" id="sideLogoMount"></div>
       </div>
       <button class="closeBtn" onclick="closeMenu()">✕</button>
     </div>
@@ -1025,10 +1003,9 @@
   <div class="container">
     <div id="stickyMenu" class="stickyMenu">
       <div class="topRow">
-
-        <!-- ✅ TOP LOGO STANDING ALONE (NO BOX, NO TEXT) -->
-        <div class="topLogoLink" onclick="goDashboard()" title="Home">
-          <img class="brandLogoWide" src="assets/vgm-logo.png" alt="Veloci Global Markets">
+        <!-- ✅ TOP LEFT SVG LOGO (SHARP, DOES NOT CHANGE HEIGHT) -->
+        <div class="topLogoWrap" onclick="goDashboard()" title="Go to dashboard">
+          <div id="topLogoMount"></div>
         </div>
 
         <div class="headerActions">
@@ -1043,8 +1020,12 @@
 
     <div class="helloCard">
       <div class="helloLeft">
-        <!-- ✅ VERIFIED ICON (NOT LOGO) -->
-        <div class="verifiedIcon" title="Verified">🛡️</div>
+        <div class="verifiedShield" title="Verified Account">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2l7 4v6c0 5-3 9-7 10-4-1-7-5-7-10V6l7-4z" fill="rgba(255,255,255,.92)"/>
+            <path d="M10.3 12.6l1.4 1.4 3.5-3.6" stroke="rgba(5,10,24,1)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
 
         <div>
           <div class="chips">
@@ -1055,7 +1036,6 @@
           <div class="helloSub" id="helloName">Loading…</div>
         </div>
       </div>
-
       <div class="helloRight">
         <div class="helloRightTop">
           <div class="idChip" id="userIdChip">ID:</div>
@@ -1100,13 +1080,10 @@
           <button class="swapBtn" onclick="swapCrypto()">⇄</button>
           <div class="ddWrap" id="ddCryptoB"></div>
         </div>
-
         <div class="convRow">
           <input id="cryptoAmount" class="inp" type="number" min="0" step="0.00000001" placeholder="Enter amount"/>
         </div>
-
         <button class="convBtn" onclick="convertCrypto()">⚡ Convert</button>
-
         <div class="card">
           <div class="rateLine"><span class="rateDot"></span> <span id="cryptoRate">Rate: --</span></div>
           <div class="small" style="margin-top:10px;font-size:14px;">Result: <strong id="cryptoResult">--</strong></div>
@@ -1127,13 +1104,10 @@
           <button class="swapBtn" onclick="swapFiat()">⇄</button>
           <div class="ddWrap" id="ddFiatB"></div>
         </div>
-
         <div class="convRow">
           <input id="fiatAmount" class="inp" type="number" min="0" step="0.01" placeholder="Enter amount"/>
         </div>
-
         <button class="convBtn" onclick="convertFiat()">💱 Convert Fiat</button>
-
         <div class="card">
           <div class="rateLine"><span class="rateDot"></span> <span id="fiatRate">Rate: --</span></div>
           <div class="small" style="margin-top:10px;font-size:14px;">Result: <strong id="fiatResult">--</strong></div>
@@ -1206,7 +1180,7 @@
 
   </div>
 
-  <!-- DOCK (HOME ICON stays HOME) -->
+  <!-- DOCK -->
   <div class="dock">
     <div class="dockInner">
       <div class="dockBar">
@@ -1229,6 +1203,36 @@
   </div>
 
   <script>
+    /* ✅ mount SVG into top left, sidebar, and gate */
+    (function mountLogo(){
+      const tpl = document.getElementById("vgmLogoSVG");
+      if(!tpl) return;
+      const svg = tpl.content.firstElementChild.cloneNode(true);
+
+      const top=document.getElementById("topLogoMount");
+      const side=document.getElementById("sideLogoMount");
+      const gate=document.getElementById("gateLogoMount");
+
+      if(top){
+        const svgTop = svg.cloneNode(true);
+        svgTop.classList.add("topLogoSVG");
+        top.innerHTML="";
+        top.appendChild(svgTop);
+      }
+      if(side){
+        const svgSide = svg.cloneNode(true);
+        side.innerHTML="";
+        side.appendChild(svgSide);
+      }
+      if(gate){
+        const svgGate = svg.cloneNode(true);
+        svgGate.style.width="54px";
+        svgGate.style.height="54px";
+        gate.innerHTML="";
+        gate.appendChild(svgGate);
+      }
+    })();
+
     /* ============================================================
       ✅ STICKY MENU POLISH SCRIPT
     ============================================================ */
@@ -1255,6 +1259,7 @@
     let currentUserId="";
     let badgeChannel=null;
 
+    /* converter global */
     let ALL_COINS=[];
     let FIATS=[];
     let FX_RATES=null;
@@ -1266,9 +1271,11 @@
     let selectedFiatB={ id:"NGN", label:"NGN", icon:"₦" };
 
     let top10Timer=null;
-    let newsTimer=null;
 
-    /* NEWS */
+    /* ============================================================
+      ✅ NEWS
+    ============================================================ */
+    let newsTimer=null;
     const NEWS_RSS_URL="https://cryptopanic.com/news/rss/";
     const RSS_TO_JSON="https://api.rss2json.com/v1/api.json?rss_url=";
 
@@ -1327,75 +1334,41 @@
       newsTimer=setInterval(loadNews, 60000);
     }
 
-    /* TOP 10 */
-    const TOP10_IDS = [
-      "bitcoin","ethereum","tether","binancecoin","solana",
-      "ripple","usd-coin","dogecoin","cardano","tron"
-    ];
-
-    function fmtMoneySmart(n){
-      const num=Number(n||0);
-      if(num >= 1000) return "$" + num.toLocaleString(undefined,{maximumFractionDigits:2});
-      if(num >= 1) return "$" + num.toLocaleString(undefined,{maximumFractionDigits:4});
-      return "$" + num.toLocaleString(undefined,{maximumFractionDigits:8});
-    }
-    function nfmt(n, dp=2){
-      return Number(n).toLocaleString(undefined,{minimumFractionDigits:dp, maximumFractionDigits:dp});
-    }
-
-    async function loadTop10MajorCryptos(){
-      const msg=document.getElementById("top10Msg");
-      const list=document.getElementById("top10List");
-      if(!msg || !list) return;
-
-      try{
-        msg.textContent="Loading…";
-        const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${encodeURIComponent(TOP10_IDS.join(","))}&order=market_cap_desc&per_page=10&page=1&sparkline=false`;
-        const res=await fetch(url);
-        const data=await res.json();
-        if(!Array.isArray(data) || data.length===0) throw new Error("No data");
-
-        msg.textContent="";
-        list.innerHTML = data.map(c=>{
-          const chg=Number(c.price_change_percentage_24h||0);
-          const chgClass = chg>=0 ? "up" : "down";
-          const sign = chg>=0 ? "+" : "";
-          return `
-            <div class="cryptoRow">
-              <div class="cryptoLeft">
-                <div class="cryptoLogo">
-                  <img src="${c.image}" alt="${c.symbol}"/>
-                </div>
-                <div style="min-width:0">
-                  <div class="cryptoName">${c.name}</div>
-                  <span class="cryptoSym">${String(c.symbol||"").toUpperCase()}</span>
-                </div>
-              </div>
-              <div class="cryptoRight">
-                <div class="cryptoPrice">${fmtMoneySmart(c.current_price)}</div>
-                <div class="cryptoChg ${chgClass}">${sign}${chg.toFixed(2)}% (24h)</div>
-              </div>
-            </div>
-          `;
-        }).join("");
-      }catch(e){
-        msg.innerHTML = "<span class='err'>Unable to load live crypto prices (network blocked).</span>";
-        list.innerHTML = "";
-      }
-    }
-
-    function startTop10AutoRefresh(){
-      if(top10Timer) clearInterval(top10Timer);
-      top10Timer=setInterval(loadTop10MajorCryptos, 20000);
-    }
-
-    /* ORDER BOOK PAIRS */
+    /* ============================================================
+      ✅ ORDER BOOK PAIRS
+    ============================================================ */
     const OB_PAIRS = [
       { value:"BTCUSDT", label:"Bitcoin (BTC/USDT)", search:"bitcoin btc usdt btcusdt" },
       { value:"ETHUSDT", label:"Ethereum (ETH/USDT)", search:"ethereum eth usdt ethusdt" },
       { value:"BNBUSDT", label:"BNB (BNB/USDT)", search:"bnb binance bnbusdt usdt" },
       { value:"SOLUSDT", label:"Solana (SOL/USDT)", search:"solana sol solusdt usdt" },
-      { value:"XRPUSDT", label:"XRP (XRP/USDT)", search:"xrp ripple xrpusdt usdt" }
+      { value:"XRPUSDT", label:"XRP (XRP/USDT)", search:"xrp ripple xrpusdt usdt" },
+      { value:"ADAUSDT", label:"Cardano (ADA/USDT)", search:"cardano ada adausdt usdt" },
+      { value:"DOGEUSDT", label:"Dogecoin (DOGE/USDT)", search:"dogecoin doge dogeusdt usdt" },
+      { value:"TRXUSDT", label:"TRON (TRX/USDT)", search:"tron trx trxusdt usdt" },
+      { value:"DOTUSDT", label:"Polkadot (DOT/USDT)", search:"polkadot dot dotusdt usdt" },
+      { value:"MATICUSDT", label:"Polygon (MATIC/USDT)", search:"polygon matic maticusdt usdt" },
+      { value:"AVAXUSDT", label:"Avalanche (AVAX/USDT)", search:"avalanche avax avaxusdt usdt" },
+      { value:"LINKUSDT", label:"Chainlink (LINK/USDT)", search:"chainlink link linkusdt usdt" },
+      { value:"LTCUSDT", label:"Litecoin (LTC/USDT)", search:"litecoin ltc ltcusdt usdt" },
+      { value:"BCHUSDT", label:"Bitcoin Cash (BCH/USDT)", search:"bitcoin cash bch bchusdt usdt" },
+      { value:"ATOMUSDT", label:"Cosmos (ATOM/USDT)", search:"cosmos atom atomusdt usdt" },
+      { value:"XLMUSDT", label:"Stellar (XLM/USDT)", search:"stellar xlm xlmusdt usdt" },
+      { value:"NEARUSDT", label:"NEAR (NEAR/USDT)", search:"near nearusdt usdt" },
+      { value:"APTUSDT", label:"Aptos (APT/USDT)", search:"aptos apt aptusdt usdt" },
+      { value:"OPUSDT", label:"Optimism (OP/USDT)", search:"optimism op opusdt usdt" },
+      { value:"ARBUSDT", label:"Arbitrum (ARB/USDT)", search:"arbitrum arb arbusdt usdt" },
+      { value:"INJUSDT", label:"Injective (INJ/USDT)", search:"injective inj injusdt usdt" },
+      { value:"RNDRUSDT", label:"Render (RNDR/USDT)", search:"render rndr rndrusdt usdt" },
+      { value:"FILUSDT", label:"Filecoin (FIL/USDT)", search:"filecoin fil filusdt usdt" },
+      { value:"ETCUSDT", label:"Ethereum Classic (ETC/USDT)", search:"ethereum classic etc etcusdt usdt" },
+      { value:"UNIUSDT", label:"Uniswap (UNI/USDT)", search:"uniswap uni uniusdt usdt" },
+      { value:"AAVEUSDT", label:"Aave (AAVE/USDT)", search:"aave aaveusdt usdt" },
+      { value:"SUIUSDT", label:"Sui (SUI/USDT)", search:"sui sui usdt suiusdt" },
+      { value:"PEPEUSDT", label:"Pepe (PEPE/USDT)", search:"pepe pepeusdt usdt" },
+      { value:"SHIBUSDT", label:"Shiba Inu (SHIB/USDT)", search:"shiba inu shib shibusdt usdt" },
+      { value:"BATUSDT", label:"Basic Attention (BAT/USDT)", search:"basic attention bat batusdt usdt" },
+      { value:"GALAUSDT", label:"Gala (GALA/USDT)", search:"gala galausdt usdt" }
     ];
 
     function mountOBPairs(){
@@ -1406,7 +1379,7 @@
       wrap.innerHTML = `
         <button class="ddBtn" type="button" id="obPairBtn">
           <div class="ddLeft">
-            <div class="ddIcon">◈</div>
+            <div class="ddIcon">📊</div>
             <div class="ddName" id="obPairName">BTC/USDT</div>
           </div>
           <div>▾</div>
@@ -1473,7 +1446,73 @@
       });
     }
 
-    /* ORDER BOOK WS */
+    /* ============================================================
+      ✅ TOP 10 MAJOR CRYPTO
+    ============================================================ */
+    const TOP10_IDS = [
+      "bitcoin","ethereum","tether","binancecoin","solana",
+      "ripple","usd-coin","dogecoin","cardano","tron"
+    ];
+
+    function fmtMoneySmart(n){
+      const num=Number(n||0);
+      if(num >= 1000) return "$" + num.toLocaleString(undefined,{maximumFractionDigits:2});
+      if(num >= 1) return "$" + num.toLocaleString(undefined,{maximumFractionDigits:4});
+      return "$" + num.toLocaleString(undefined,{maximumFractionDigits:8});
+    }
+    function nfmt(n, dp=2){
+      return Number(n).toLocaleString(undefined,{minimumFractionDigits:dp, maximumFractionDigits:dp});
+    }
+
+    async function loadTop10MajorCryptos(){
+      const msg=document.getElementById("top10Msg");
+      const list=document.getElementById("top10List");
+      if(!msg || !list) return;
+
+      try{
+        msg.textContent="Loading…";
+        const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${encodeURIComponent(TOP10_IDS.join(","))}&order=market_cap_desc&per_page=10&page=1&sparkline=false`;
+        const res=await fetch(url);
+        const data=await res.json();
+        if(!Array.isArray(data) || data.length===0) throw new Error("No data");
+
+        msg.textContent="";
+        list.innerHTML = data.map(c=>{
+          const chg=Number(c.price_change_percentage_24h||0);
+          const chgClass = chg>=0 ? "up" : "down";
+          const sign = chg>=0 ? "+" : "";
+          return `
+            <div class="cryptoRow">
+              <div class="cryptoLeft">
+                <div class="cryptoLogo">
+                  <img src="${c.image}" alt="${c.symbol}"/>
+                </div>
+                <div style="min-width:0">
+                  <div class="cryptoName">${c.name}</div>
+                  <span class="cryptoSym">${String(c.symbol||"").toUpperCase()}</span>
+                </div>
+              </div>
+              <div class="cryptoRight">
+                <div class="cryptoPrice">${fmtMoneySmart(c.current_price)}</div>
+                <div class="cryptoChg ${chgClass}">${sign}${chg.toFixed(2)}% (24h)</div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }catch(e){
+        msg.innerHTML = "<span class='err'>Unable to load live crypto prices (network blocked).</span>";
+        list.innerHTML = "";
+      }
+    }
+
+    function startTop10AutoRefresh(){
+      if(top10Timer) clearInterval(top10Timer);
+      top10Timer=setInterval(loadTop10MajorCryptos, 20000);
+    }
+
+    /* ============================================================
+      ✅ ORDER BOOK — MULTI WS FALLBACK
+    ============================================================ */
     let obWS=null;
     let obReconnectTimer=null;
     let obLastRender=0;
@@ -1556,9 +1595,15 @@
       }catch(e){}
       obWS=null;
     }
+
     function scheduleOBReconnect(){
       try{ if(obReconnectTimer) clearTimeout(obReconnectTimer); }catch(e){}
       obReconnectTimer=setTimeout(()=>startOrderBook(), 1500);
+    }
+
+    function normalizePairForOKX(pair){
+      const base = pair.replace("USDT","").toUpperCase();
+      return `${base}-USDT`;
     }
 
     function connectBinanceWS(pair){
@@ -1581,16 +1626,121 @@
       });
     }
 
+    function connectBinanceAltWS(pair){
+      return new Promise((resolve,reject)=>{
+        const url = `wss://data-stream.binance.vision/ws/${pair.toLowerCase()}@depth20@100ms`;
+        const ws = new WebSocket(url);
+        const timer=setTimeout(()=>{
+          try{ ws.close(); }catch(e){}
+          reject(new Error("binance alt timeout"));
+        }, 1800);
+        ws.onopen=()=>{
+          clearTimeout(timer);
+          resolve({ws, source:"Binance (Alt WS)"});
+        };
+        ws.onerror=()=>{
+          clearTimeout(timer);
+          try{ ws.close(); }catch(e){}
+          reject(new Error("binance alt blocked"));
+        };
+      });
+    }
+
+    function connectBybitWS(pair){
+      return new Promise((resolve,reject)=>{
+        const url="wss://stream.bybit.com/v5/public/spot";
+        const ws=new WebSocket(url);
+        const timer=setTimeout(()=>{
+          try{ ws.close(); }catch(e){}
+          reject(new Error("bybit timeout"));
+        }, 2200);
+        ws.onopen=()=>{
+          try{
+            ws.send(JSON.stringify({
+              op:"subscribe",
+              args:[`orderbook.50.${pair.toUpperCase()}`]
+            }));
+          }catch(e){}
+          clearTimeout(timer);
+          resolve({ws, source:"Bybit (WS)"});
+        };
+        ws.onerror=()=>{
+          clearTimeout(timer);
+          try{ ws.close(); }catch(e){}
+          reject(new Error("bybit blocked"));
+        };
+      });
+    }
+
+    function connectOKXWS(pair){
+      return new Promise((resolve,reject)=>{
+        const url="wss://ws.okx.com:8443/ws/v5/public";
+        const ws=new WebSocket(url);
+        const timer=setTimeout(()=>{
+          try{ ws.close(); }catch(e){}
+          reject(new Error("okx timeout"));
+        }, 2200);
+        ws.onopen=()=>{
+          try{
+            ws.send(JSON.stringify({
+              op:"subscribe",
+              args:[{channel:"books5", instId: normalizePairForOKX(pair)}]
+            }));
+          }catch(e){}
+          clearTimeout(timer);
+          resolve({ws, source:"OKX (WS)"});
+        };
+        ws.onerror=()=>{
+          clearTimeout(timer);
+          try{ ws.close(); }catch(e){}
+          reject(new Error("okx blocked"));
+        };
+      });
+    }
+
+    function handleDepthMessage_Binance(raw){
+      const asks=(raw?.a || raw?.asks || []).map(x=>({p:Number(x[0]), q:Number(x[1])})).filter(x=>x.p>0 && x.q>0);
+      const bids=(raw?.b || raw?.bids || []).map(x=>({p:Number(x[0]), q:Number(x[1])})).filter(x=>x.p>0 && x.q>0);
+      if(!asks.length || !bids.length) return null;
+      return { asks: asks.sort((x,y)=>x.p-y.p), bids: bids.sort((x,y)=>y.p-x.p) };
+    }
+    function handleDepthMessage_Bybit(raw){
+      const d=raw?.data;
+      if(!d) return null;
+      const asks=(d?.a || []).map(x=>({p:Number(x[0]), q:Number(x[1])})).filter(x=>x.p>0 && x.q>0);
+      const bids=(d?.b || []).map(x=>({p:Number(x[0]), q:Number(x[1])})).filter(x=>x.p>0 && x.q>0);
+      if(!asks.length || !bids.length) return null;
+      return { asks: asks.sort((x,y)=>x.p-y.p), bids: bids.sort((x,y)=>y.p-x.p) };
+    }
+    function handleDepthMessage_OKX(raw){
+      const d=raw?.data?.[0];
+      if(!d) return null;
+      const asks=(d?.asks || []).map(x=>({p:Number(x[0]), q:Number(x[1])})).filter(x=>x.p>0 && x.q>0);
+      const bids=(d?.bids || []).map(x=>({p:Number(x[0]), q:Number(x[1])})).filter(x=>x.p>0 && x.q>0);
+      if(!asks.length || !bids.length) return null;
+      return { asks: asks.sort((x,y)=>x.p-y.p), bids: bids.sort((x,y)=>y.p-x.p) };
+    }
+
     async function startOrderBook(){
       const pair = document.getElementById("obPair")?.value || "BTCUSDT";
       stopOB();
       setOBStatus("Connecting…", true);
       setOBMeta("--");
 
+      const connectors = [
+        ()=>connectBinanceWS(pair),
+        ()=>connectBinanceAltWS(pair),
+        ()=>connectBybitWS(pair),
+        ()=>connectOKXWS(pair)
+      ];
+
       let connected=null;
-      try{
-        connected = await connectBinanceWS(pair);
-      }catch(e){}
+      for(const fn of connectors){
+        try{
+          connected = await fn();
+          break;
+        }catch(e){}
+      }
 
       if(!connected){
         setOBStatus("Disconnected (Network blocked)", false);
@@ -1618,15 +1768,28 @@
       obWS.onmessage=(ev)=>{
         try{
           const raw = JSON.parse(ev.data);
-          const asks=(raw?.a || []).map(x=>({p:Number(x[0]), q:Number(x[1])})).filter(x=>x.p>0 && x.q>0);
-          const bids=(raw?.b || []).map(x=>({p:Number(x[0]), q:Number(x[1])})).filter(x=>x.p>0 && x.q>0);
-          if(!asks.length || !bids.length) return;
+          if(raw?.event==="ping" || raw?.op==="pong") return;
+
+          if(raw?.op==="ping"){
+            try{ obWS.send(JSON.stringify({op:"pong"})); }catch(e){}
+            return;
+          }
+
+          let parsed=null;
+          if(obActiveSource.includes("Binance")){
+            parsed = handleDepthMessage_Binance(raw);
+          }else if(obActiveSource.includes("Bybit")){
+            parsed = handleDepthMessage_Bybit(raw);
+          }else if(obActiveSource.includes("OKX")){
+            parsed = handleDepthMessage_OKX(raw);
+          }
+          if(!parsed) return;
 
           const now=Date.now();
           if(now - obLastRender < 150) return;
           obLastRender = now;
 
-          renderOB(asks.sort((x,y)=>x.p-y.p), bids.sort((x,y)=>y.p-x.p));
+          renderOB(parsed.asks, parsed.bids);
           setOBMeta(obActiveSource);
         }catch(e){}
       };
@@ -1683,7 +1846,8 @@
         const ss=String(now.getSeconds()).padStart(2,"0");
         dtEl.textContent=`${dayName}, ${day} ${mon} ${yr} | ${hhs}:${mm}:${ss} ${ampm}`;
       };
-      tick(); setInterval(tick,1000);
+      tick();
+      setInterval(tick,1000);
     }
 
     function setTopAvatar(avatarUrl){
@@ -1710,17 +1874,81 @@
         fb.style.display="block";
       }
     }
+
     function setNameEverywhere(fullName){
       const nice=(fullName && fullName.trim()) ? fullName.trim() : "User";
       document.getElementById("helloName").innerHTML=`<span class="ok">${nice}</span>`;
       document.getElementById("sideName").textContent=nice;
     }
 
+    function isoToFlag(iso){
+      if(!iso || iso.length!==2) return "";
+      const code=iso.toUpperCase();
+      const A=0x1F1E6;
+      return String.fromCodePoint(...[...code].map(c=>A + c.charCodeAt(0)-65));
+    }
+    function setCountryChip(iso, fullName=""){
+      const el=document.getElementById("countryChip");
+      if(!el) return;
+      if(!iso || iso.length!==2){ el.style.display="none"; el.textContent=""; return; }
+      const flag=isoToFlag(iso);
+      if(!flag){ el.style.display="none"; el.textContent=""; return; }
+      const cleanName = (fullName || "").trim();
+      el.textContent = cleanName ? `${flag} ${iso.toUpperCase()} · ${cleanName}` : `${flag} ${iso.toUpperCase()}`;
+      el.style.display="inline-flex";
+    }
+
+    function normalizeCountryText(v){
+      if(!v) return "";
+      return String(v).replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]/g,"").replace(/[^\w\s-]/g," ").trim().toLowerCase();
+    }
+    function isoToCountryName(iso){
+      if(!iso) return "";
+      const c = iso.toUpperCase();
+      const map = { NG:"Nigeria", US:"United States", GB:"United Kingdom", CA:"Canada", DE:"Germany", FR:"France", ZA:"South Africa", KE:"Kenya", GH:"Ghana", AE:"United Arab Emirates", SA:"Saudi Arabia", IN:"India", AU:"Australia", BR:"Brazil", MX:"Mexico", JP:"Japan", SG:"Singapore" };
+      return map[c] || "";
+    }
+    function countryNameToISO(name){
+      if(!name) return "";
+      const raw = String(name).trim();
+      if(/^[A-Za-z]{2}$/.test(raw)) return raw.toUpperCase();
+      const n=normalizeCountryText(raw);
+      const map={ "nigeria":"NG","ng":"NG","nigerian":"NG","united states":"US","united states of america":"US","usa":"US","us":"US","america":"US","united kingdom":"GB","great britain":"GB","britain":"GB","england":"GB","uk":"GB","gb":"GB","canada":"CA","germany":"DE","france":"FR","south africa":"ZA","kenya":"KE","ghana":"GH","united arab emirates":"AE","uae":"AE","dubai":"AE","saudi arabia":"SA","india":"IN","australia":"AU","brazil":"BR","mexico":"MX","japan":"JP","singapore":"SG" };
+      if(map[n]) return map[n];
+      for(const key of Object.keys(map)){ if(n.includes(key)) return map[n]; }
+      return "";
+    }
+    async function detectCountryFromIP(){
+      try{
+        const res=await fetch("https://ipapi.co/json/");
+        const data=await res.json();
+        if(data?.country_code) return String(data.country_code).toUpperCase();
+      }catch(e){}
+      return "";
+    }
+    function detectCountryFromLocale(){
+      try{
+        const loc = (navigator.language || "").toUpperCase();
+        const parts = loc.split("-");
+        if(parts.length>=2 && /^[A-Z]{2}$/.test(parts[1])) return parts[1];
+      }catch{}
+      return "";
+    }
+    async function resolveCountryISO(countryNameFromDB){
+      let iso = countryNameToISO(countryNameFromDB);
+      if(iso) return iso;
+      iso = await detectCountryFromIP();
+      if(iso) return iso;
+      iso = detectCountryFromLocale();
+      if(iso) return iso;
+      return "";
+    }
+
     async function loadDashboardIdentity(){
       try{
-        let fullName="", avatarUrl="";
-        const { data: row } = await supabaseClient.from("users").select("full_name, avatar_url").eq("email", currentUserEmail).maybeSingle();
-        if(row){ fullName=row.full_name||""; avatarUrl=row.avatar_url||""; }
+        let fullName="", avatarUrl="", countryName="";
+        const { data: row, error } = await supabaseClient.from("users").select("full_name, avatar_url, country").eq("email", currentUserEmail).maybeSingle();
+        if(!error && row){ fullName=row.full_name||""; avatarUrl=row.avatar_url||""; countryName=row.country||""; }
 
         const md=(window.COINLUXORA_USER?.user_metadata||{});
         if(!fullName) fullName=md.full_name||"User";
@@ -1729,10 +1957,15 @@
         setNameEverywhere(fullName);
         setTopAvatar(avatarUrl);
         setSideAvatar(avatarUrl);
+
+        const iso = await resolveCountryISO(countryName);
+        const niceName = (countryName && countryName.trim()) ? countryName.trim() : isoToCountryName(iso);
+        setCountryChip(iso, niceName);
       }catch(e){
         setNameEverywhere("User");
         setTopAvatar("");
         setSideAvatar("");
+        setCountryChip("");
       }
     }
 
@@ -1840,6 +2073,7 @@
         const coins = await coinRes.json();
         const favMap = new Map(FAVORITES.map(f=>[f.id,f]));
         const list = [];
+
         for(const c of (coins||[])){
           if(!c?.id || !c?.name) continue;
           if(favMap.has(c.id)) continue;
@@ -1904,6 +2138,7 @@
         document.getElementById("cryptoReverse").textContent="--";
         return;
       }
+
       try{
         if(cryptoDirection === "crypto_to_fiat"){
           const coinId = selectedCryptoA?.id || "bitcoin";
@@ -1999,6 +2234,16 @@
     }
 
     function money(n){ return "$" + Number(n||0).toFixed(2); }
+    function pill(status){
+      const s=(status||"pending").toLowerCase();
+      return `<span style="padding:4px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);font-weight:1000;font-size:12px">${s}</span>`;
+    }
+    function daysBetween(date1, date2){
+      const d1=new Date(date1);
+      const d2=new Date(date2);
+      const diff=(d2 - d1) / (1000*60*60*24);
+      return Math.max(0, Math.ceil(diff));
+    }
 
     async function loadActivePlan(){
       const planMsg=document.getElementById("planMsg");
@@ -2029,12 +2274,23 @@
       const roi=Number(plan.roi_percent||0);
       const expected=amount+(amount*(roi/100));
 
+      let daysLeft="--";
+      if(plan.duration_days && plan.created_at){
+        const start=new Date(plan.created_at);
+        const end=new Date(start);
+        end.setDate(end.getDate()+Number(plan.duration_days||0));
+        daysLeft = daysBetween(new Date(), end);
+      }
+
       planBox.innerHTML=`
         <div class="card">
-          <strong>${plan.plan_name} Plan</strong>
+          <strong>${plan.plan_name} Plan</strong> ${pill(plan.status)}
           <div class="small" style="margin-top:10px">Amount: <strong>${money(amount)}</strong></div>
           <div class="small">ROI: <strong>${roi}%</strong></div>
+          <div class="small">Duration: <strong>${plan.duration_days} days</strong></div>
           <div class="small">Expected Return: <strong>${money(expected)}</strong></div>
+          <div class="small">Days remaining: <strong>${daysLeft}</strong></div>
+          ${plan.admin_note ? `<div class="small">Admin note: <strong>${plan.admin_note}</strong></div>` : ""}
         </div>
       `;
     }
@@ -2046,6 +2302,7 @@
       if(n<=0) el.style.display="none";
       else { el.style.display="flex"; el.innerText = n>99?"99+":String(n); }
     }
+
     function setBadgeFromKey(key,val){
       if(key==="deposits") setBadge("badgeDepositDock", val);
       else if(key==="withdrawals") setBadge("badgeWithdrawDock", val);
@@ -2067,10 +2324,12 @@
 
     function subscribeToRealtimeBadges(){
       if(!currentUserId) return;
+
       if(badgeChannel){
         supabaseClient.removeChannel(badgeChannel);
         badgeChannel=null;
       }
+
       badgeChannel = supabaseClient
         .channel("realtime-user-badges-dashboard")
         .on("postgres_changes", {
@@ -2118,6 +2377,7 @@
       document.getElementById("userIdChip").innerText = "ID: " + currentUserId.slice(0,6).toUpperCase();
 
       hideGate();
+
       loadDashboardIdentity();
       loadBalance();
       loadActivePlan();
