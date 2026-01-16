@@ -173,7 +173,7 @@
       gap:12px; margin-bottom:14px;
     }
 
-    /* ✅ NEW: logo stands alone big (no box, no VGM text) */
+    /* ✅ NEW: wide / magnified logo (NO BOX) */
     .brand{
       display:flex;
       align-items:center;
@@ -184,19 +184,23 @@
       box-shadow:none;
       min-width:unset;
     }
-    .brandIcon{
-      width:78px;
-      height:78px;
-      border-radius:22px;
-      overflow:hidden;
-      display:grid;
-      place-items:center;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.12);
-      box-shadow:0 18px 55px rgba(0,0,0,.45);
+
+    .brandLogoWide{
+      height:54px;
+      width:auto;
+      max-width:320px;
+      display:block;
+      object-fit:contain;
+      filter:
+        drop-shadow(0 18px 35px rgba(0,0,0,.55))
+        drop-shadow(0 0 22px rgba(91,108,255,.22));
+      transform: translateY(1px);
     }
     @media(max-width:520px){
-      .brandIcon{width:66px;height:66px;border-radius:20px;}
+      .brandLogoWide{
+        height:48px;
+        max-width:250px;
+      }
     }
 
     .headerActions{display:flex;gap:10px;align-items:center}
@@ -248,7 +252,7 @@
     }
     .helloLeft{display:flex;align-items:center;gap:12px;}
 
-    /* ✅ REPLACED hello small logo with shield/verified icon */
+    /* ✅ shield verified icon */
     .helloLogo{
       width:48px;height:48px;border-radius:18px;
       background:rgba(255,255,255,.20);
@@ -660,7 +664,7 @@
       gap:10px;margin-bottom:12px;
     }
 
-    /* ✅ NEW sidebar logo: big + alone (no text, no box style) */
+    /* ✅ NEW sidebar wide logo (NO BOX) */
     .sideBrand{
       display:flex;
       align-items:center;
@@ -671,13 +675,16 @@
       box-shadow:none;
       min-width:unset;
     }
-    .sideBrandIcon{
-      width:92px;height:92px;border-radius:26px;
-      display:grid;place-items:center;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.12);
-      overflow:hidden;
-      box-shadow:0 18px 60px rgba(0,0,0,.55);
+
+    .sideLogoWide{
+      height:64px;
+      width:auto;
+      max-width:230px;
+      display:block;
+      object-fit:contain;
+      filter:
+        drop-shadow(0 18px 35px rgba(0,0,0,.55))
+        drop-shadow(0 0 22px rgba(91,108,255,.18));
     }
 
     .closeBtn{
@@ -987,9 +994,7 @@
   <div id="sidebar" class="sidebar">
     <div class="sideTop">
       <div class="sideBrand">
-        <div class="sideBrandIcon">
-          <img class="logoImg" src="assets/vgm-logo.png" alt="VGM Logo">
-        </div>
+        <img class="sideLogoWide" src="assets/vgm-logo.png" alt="VGM Logo">
       </div>
       <button class="closeBtn" onclick="closeMenu()">✕</button>
     </div>
@@ -1020,9 +1025,8 @@
     <div id="stickyMenu" class="stickyMenu">
       <div class="topRow">
         <div class="brand">
-          <div class="brandIcon">
-            <img class="logoImg" src="assets/vgm-logo.png" alt="VGM Logo">
-          </div>
+          <!-- ✅ Only wide magnified logo -->
+          <img class="brandLogoWide" src="assets/vgm-logo.png" alt="Veloci Global Markets">
         </div>
 
         <div class="headerActions">
