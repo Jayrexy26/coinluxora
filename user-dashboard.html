@@ -186,7 +186,7 @@
       position:relative;
     }
 
-    /* ✅ 2x magnified logo WITHOUT changing sticky bar height */
+    /* ✅ 4x magnified logo WITHOUT changing sticky bar height */
     .brandLogoWide{
       height:54px;                 /* ✅ layout height stays normal */
       width:auto;
@@ -194,7 +194,7 @@
       display:block;
       object-fit:contain;
 
-      transform: scale(2);         /* ✅ 2x visual magnification */
+      transform: scale(4);         /* ✅ 4x visual magnification */
       transform-origin: left center;
 
       filter:
@@ -205,7 +205,7 @@
     /* prevent huge logo from breaking mobile */
     @media(max-width:520px){
       .brandLogoWide{
-        transform: scale(2);       /* ✅ on tiny screens, keep 2x */
+        transform: scale(3);       /* ✅ on tiny screens, 4x may overflow too much */
         transform-origin: left center;
       }
     }
@@ -683,9 +683,9 @@
       min-width:unset;
     }
 
-    /* ✅ IMPORTANT: side menu logo stays SAME SIZE (unchanged) */
+    /* ✅ ONLY CHANGE: SIDEBAR LOGO 2X */
     .sideLogoWide{
-      height:64px;
+      height:128px;                 /* ✅ was 64px */
       width:auto;
       max-width:230px;
       display:block;
