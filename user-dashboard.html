@@ -116,13 +116,14 @@
 
     /* ✅ Gate logo now image */
     .gateLogo{
-      width:62px;height:62px;border-radius:18px;
+      width:74px;height:74px;border-radius:20px;
       margin:0 auto 10px;
       display:grid;place-items:center;
       border:1px solid rgba(255,255,255,.14);
       background:linear-gradient(180deg, rgba(109,87,255,1), rgba(124,77,255,1));
       box-shadow:0 18px 50px rgba(109,87,255,.28);
       overflow:hidden;
+      padding:8px;
     }
     .gateTxt{font-weight:1000}
     .gateSub{margin-top:6px;color:rgba(234,240,255,.70);font-weight:900;font-size:13px}
@@ -174,23 +175,26 @@
       display:flex; align-items:center; justify-content:space-between;
       gap:12px; margin-bottom:14px;
     }
+
+    /* ✅ brand becomes logo-only */
     .brand{
-      display:flex;align-items:center;gap:12px;
-      padding:12px 14px;border-radius:16px;
+      display:flex;align-items:center;gap:0;
+      padding:10px 10px;border-radius:18px;
       border:1px solid rgba(255,255,255,.14);
       background:linear-gradient(90deg, rgba(109,87,255,1), rgba(135,116,255,0.86));
-      color:white;font-weight:1000;letter-spacing:.6px;
       box-shadow:0 18px 50px rgba(109,87,255,.25);
-      min-width:140px;
+      min-width:unset;
+      cursor:pointer;
     }
 
-    /* ✅ top-left icon now image holder */
+    /* ✅ top-left icon now larger logo-only */
     .brandIcon{
-      width:34px;height:34px;border-radius:12px;
+      width:50px;height:50px;border-radius:18px;
       background:rgba(255,255,255,.18);
       border:1px solid rgba(255,255,255,.22);
       display:grid;place-items:center;
       overflow:hidden;
+      padding:7px;
     }
 
     .headerActions{display:flex;gap:10px;align-items:center}
@@ -660,24 +664,27 @@
       display:flex;align-items:center;justify-content:space-between;
       gap:10px;margin-bottom:12px;
     }
+
+    /* ✅ sidebar brand becomes logo-only */
     .sideBrand{
-      display:flex;align-items:center;gap:10px;
+      display:flex;align-items:center;gap:0;
       font-weight:1000;font-size:16px;letter-spacing:.9px;
       color:#fff;
-      padding:10px 12px;border-radius:16px;
+      padding:10px 10px;border-radius:18px;
       border:1px solid rgba(255,255,255,.10);
       background:linear-gradient(90deg, rgba(109,87,255,.85), rgba(124,77,255,.85));
       box-shadow:0 16px 50px rgba(109,87,255,.18);
-      min-width:170px;
+      min-width:unset;
     }
 
-    /* ✅ sidebar icon now image holder */
+    /* ✅ sidebar icon now image holder (bigger) */
     .sideBrandIcon{
-      width:30px;height:30px;border-radius:12px;
+      width:46px;height:46px;border-radius:18px;
       display:grid;place-items:center;
       background:rgba(255,255,255,.16);
       border:1px solid rgba(255,255,255,.20);
       overflow:hidden;
+      padding:7px;
     }
 
     .closeBtn{
@@ -977,6 +984,8 @@
       <div class="gateLogo">
         <img class="logoImg" src="assets/vgm-logo.png" alt="Veloci Global Markets Logo">
       </div>
+
+      <!-- ✅ keep full brand name here (LOGICAL) -->
       <div class="gateTxt">Veloci Global Markets</div>
       <div class="gateSub">Precision trading. Real-time execution.</div>
       <div class="spinner"></div>
@@ -989,11 +998,10 @@
   <div id="sidebar" class="sidebar">
     <div class="sideTop">
       <div class="sideBrand">
-        <!-- ✅ LOGO IMPLEMENTED -->
+        <!-- ✅ LOGO ONLY (removed redundant brand name text) -->
         <div class="sideBrandIcon">
-          <img class="logoImg" src="assets/vgm-logo.png" alt="Veloci Markets Logo">
+          <img class="logoImg" src="assets/vgm-logo.png" alt="VGM Logo">
         </div>
-        Veloci Markets
       </div>
       <button class="closeBtn" onclick="closeMenu()">✕</button>
     </div>
@@ -1023,12 +1031,11 @@
   <div class="container">
     <div id="stickyMenu" class="stickyMenu">
       <div class="topRow">
-        <div class="brand">
-          <!-- ✅ LOGO IMPLEMENTED -->
+        <!-- ✅ LOGO ONLY -->
+        <div class="brand" onclick="goDashboard()" title="Dashboard">
           <div class="brandIcon">
             <img class="logoImg" src="assets/vgm-logo.png" alt="VGM Logo">
           </div>
-          VGM
         </div>
 
         <div class="headerActions">
@@ -1043,7 +1050,6 @@
 
     <div class="helloCard">
       <div class="helloLeft">
-        <!-- ✅ LOGO IMPLEMENTED -->
         <div class="helloLogo">
           <img class="logoImg" src="assets/vgm-logo.png" alt="VGM Logo">
         </div>
