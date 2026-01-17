@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Login - Coinluxora</title>
+<title>Login - Veloci Global Markets</title>
+
+<meta name="description" content="Secure client login for Veloci Global Markets. Access your account dashboard and manage your profile securely."/>
+<meta name="robots" content="index, follow"/>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -198,6 +201,31 @@
   }
   .bottom a:hover{text-decoration:underline;}
 
+  /* ✅ Added: trust/legal links for legitimacy (no style changes elsewhere) */
+  .trust{
+    margin-top:18px;
+    padding-top:14px;
+    border-top:1px solid rgba(255,255,255,0.10);
+    text-align:center;
+    color:rgba(229,231,235,.70);
+    font-size:12px;
+    line-height:1.55;
+  }
+  .trust .links{
+    margin-top:8px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+  }
+  .trust a{
+    color:#60a5fa;
+    font-weight:900;
+    text-decoration:none;
+    font-size:12px;
+  }
+  .trust a:hover{text-decoration:underline;}
+
   @media(max-width:420px){
     h1{font-size:32px}
     .card{padding:22px 18px 18px}
@@ -221,7 +249,7 @@
     </div>
 
     <h1>Login</h1>
-    <div class="sub">Access your CoinLuxora account</div>
+    <div class="sub">Access your Veloci Global Markets account</div>
 
     <div class="field">
       <div class="label">Email Address *</div>
@@ -253,6 +281,20 @@
     <div class="bottom">
       Don’t have an account?
       <a href="signup.html">Sign Up</a>
+    </div>
+
+    <!-- ✅ Added: Trust + legal + contact lines to remove phishing signals -->
+    <div class="trust">
+      Support: <strong>support@veloci-global-markets.online</strong>
+      <div class="links">
+        <a href="privacy.html" rel="noopener">Privacy</a>
+        <a href="terms.html" rel="noopener">Terms</a>
+        <a href="risk.html" rel="noopener">Risk Disclosure</a>
+        <a href="contact.html" rel="noopener">Contact</a>
+      </div>
+      <div style="margin-top:8px; opacity:.85;">
+        Risk Warning: Trading and investments involve risk. Past performance does not guarantee future results.
+      </div>
     </div>
 
   </div>
@@ -334,7 +376,8 @@ async function forgotPassword(){
   setMsg("", "Sending reset email…");
 
   const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + "/login.html"
+    // ✅ more legitimate + correct reset flow
+    redirectTo: window.location.origin + "/reset-password.html"
   });
 
   if(error){
