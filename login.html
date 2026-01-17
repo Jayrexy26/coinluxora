@@ -111,8 +111,8 @@
   /* ✅ FIX: prevent "Login" text from clipping */
   h1{
     margin:12px 0 0;
-    padding:0 0 2px;       /* ✅ stops cut */
-    line-height:1.15;      /* ✅ stops cut */
+    padding:0 0 2px;
+    line-height:1.15;
     font-size:36px;
     text-align:center;
     font-weight:900;
@@ -128,7 +128,66 @@
     margin-top:8px;
     color: var(--muted);
     font-size:16px;
-    margin-bottom:22px;
+    margin-bottom:14px;
+  }
+
+  /* ✅ Google button + divider */
+  .oauth{
+    margin-top:10px;
+  }
+
+  .oauthBtn{
+    width:100%;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.06);
+    color: #eaf0ff;
+    font-size:16px;
+    font-weight:900;
+    padding:13px 14px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    transition:.15s ease;
+    box-shadow: 0 16px 45px rgba(0,0,0,.25);
+  }
+
+  .oauthBtn:hover{
+    transform: translateY(-1px);
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.22);
+  }
+
+  .oauthBtn:active{ transform: translateY(0px); }
+
+  .gIcon{
+    width:20px;height:20px;
+    border-radius:6px;
+    background:#fff;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    flex:0 0 auto;
+  }
+  .gIcon svg{ width:16px;height:16px; display:block; }
+
+  .divider{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:14px 0 6px;
+    color: rgba(229,231,235,.55);
+    font-size:13px;
+    font-weight:900;
+  }
+  .divider::before,
+  .divider::after{
+    content:"";
+    height:1px;
+    flex:1;
+    background: rgba(255,255,255,0.10);
   }
 
   .field{margin-top:14px;}
@@ -391,6 +450,23 @@
     <h1>Login</h1>
     <div class="sub">Access your Veloci Global Markets account</div>
 
+    <!-- ✅ Google Sign In -->
+    <div class="oauth">
+      <button class="oauthBtn" onclick="signInWithGoogle()">
+        <span class="gIcon" aria-hidden="true">
+          <svg viewBox="0 0 48 48">
+            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.648 32.659 29.196 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.957 3.043l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+            <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 16.108 19.021 12 24 12c3.059 0 5.842 1.154 7.957 3.043l5.657-5.657C34.046 6.053 29.268 4 24 4c-7.682 0-14.342 4.337-17.694 10.691z"/>
+            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.197l-6.19-5.238C29.141 35.091 26.715 36 24 36c-5.173 0-9.573-3.305-11.2-7.915l-6.519 5.02C9.566 39.556 16.227 44 24 44z"/>
+            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.367-2.398 4.343-4.494 5.565l.003-.002 6.19 5.238C36.564 39.214 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+          </svg>
+        </span>
+        Continue with Google
+      </button>
+
+      <div class="divider">OR</div>
+    </div>
+
     <div class="field">
       <div class="label">Email Address *</div>
       <input id="email" class="input" type="email" placeholder="Enter your email address" autocomplete="email"/>
@@ -469,13 +545,13 @@
 <script>
 const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 checkSessionSafely();
 
 async function checkSessionSafely(){
   await new Promise(r => setTimeout(r, 150));
-
   const { data } = await supabaseClient.auth.getSession();
   const session = data?.session;
 
@@ -505,6 +581,22 @@ function showSuccessModal(){
   const modal = document.getElementById("successModal");
   modal.style.display="flex";
   modal.setAttribute("aria-hidden","false");
+}
+
+async function signInWithGoogle(){
+  setMsg("", "Opening Google sign-in…");
+
+  const redirectTo = window.location.origin + "/login.html";
+
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo }
+  });
+
+  if(error){
+    setMsg("err", error.message);
+    return;
+  }
 }
 
 async function login(){
