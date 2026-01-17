@@ -452,7 +452,10 @@
 
 <script>
   const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
-  const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5Mj230M30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+
+  // ✅ FIXED: correct ANON KEY (your original working one)
+  const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+
   const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
   // ✅ Safety check: if logged in but not verified, force sign out
@@ -574,8 +577,7 @@
         return;
       }
 
-      // ✅ IMPORTANT:
-      // Supabase email verification link must go to verified.html (token handler)
+      // ✅ IMPORTANT: email verification token handler page
       const redirectTo = window.location.origin + "/verified.html";
 
       const { data, error } = await supabaseClient.auth.signUp({
@@ -608,11 +610,9 @@
         console.warn("Users table upsert failed:", dbError);
       }
 
-      // ✅ Modal only (no plain success text)
       setMsg("", "");
       showVerifyModal();
 
-      // ✅ redirect to verify waiting page
       setTimeout(()=>{
         window.location.href="verify.html?email="+encodeURIComponent(email);
       }, 1800);
