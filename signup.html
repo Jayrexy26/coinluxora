@@ -63,7 +63,7 @@
     .logoSolo{
       display:flex;
       justify-content:center;
-      margin:0 auto 8px;
+      margin: -10px auto 14px; /* ✅ pushed up + more space from Create Account */
       padding:0;
       line-height:0;
       height:110px;
@@ -111,7 +111,68 @@
       line-height:1.15;
       padding-bottom:2px;
     }
-    .sub{text-align:center;margin-top:6px;color: var(--muted);font-size:16px;margin-bottom:18px;}
+
+    .sub{text-align:center;margin-top:6px;color: var(--muted);font-size:16px;margin-bottom:12px;}
+
+    /* ✅ Google sign up button (same styling as login) */
+    .oauth{
+      margin-top:10px;
+    }
+
+    .oauthBtn{
+      width:100%;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color: #eaf0ff;
+      font-size:16px;
+      font-weight:900;
+      padding:13px 14px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      transition:.15s ease;
+      box-shadow: 0 16px 45px rgba(0,0,0,.25);
+    }
+
+    .oauthBtn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.22);
+    }
+
+    .oauthBtn:active{ transform: translateY(0px); }
+
+    .gIcon{
+      width:20px;height:20px;
+      border-radius:6px;
+      background:#fff;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .gIcon svg{ width:16px;height:16px; display:block; }
+
+    .divider{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin:14px 0 6px;
+      color: rgba(229,231,235,.55);
+      font-size:13px;
+      font-weight:900;
+    }
+    .divider::before,
+    .divider::after{
+      content:"";
+      height:1px;
+      flex:1;
+      background: rgba(255,255,255,0.10);
+    }
+
     .field{margin-top:14px;}
     .label{font-size:15px;font-weight:700;color:#d1d5db;margin:0 0 8px 2px;}
     .input, select{
@@ -183,7 +244,7 @@
     @media(max-width:420px){
       h1{font-size:32px}
       .card{padding:22px 18px 18px}
-      .logoSolo{height:104px;margin-bottom:8px}
+      .logoSolo{height:104px;margin: -12px auto 14px;}
       .logoSolo img{width:300px;height:130px}
       .bottom{font-size:16px}
     }
@@ -194,7 +255,6 @@
   <div class="wrap">
     <div class="card">
 
-      <!-- ✅ Replaced topIcon with your premium logo (no extra boxes added) -->
       <div class="logoSolo" aria-hidden="true">
         <img
           src="assets/vgm-logo.png"
@@ -205,6 +265,23 @@
 
       <h1>Create Account</h1>
       <div class="sub">Join Veloci Global Markets today</div>
+
+      <!-- ✅ Google Sign Up -->
+      <div class="oauth">
+        <button class="oauthBtn" onclick="signUpWithGoogle()">
+          <span class="gIcon" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.648 32.659 29.196 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.957 3.043l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+              <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 16.108 19.021 12 24 12c3.059 0 5.842 1.154 7.957 3.043l5.657-5.657C34.046 6.053 29.268 4 24 4c-7.682 0-14.342 4.337-17.694 10.691z"/>
+              <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.197l-6.19-5.238C29.141 35.091 26.715 36 24 36c-5.173 0-9.573-3.305-11.2-7.915l-6.519 5.02C9.566 39.556 16.227 44 24 44z"/>
+              <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.367-2.398 4.343-4.494 5.565l.003-.002 6.19 5.238C36.564 39.214 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+            </svg>
+          </span>
+          Continue with Google
+        </button>
+
+        <div class="divider">OR</div>
+      </div>
 
       <div class="field">
         <div class="label">Full Name *</div>
@@ -238,7 +315,6 @@
           <option>Japan</option>
           <option>Singapore</option>
 
-          <!-- full list still works; keeping your big list is fine -->
           <option>Afghanistan</option><option>Albania</option><option>Algeria</option><option>Andorra</option>
           <option>Angola</option><option>Antigua and Barbuda</option><option>Argentina</option><option>Armenia</option>
           <option>Austria</option><option>Azerbaijan</option><option>Bahamas</option><option>Bahrain</option>
@@ -342,11 +418,21 @@
   const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
   const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-  // If already logged in → go dashboard
-  checkSession();
-  async function checkSession(){
+  checkSessionSafely();
+
+  async function checkSessionSafely(){
+    // ✅ prevent session bounce / race condition
+    await new Promise(r => setTimeout(r, 150));
+
     const { data } = await supabaseClient.auth.getSession();
-    if(data.session){
+    const session = data?.session;
+
+    if(session?.user){
+      if(!session.user.email_confirmed_at){
+        await supabaseClient.auth.signOut();
+        setMsg("err", "Please verify your email before continuing.");
+        return;
+      }
       window.location.href="user-dashboard.html";
     }
   }
@@ -404,6 +490,23 @@
     }
   }
 
+  async function signUpWithGoogle(){
+    setMsg("", "Opening Google sign-in…");
+
+    // ✅ send user directly to /session/ after Google login
+    const redirectTo = window.location.origin + "/session/";
+
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo }
+    });
+
+    if(error){
+      setMsg("err", error.message);
+      return;
+    }
+  }
+
   async function signup(){
     setMsg("", "Creating account…");
 
@@ -429,8 +532,6 @@
       return;
     }
 
-    // VERIFIED SIGNUP FLOW ✅
-    // redirectTo must point to verify.html on your site
     const redirectTo = window.location.origin + "/verify.html";
 
     const { data, error } = await supabaseClient.auth.signUp({
@@ -451,7 +552,6 @@
       return;
     }
 
-    // Save profile in users table (still keep it)
     const userId = data?.user?.id || null;
 
     await supabaseClient.from("users").upsert([{
@@ -464,8 +564,6 @@
       notes: "new user"
     }], { onConflict: "email" });
 
-    // IMPORTANT:
-    // do NOT redirect to dashboard until verified
     setMsg("ok","Verification email sent ✅ Please check your inbox to verify your account.");
 
     setTimeout(()=>{
