@@ -58,36 +58,36 @@
     border:1px solid var(--stroke);
     background: var(--card);
     box-shadow: 0 25px 80px rgba(0,0,0,.50);
-    padding:10px 22px 22px;   /* ✅ MUCH tighter top padding */
+    padding:12px 22px 22px;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
 
-  /* ✅ Standalone logo INSIDE card */
+  /* ✅ REAL FIX: crop logo transparent padding */
   .logoSolo{
     display:flex;
     justify-content:center;
-    margin:0 auto 0px;   /* ✅ remove almost all gap */
-    padding:0;           /* ✅ ensure no padding */
-    line-height:0;       /* ✅ kills phantom spacing */
+    margin:0 auto 2px;
+    padding:0;
+    line-height:0;
+    height:120px;             /* fixed height so we can crop */
+    overflow:hidden;          /* crop extra empty space */
   }
 
   .logoSolo img{
-    width:320px;                 /* ✅ bigger */
-    max-width:96%;
-    height:auto;
-    object-fit:contain;
+    width:340px;
+    max-width:98%;
+    height:140px;            /* taller than container = crop effect */
+    object-fit:cover;         /* ✅ trims transparent padding */
+    object-position:center 38%; /* ✅ move logo up/down to remove top gap */
     user-select:none;
     -webkit-user-drag:none;
 
-    /* ✅ premium glow + pulse */
     filter:
       drop-shadow(0 22px 54px rgba(0,0,0,.66))
       drop-shadow(0 0 28px rgba(59,130,246,.28));
     animation: logoPulse 2.8s ease-in-out infinite;
     transform-origin:center;
-    margin:0;
-    padding:0;
     display:block;
   }
 
@@ -109,8 +109,9 @@
   }
 
   h1{
-    margin:2px 0 0;      /* ✅ tighten top gap under logo */
-    line-height:1;       /* ✅ reduces vertical whitespace */
+    margin:0;
+    padding:0;
+    line-height:1;
     font-size:36px;
     text-align:center;
     font-weight:900;
@@ -126,7 +127,7 @@
     margin-top:4px;
     color: var(--muted);
     font-size:16px;
-    margin-bottom:12px;   /* ✅ tighter */
+    margin-bottom:12px;
   }
 
   .field{margin-top:14px;}
@@ -365,9 +366,10 @@
 
   @media(max-width:420px){
     h1{font-size:32px}
-    .card{padding:8px 18px 18px} /* ✅ even tighter on small screens */
+    .card{padding:10px 18px 18px}
+    .logoSolo{height:112px}
+    .logoSolo img{width:300px;height:132px}
     .bottom{font-size:16px}
-    .logoSolo img{width:285px}
   }
 </style>
 </head>
