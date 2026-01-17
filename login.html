@@ -548,9 +548,6 @@ const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* ✅ prevent double modal flashes */
-let modalShownOnce = false;
-
 checkSessionSafely();
 
 async function checkSessionSafely(){
@@ -564,16 +561,6 @@ async function checkSessionSafely(){
       setMsg("err", "Please verify your email before logging in.");
       return;
     }
-
-    // If user came from Google OAuth, make it premium by showing modal first
-    if(!modalShownOnce){
-      modalShownOnce = true;
-      setMsg("", "");
-      showSuccessModal();
-      setTimeout(()=> window.location.href="/session/", 1100);
-      return;
-    }
-
     window.location.href="/session/";
   }
 }
@@ -597,16 +584,10 @@ function showSuccessModal(){
 }
 
 async function signInWithGoogle(){
-  setMsg("", "");
+  setMsg("", "Opening Google sign-in…");
 
-  // ✅ premium UX: show same modal before sending to Google
-  showSuccessModal();
-
-  /* ✅ go directly to /session/ after Google login */
+  /* ✅ CHANGED: go directly to /session/ after Google login */
   const redirectTo = window.location.origin + "/session/";
-
-  // allow modal to render briefly before redirecting out
-  await new Promise(r => setTimeout(r, 320));
 
   const { error } = await supabaseClient.auth.signInWithOAuth({
     provider: "google",
@@ -614,9 +595,6 @@ async function signInWithGoogle(){
   });
 
   if(error){
-    const modal = document.getElementById("successModal");
-    modal.style.display="none";
-    modal.setAttribute("aria-hidden","true");
     setMsg("err", error.message);
     return;
   }
