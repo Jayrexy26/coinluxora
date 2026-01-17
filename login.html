@@ -63,40 +63,18 @@
     -webkit-backdrop-filter: blur(12px);
   }
 
-  /* ✅ Logo box inside card (independent like before) */
-  .logoBox{
-    width:108px;                 /* bigger container */
-    height:108px;
-    border-radius:22px;
-    margin:0 auto 14px;
+  /* ✅ Standalone logo (no box) inside card */
+  .logoSolo{
     display:flex;
-    align-items:center;
     justify-content:center;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.12);
-    box-shadow: 0 10px 35px rgba(0,0,0,.40);
-    overflow:hidden;
-    position:relative;
+    margin:0 auto 14px;
   }
-
-  /* premium soft glow behind logo */
-  .logoBox::before{
-    content:"";
-    position:absolute;
-    inset:-30px;
-    background: radial-gradient(circle at 50% 35%, rgba(96,165,250,.35), transparent 55%);
-    filter: blur(12px);
-    opacity:.65;
-    pointer-events:none;
-  }
-
-  .logoImg{
-    width:96px;          /* ✅ ~3x magnified */
-    height:96px;
+  .logoSolo img{
+    width:260px;                  /* BIG & readable */
+    max-width:88%;
+    height:auto;
     object-fit:contain;
-    position:relative;
-    z-index:1;
-    filter: drop-shadow(0 18px 34px rgba(0,0,0,.55));
+    filter: drop-shadow(0 22px 50px rgba(0,0,0,.65));
     user-select:none;
     -webkit-user-drag:none;
   }
@@ -291,7 +269,7 @@
     width:280px;
     max-width:90%;
     opacity:0.07;
-    filter: blur(0px) drop-shadow(0 40px 90px rgba(0,0,0,.85));
+    filter: drop-shadow(0 40px 90px rgba(0,0,0,.85));
     transform: translateY(-6px);
   }
   .modal::before{
@@ -361,8 +339,7 @@
     h1{font-size:32px}
     .card{padding:22px 18px 18px}
     .bottom{font-size:16px}
-    .logoBox{width:100px;height:100px}
-    .logoImg{width:88px;height:88px}
+    .logoSolo img{width:230px}
   }
 </style>
 </head>
@@ -372,12 +349,11 @@
 <div class="wrap">
   <div class="card">
 
-    <!-- ✅ Logo inside card, in its own independent box -->
-    <div class="logoBox" aria-hidden="true">
+    <!-- ✅ Standalone Logo INSIDE card (no box) -->
+    <div class="logoSolo" aria-hidden="true">
       <img
         src="assets/vgm-logo.png"
         alt="Veloci Global Markets"
-        class="logoImg"
         onerror="this.style.display='none';"
       />
     </div>
@@ -437,7 +413,6 @@
 <div id="successModal" class="modalOverlay" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true" aria-label="Login successful">
 
-    <!-- ✅ Watermark logo -->
     <div class="modalWatermark" aria-hidden="true">
       <img src="assets/vgm-logo.png" alt="" />
     </div>
@@ -528,7 +503,7 @@ async function login(){
     return;
   }
 
-  // ✅ Requested: modal popup instead of success text
+  // ✅ modal popup instead of success text
   setMsg("", "");
   showSuccessModal();
 
