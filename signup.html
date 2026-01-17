@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign Up - Coinluxora</title>
+  <title>Sign Up - Veloci Global Markets</title>
+
+  <meta name="description" content="Create your Veloci Global Markets account securely. Sign up to access your dashboard and manage your profile."/>
+  <meta name="robots" content="index, follow"/>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -55,19 +58,58 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
     }
-    .topIcon{
-      width:60px;height:60px;border-radius:18px;
-      margin:0 auto 12px;
-      display:flex;align-items:center;justify-content:center;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 10px 35px rgba(0,0,0,.40);
+
+    /* ✅ Logo crop to remove PNG transparent padding (same style as login) */
+    .logoSolo{
+      display:flex;
+      justify-content:center;
+      margin:0 auto 8px;
+      padding:0;
+      line-height:0;
+      height:110px;
+      overflow:hidden;
     }
-    .topIcon svg{width:32px;height:32px;filter: drop-shadow(0 8px 20px rgba(0,0,0,.50));}
+
+    .logoSolo img{
+      width:330px;
+      max-width:98%;
+      height:135px;
+      object-fit:cover;
+      object-position:center 38%;
+      user-select:none;
+      -webkit-user-drag:none;
+
+      filter:
+        drop-shadow(0 22px 54px rgba(0,0,0,.66))
+        drop-shadow(0 0 28px rgba(59,130,246,.28));
+      animation: logoPulse 2.8s ease-in-out infinite;
+      transform-origin:center;
+      display:block;
+    }
+
+    @keyframes logoPulse{
+      0%, 100%{
+        transform: scale(1);
+        filter:
+          drop-shadow(0 22px 54px rgba(0,0,0,.66))
+          drop-shadow(0 0 22px rgba(59,130,246,.24));
+        opacity: .98;
+      }
+      50%{
+        transform: scale(1.03);
+        filter:
+          drop-shadow(0 26px 66px rgba(0,0,0,.72))
+          drop-shadow(0 0 42px rgba(59,130,246,.42));
+        opacity: 1;
+      }
+    }
+
     h1{
       margin:0;font-size:36px;text-align:center;font-weight:900;letter-spacing:-0.8px;
       background: linear-gradient(90deg, #3b82f6, #6366f1);
       -webkit-background-clip:text;background-clip:text;color:transparent;
+      line-height:1.15;
+      padding-bottom:2px;
     }
     .sub{text-align:center;margin-top:6px;color: var(--muted);font-size:16px;margin-bottom:18px;}
     .field{margin-top:14px;}
@@ -141,6 +183,8 @@
     @media(max-width:420px){
       h1{font-size:32px}
       .card{padding:22px 18px 18px}
+      .logoSolo{height:104px;margin-bottom:8px}
+      .logoSolo img{width:300px;height:130px}
       .bottom{font-size:16px}
     }
   </style>
@@ -150,17 +194,17 @@
   <div class="wrap">
     <div class="card">
 
-      <div class="topIcon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M2.2 8.8c5.5-5.1 14.1-5.1 19.6 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M5.3 12c3.8-3.5 9.6-3.5 13.4 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M8.7 15.2c1.8-1.6 4.8-1.6 6.6 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M12 19.5h.01" stroke="white" stroke-width="4" stroke-linecap="round"/>
-        </svg>
+      <!-- ✅ Replaced topIcon with your premium logo (no extra boxes added) -->
+      <div class="logoSolo" aria-hidden="true">
+        <img
+          src="assets/vgm-logo.png"
+          alt="Veloci Global Markets"
+          onerror="this.style.display='none';"
+        />
       </div>
 
       <h1>Create Account</h1>
-      <div class="sub">Join CoinLuxora today</div>
+      <div class="sub">Join Veloci Global Markets today</div>
 
       <div class="field">
         <div class="label">Full Name *</div>
