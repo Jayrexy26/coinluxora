@@ -270,12 +270,53 @@
     modal.setAttribute("aria-hidden","false");
   }
 
+  // ✅ Helper: parse hash tokens (access_token, refresh_token)
+  function parseHashParams(){
+    const hash = window.location.hash || "";
+    if(!hash.startsWith("#")) return {};
+    const params = new URLSearchParams(hash.slice(1));
+    return {
+      access_token: params.get("access_token"),
+      refresh_token: params.get("refresh_token"),
+      type: params.get("type"),
+      expires_in: params.get("expires_in")
+    };
+  }
+
   async function verifyFromToken(){
     try{
       setMsg("", "Verifying your email…");
-      await new Promise(r => setTimeout(r, 400));
+      await new Promise(r => setTimeout(r, 250));
 
+      // ✅ 1) PKCE code flow (recommended by Supabase)
+      const url = new URL(window.location.href);
+      const code = url.searchParams.get("code");
+
+      if(code){
+        const { error } = await supabaseClient.auth.exchangeCodeForSession(code);
+        if(error){
+          setMsg("err", "Verification failed: " + error.message);
+          return;
+        }
+      }else{
+        // ✅ 2) Hash token flow (older Supabase verification style)
+        const { access_token, refresh_token } = parseHashParams();
+
+        if(access_token && refresh_token){
+          const { error } = await supabaseClient.auth.setSession({
+            access_token,
+            refresh_token
+          });
+          if(error){
+            setMsg("err", "Verification failed: " + error.message);
+            return;
+          }
+        }
+      }
+
+      // ✅ 3) Now get session (should exist after exchange/setSession)
       const { data, error } = await supabaseClient.auth.getSession();
+
       if(error){
         setMsg("err", error.message);
         return;
@@ -289,13 +330,20 @@
         return;
       }
 
+      // ✅ Confirm email status
       if(!user.email_confirmed_at){
         setMsg("err","Email not verified yet. Please open the newest verification email.");
         return;
       }
 
+      // ✅ success modal + redirect to session (PIN page)
       setMsg("", "");
       showSuccessModal();
+
+      // ✅ Clean URL so tokens/code do not remain visible
+      try{
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }catch(e){}
 
       setTimeout(()=>{
         window.location.href="/session/";
