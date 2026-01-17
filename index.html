@@ -91,74 +91,6 @@
       user-select:none;
     }
 
-    /* ✅ MENU dropdown */
-    .menuWrap{ position:relative; }
-    .menuBtn{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      cursor:pointer;
-      font-weight:1100;
-      color:rgba(234,240,255,.85);
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      padding:7px 10px;
-      border-radius:999px;
-      transition:.15s ease;
-    }
-    .menuBtn:hover{ background: rgba(255,255,255,.06); transform: translateY(-1px); }
-    .menuBtn svg{ width:16px;height:16px; opacity:.95; }
-
-    .menuDropdown{
-      position:absolute;
-      top: 42px;
-      left:0;
-      min-width:220px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.80);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: 0 30px 120px rgba(0,0,0,.65);
-      padding:10px;
-      display:none;
-      z-index:9999;
-      overflow:hidden;
-    }
-    .menuDropdown::before{
-      content:"";
-      position:absolute;
-      inset:-60px;
-      background: radial-gradient(circle at 25% 20%, rgba(96,165,250,.20), transparent 62%);
-      filter: blur(20px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .menuDropdown a{
-      position:relative;
-      z-index:1;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      text-decoration:none;
-      padding:10px 12px;
-      border-radius:12px;
-      color:rgba(234,240,255,.86);
-      font-weight:1100;
-      border:1px solid transparent;
-      background: rgba(255,255,255,.02);
-      transition:.12s ease;
-      margin:6px 0;
-    }
-    .menuDropdown a:hover{
-      background: rgba(255,255,255,.06);
-      border-color: rgba(255,255,255,.10);
-    }
-    .menuDropdown small{
-      color: rgba(234,240,255,.55);
-      font-weight:1000;
-    }
-
     /* ✅ Translator selector */
     .langSelect{
       cursor:pointer;
@@ -201,35 +133,22 @@
       user-select:none;
       min-width: 260px;
     }
-    .logo{
-      width:46px;height:46px;
-      border-radius:14px;
-      background: rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.12);
-      display:grid;
-      place-items:center;
-      overflow:hidden;
-      box-shadow: 0 14px 46px rgba(0,0,0,.45);
-      position:relative;
+
+    /* ✅ REMOVE small logo box (no longer used) */
+    .logo{ display:none !important; }
+
+    /* ✅ Bigger readable logo inside sticky bar WITHOUT increasing bar height */
+    .brandLogoImg{
+      height:32px;          /* stays within sticky bar height */
+      width:auto;
+      max-width:240px;
+      object-fit:contain;
+      filter:
+        drop-shadow(0 10px 30px rgba(0,0,0,.55))
+        drop-shadow(0 0 22px rgba(59,130,246,.22));
+      transform: translateY(1px);
     }
-    .logo::after{
-      content:"";
-      position:absolute;
-      inset:-50px;
-      background: radial-gradient(circle at 50% 20%, rgba(96,165,250,.28), transparent 55%);
-      filter: blur(18px);
-      opacity:.85;
-      pointer-events:none;
-    }
-    .logo img{
-      width:88px;
-      height:88px;
-      object-fit:cover;
-      transform: translateY(-6px);
-      filter: drop-shadow(0 10px 30px rgba(0,0,0,.55));
-      position:relative;
-      z-index:1;
-    }
+
     .brandText{
       display:flex;
       flex-direction:column;
@@ -307,6 +226,74 @@
       border:1px solid rgba(96,165,250,.40);
       color:#a6c8ff;
       background: rgba(2,6,23,.12);
+    }
+
+    /* ✅ MENU dropdown moved next to Get Started (top right) */
+    .menuWrap{ position:relative; }
+    .menuBtn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      font-weight:1100;
+      color:rgba(234,240,255,.85);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      padding:10px 14px;
+      border-radius:999px;
+      transition:.15s ease;
+    }
+    .menuBtn:hover{ background: rgba(255,255,255,.06); transform: translateY(-1px); }
+    .menuBtn svg{ width:16px;height:16px; opacity:.95; }
+
+    .menuDropdown{
+      position:absolute;
+      top: 48px;
+      right:0;
+      min-width:220px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(2,6,23,.80);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 30px 120px rgba(0,0,0,.65);
+      padding:10px;
+      display:none;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .menuDropdown::before{
+      content:"";
+      position:absolute;
+      inset:-60px;
+      background: radial-gradient(circle at 25% 20%, rgba(96,165,250,.20), transparent 62%);
+      filter: blur(20px);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .menuDropdown a{
+      position:relative;
+      z-index:1;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      text-decoration:none;
+      padding:10px 12px;
+      border-radius:12px;
+      color:rgba(234,240,255,.86);
+      font-weight:1100;
+      border:1px solid transparent;
+      background: rgba(255,255,255,.02);
+      transition:.12s ease;
+      margin:6px 0;
+    }
+    .menuDropdown a:hover{
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.10);
+    }
+    .menuDropdown small{
+      color: rgba(234,240,255,.55);
+      font-weight:1000;
     }
 
     /* ✅ TradingView Ticker Tape */
@@ -534,7 +521,34 @@
       padding:56px 0;
       position:relative;
       z-index:2;
+      scroll-margin-top: 110px;
     }
+
+    /* ✅ scroll unfold + fade */
+    .reveal{
+      opacity:0;
+      transform: translateY(26px) scale(.985);
+      transition: opacity .8s ease, transform .8s ease;
+      will-change: opacity, transform;
+    }
+    .reveal.show{
+      opacity:1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* ✅ section highlight on touch */
+    .touchHighlight{
+      border-radius: 18px;
+      transition: box-shadow .35s ease, transform .25s ease;
+    }
+    .touchHighlight.active{
+      box-shadow:
+        0 0 0 1px rgba(96,165,250,.18),
+        0 0 0 6px rgba(59,130,246,.10),
+        0 28px 120px rgba(0,0,0,.40);
+      transform: translateY(-1px);
+    }
+
     .sectionTitle{
       text-align:center;
       max-width:920px;
@@ -986,7 +1000,6 @@
     .coinCard{
       min-width: 360px;
       max-width: 360px;
-
       border-radius:20px;
       border:1px solid rgba(255,255,255,.12);
       background: rgba(2,6,23,.32);
@@ -1284,6 +1297,7 @@
       .planGrid{grid-template-columns: 1fr;}
       .statsGrid{grid-template-columns: 1fr;}
       .stepsGrid{grid-template-columns: 1fr;}
+      .brandLogoImg{height:28px; max-width:200px;}
     }
 
     /* ✅ Hide Google default translate banner (keeps UI clean) */
@@ -1301,29 +1315,7 @@
 <div class="topbar">
   <div class="container">
     <div class="topbarInner">
-
-      <!-- MENU BUTTON (top left) -->
-      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-        <div class="menuWrap">
-          <button id="menuBtn" class="menuBtn" type="button" aria-haspopup="true" aria-expanded="false">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M4 7h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <path d="M4 12h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <path d="M4 17h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Menu
-          </button>
-
-          <div id="menuDropdown" class="menuDropdown" role="menu" aria-label="Top menu">
-            <a href="about.html" role="menuitem">About <small>Company</small></a>
-            <a href="terms.html" role="menuitem">Terms <small>Policy</small></a>
-            <a href="faq.html" role="menuitem">FAQ <small>Help</small></a>
-            <a href="contact.html" role="menuitem">Contact <small>Support</small></a>
-          </div>
-        </div>
-
-        <span class="pill">Support: <b style="color:#eaf0ff;">support@veloci-global-markets.online</b></span>
-      </div>
+      <span class="pill">Support: <b style="color:#eaf0ff;">support@veloci-global-markets.online</b></span>
 
       <!-- TRANSLATOR -->
       <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
@@ -1342,10 +1334,8 @@
           <option value="zh-CN">Chinese (Simplified)</option>
         </select>
 
-        <!-- hidden google translate widget -->
         <div id="google_translate_element" style="display:none;"></div>
       </div>
-
     </div>
   </div>
 </div>
@@ -1355,13 +1345,8 @@
   <div class="container">
     <div class="nav">
       <a class="brand" href="index.html" aria-label="Veloci Global Markets">
-        <div class="logo" aria-hidden="true">
-          <img src="assets/vgm-logo.png" alt="" onerror="this.style.display='none';" />
-        </div>
-        <div class="brandText">
-          <strong>Veloci Global Markets</strong>
-          <span>Client Portal</span>
-        </div>
+        <!-- ✅ Bigger readable logo in sticky bar -->
+        <img class="brandLogoImg" src="assets/vgm-logo.png" alt="Veloci Global Markets" onerror="this.style.display='none';" />
       </a>
 
       <nav aria-label="Primary navigation">
@@ -1371,8 +1356,28 @@
         <a href="contact.html">Contact</a>
       </nav>
 
+      <!-- ✅ MENU MOVED TO TOP RIGHT BESIDE GET STARTED -->
       <div class="navCTA">
         <a class="btn btnOutline" href="login.html">Client Login</a>
+
+        <div class="menuWrap">
+          <button id="menuBtn" class="menuBtn" type="button" aria-haspopup="true" aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M4 7h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 12h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 17h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Menu
+          </button>
+
+          <div id="menuDropdown" class="menuDropdown" role="menu" aria-label="Top menu">
+            <a href="about.html" role="menuitem">About <small>Company</small></a>
+            <a href="terms.html" role="menuitem">Terms <small>Policy</small></a>
+            <a href="faq.html" role="menuitem">FAQ <small>Help</small></a>
+            <a href="contact.html" role="menuitem">Contact <small>Support</small></a>
+          </div>
+        </div>
+
         <a class="btn btnPrimary" href="signup.html">Get Started</a>
       </div>
     </div>
@@ -1384,7 +1389,6 @@
   <div class="container">
     <div class="tickerInner">
       <div class="tickerGlass">
-        <!-- TradingView Widget BEGIN -->
         <div class="tradingview-widget-container">
           <div class="tradingview-widget-container__widget"></div>
           <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
@@ -1407,14 +1411,13 @@
           }
           </script>
         </div>
-        <!-- TradingView Widget END -->
       </div>
     </div>
   </div>
 </div>
 
 <!-- ✅ Hero -->
-<section class="hero">
+<section class="hero reveal touchHighlight">
   <div class="container">
     <div class="heroGrid">
 
@@ -1458,7 +1461,6 @@
         </div>
       </div>
 
-      <!-- ✅ 3D Realistic Chart -->
       <div class="chartCard" id="tiltCard" aria-label="3D Trading Chart">
         <div class="chartTop">
           <div class="title">
@@ -1492,8 +1494,7 @@
   </div>
 </section>
 
-<!-- ✅ Stats -->
-<section>
+<section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
       <h3>Platform Activity</h3>
@@ -1521,8 +1522,7 @@
   </div>
 </section>
 
-<!-- ✅ Steps -->
-<section>
+<section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
       <h3>Start in Minutes</h3>
@@ -1592,11 +1592,11 @@
 </section>
 
 <!-- ✅ Profit Calculator -->
-<section>
+<section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
       <h3>Profit Calculator</h3>
-      <p>Estimate potential returns using our plan-based projections.</p>
+      <p>Fixed plan projections (7 days base). 14 days = x2, 30 days = x(30/7), 60 days = x(60/7).</p>
     </div>
 
     <div class="calcGrid">
@@ -1608,7 +1608,7 @@
 
         <div class="calcField">
           <div class="calcLabel">Amount (USD)</div>
-          <input id="calcAmount" class="calcInput" type="number" min="10" value="1000" />
+          <input id="calcAmount" class="calcInput" type="number" min="10" value="100" />
         </div>
 
         <div class="calcField">
@@ -1624,8 +1624,8 @@
         <div class="calcField">
           <div class="calcLabel">Duration (Days)</div>
           <select id="calcDays" class="calcSelect">
-            <option value="7">7 days</option>
-            <option value="14" selected>14 days</option>
+            <option value="7" selected>7 days</option>
+            <option value="14">14 days</option>
             <option value="30">30 days</option>
             <option value="60">60 days</option>
           </select>
@@ -1633,12 +1633,12 @@
 
         <div class="calcResult">
           <div class="resCard">
-            <small>Estimated Profit</small>
-            <strong id="calcProfit">$0</strong>
+            <small>Projected Return</small>
+            <strong id="calcTotal">$0</strong>
           </div>
           <div class="resCard">
-            <small>Total Return</small>
-            <strong id="calcTotal">$0</strong>
+            <small>Projected Profit</small>
+            <strong id="calcProfit">$0</strong>
           </div>
         </div>
       </div>
@@ -1650,13 +1650,12 @@
         </div>
 
         <div style="color:rgba(234,240,255,.72); font-weight:950; line-height:1.75; font-size:14px;">
-          This calculator provides a market-style simulation for educational display.
-          Plan ROI multipliers are displayed to help clients understand projections.
+          This calculator is built on your fixed plan projection rules:
           <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;">
-            <span class="pill">Silver ROI: <b style="color:#eaf0ff;">0.9% / day</b></span>
-            <span class="pill">Gold ROI: <b style="color:#eaf0ff;">1.3% / day</b></span>
-            <span class="pill">Diamond ROI: <b style="color:#eaf0ff;">1.8% / day</b></span>
-            <span class="pill">Platinum ROI: <b style="color:#eaf0ff;">2.4% / day</b></span>
+            <span class="pill">Silver: <b style="color:#eaf0ff;">$100 → $10,000 (7d)</b></span>
+            <span class="pill">Gold: <b style="color:#eaf0ff;">$100 → $15,000 (7d)</b></span>
+            <span class="pill">Diamond: <b style="color:#eaf0ff;">$100 → $18,000 (7d)</b></span>
+            <span class="pill">Platinum: <b style="color:#eaf0ff;">$100 → $20,000 (7d)</b></span>
           </div>
 
           <div style="margin-top:14px; color:rgba(234,240,255,.60); font-weight:900; font-size:12.5px;">
@@ -1668,8 +1667,7 @@
   </div>
 </section>
 
-<!-- ✅ Plans -->
-<section>
+<section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
       <h3>Plans</h3>
@@ -1687,15 +1685,15 @@
         <ul class="planList">
           <li>
             <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Daily ROI projection 0.9%
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Standard market tools
+            Premium client onboarding
           </li>
           <li>
             <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Secure portal session
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Live market visibility
           </li>
         </ul>
         <div class="planBtn">
@@ -1713,15 +1711,15 @@
         <ul class="planList">
           <li>
             <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Daily ROI projection 1.3%
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Enhanced analytics
           </li>
           <li>
             <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Priority support
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Advanced tools suite
           </li>
         </ul>
         <div class="planBtn">
@@ -1738,15 +1736,15 @@
         <ul class="planList">
           <li>
             <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Daily ROI projection 1.8%
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Premium tools + insights
+            Premium insights suite
           </li>
           <li>
             <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Dedicated assistance
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Higher performance tracking
           </li>
         </ul>
         <div class="planBtn">
@@ -1763,15 +1761,15 @@
         <ul class="planList">
           <li>
             <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Daily ROI projection 2.4%
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Elite analytics suite
           </li>
           <li>
             <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             VIP client support
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Highest tier access tools
           </li>
         </ul>
         <div class="planBtn">
@@ -1783,8 +1781,7 @@
   </div>
 </section>
 
-<!-- ✅ Referral -->
-<section>
+<section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
       <h3>Referral Commissions</h3>
@@ -1816,8 +1813,7 @@
   </div>
 </section>
 
-<!-- ✅ Partners -->
-<section>
+<section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
       <h3>Trusted Partners</h3>
@@ -1833,7 +1829,6 @@
         <div class="partnerPill">Market Analytics</div>
         <div class="partnerPill">Cloud Security</div>
 
-        <!-- duplicate for seamless loop -->
         <div class="partnerPill">TradingView</div>
         <div class="partnerPill">CoinGecko</div>
         <div class="partnerPill">MetaTrader</div>
@@ -1845,44 +1840,33 @@
   </div>
 </section>
 
-<!-- ✅ Live Markets -->
-<section>
+<section class="reveal touchHighlight">
   <div class="container">
-
     <div class="sectionTitle">
       <h3>Live Markets</h3>
-      <p>
-        Realistic tracking with symbols, live prices, sparkline motion, and 24h percentage changes.
-      </p>
+      <p>Realistic tracking with symbols, live prices, sparkline motion, and 24h percentage changes.</p>
     </div>
 
     <div class="marketRowWrap">
       <div id="marketScroller" class="marketScroller" aria-label="Live markets row">
-        <div id="marketAuto" class="marketAuto">
-          <!-- cards inserted by JS -->
-        </div>
+        <div id="marketAuto" class="marketAuto"></div>
       </div>
     </div>
-
   </div>
 </section>
 
-<!-- ✅ Testimonials -->
-<section>
+<section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
       <h3>What clients say</h3>
       <p>Testimonials are displayed from a configurable data source (backend-ready).</p>
     </div>
 
-    <div id="testimonials" class="testGrid">
-      <!-- loaded by JS -->
-    </div>
+    <div id="testimonials" class="testGrid"></div>
   </div>
 </section>
 
-<!-- ✅ CTA -->
-<section class="ctaBand">
+<section class="ctaBand reveal touchHighlight">
   <div class="container">
     <div class="ctaBox">
       <div class="left">
@@ -1897,8 +1881,7 @@
   </div>
 </section>
 
-<!-- ✅ Footer -->
-<footer>
+<footer class="reveal touchHighlight">
   <div class="container">
     <div class="footInner">
       © 2026 Veloci Global Markets. All rights reserved.
@@ -1920,7 +1903,7 @@
 
 <script>
 /* =========================================================
-   ✅ MENU BUTTON DROPDOWN
+   ✅ MENU BUTTON DROPDOWN (now next to Get Started)
 ========================================================= */
 (function initMenu(){
   const btn = document.getElementById("menuBtn");
@@ -1955,7 +1938,6 @@ function googleTranslateElementInit() {
 }
 
 function setGoogleTranslateLang(lang){
-  // google injects an iframe with a select inside
   const combo = document.querySelector("select.goog-te-combo");
   if(combo){
     combo.value = lang;
@@ -1973,10 +1955,8 @@ function setGoogleTranslateLang(lang){
     const lang = select.value;
     if(!lang) return;
 
-    // attempt now
     if(setGoogleTranslateLang(lang)) return;
 
-    // retry until widget loads
     let tries = 0;
     const interval = setInterval(()=>{
       tries++;
@@ -1984,6 +1964,44 @@ function setGoogleTranslateLang(lang){
         clearInterval(interval);
       }
     }, 200);
+  });
+})();
+
+/* =========================================================
+   ✅ Scroll unfold + fade reveal
+========================================================= */
+(function initReveal(){
+  const items = document.querySelectorAll(".reveal");
+  if(!items.length) return;
+
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add("show");
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold: 0.12});
+
+  items.forEach(el => io.observe(el));
+})();
+
+/* =========================================================
+   ✅ Touch highlight per section
+========================================================= */
+(function initTouchHighlight(){
+  const blocks = document.querySelectorAll(".touchHighlight");
+  if(!blocks.length) return;
+
+  function activate(el){
+    blocks.forEach(b => b.classList.remove("active"));
+    el.classList.add("active");
+    setTimeout(()=> el.classList.remove("active"), 700);
+  }
+
+  blocks.forEach(el=>{
+    el.addEventListener("touchstart", ()=> activate(el), {passive:true});
+    el.addEventListener("mousedown", ()=> activate(el));
   });
 })();
 
@@ -2266,7 +2284,12 @@ function setGoogleTranslateLang(lang){
 })();
 
 /* =========================================================
-   ✅ Profit Calculator Logic
+   ✅ FIXED Profit Calculator Logic (as you requested)
+   - Silver: 100 => 10000 for 7 days
+   - Gold: 100 => 15000 for 7 days
+   - Diamond: 100 => 18000 for 7 days
+   - Platinum: 100 => 20000 for 7 days
+   - 14 days = x2, 30 days = x(30/7), 60 days = x(60/7)
 ========================================================= */
 (function initCalculator(){
   const amountEl = document.getElementById("calcAmount");
@@ -2275,28 +2298,38 @@ function setGoogleTranslateLang(lang){
   const profitEl = document.getElementById("calcProfit");
   const totalEl  = document.getElementById("calcTotal");
 
-  const rates = {
-    silver: 0.009,
-    gold: 0.013,
-    diamond: 0.018,
-    platinum: 0.024
+  // baseReturnPer100 = return amount at 7 days if user invests $100
+  const baseReturnPer100_7d = {
+    silver: 10000,
+    gold: 15000,
+    diamond: 18000,
+    platinum: 20000
   };
 
   function money(v){
-    return "$" + Number(v).toLocaleString(undefined, {maximumFractionDigits: 2});
+    return "$" + Number(v).toLocaleString(undefined, {maximumFractionDigits: 0});
   }
 
   function update(){
     const amt = Math.max(0, Number(amountEl.value || 0));
-    const days = Math.max(1, Number(daysEl.value || 1));
+    const days = Math.max(7, Number(daysEl.value || 7));
     const plan = planEl.value || "gold";
-    const rate = rates[plan] || 0.013;
 
-    const profit = amt * rate * days;
-    const total = amt + profit;
+    const base7 = baseReturnPer100_7d[plan] || 15000;
 
+    // return for 7 days for the entered amount
+    // amt = 100 => base7, amt = 200 => base7*2
+    const baseReturnForAmt_7d = (amt/100) * base7;
+
+    // scale to duration:
+    // 14 days => x2, 30 => x(30/7), 60 => x(60/7)
+    const multiplier = days / 7;
+    const totalReturn = baseReturnForAmt_7d * multiplier;
+
+    const profit = Math.max(0, totalReturn - amt);
+
+    totalEl.textContent = money(totalReturn);
     profitEl.textContent = money(profit);
-    totalEl.textContent = money(total);
   }
 
   amountEl.addEventListener("input", update);
@@ -2317,16 +2350,14 @@ function setGoogleTranslateLang(lang){
       if(entry.isIntersecting){
         const el = entry.target;
         const target = parseFloat(el.getAttribute("data-count") || "0");
-        let start = 0;
         const duration = 1200;
         const startTime = performance.now();
 
         function step(now){
           const t = Math.min(1, (now-startTime)/duration);
           const eased = 1 - Math.pow(1-t, 3);
-          const val = start + (target-start)*eased;
+          const val = target * eased;
 
-          // handle decimals
           if(String(target).includes(".")){
             el.textContent = val.toFixed(1);
           }else{
@@ -2450,20 +2481,10 @@ async function loadMarkets(){
   const auto = document.getElementById("marketAuto");
   if(!auto) return;
 
-  // create cards
   auto.innerHTML = "";
-  const cards = [];
-  coins.forEach(c=>{
-    const el = createCoinCard(c);
-    auto.appendChild(el);
-    cards.push(el);
-  });
 
-  // duplicate for infinite loop
-  coins.forEach(c=>{
-    const el = createCoinCard(c);
-    auto.appendChild(el);
-  });
+  coins.forEach(c=> auto.appendChild(createCoinCard(c)));
+  coins.forEach(c=> auto.appendChild(createCoinCard(c))); // duplicate for infinite loop
 
   try{
     const res = await fetch(
@@ -2509,7 +2530,6 @@ async function loadMarkets(){
     }
 
     for(const item of data){
-      // update original set
       const allCards = auto.querySelectorAll(`.coinCard[data-coin="${item.id}"]`);
       allCards.forEach(card => applyTo(card, item));
     }
@@ -2524,12 +2544,8 @@ setInterval(loadMarkets, 45000);
 
 /* =========================================================
    ✅ Testimonials (backend-ready later)
-   - For now uses local array
-   - Later: replace getTestimonials() with Supabase fetch
 ========================================================= */
 async function getTestimonials(){
-  // ✅ later backend: return await supabaseClient.from("testimonials").select("*").order("created_at",{ascending:false});
-
   return [
     { name:"Daniel K.", role:"Client", text:"Veloci Global Markets feels premium. The portal is fast, clean and secure.", stars:5 },
     { name:"Amina S.", role:"Investor", text:"The live markets and ticker give it a real terminal feel. Smooth experience.", stars:5 },
