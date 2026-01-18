@@ -402,6 +402,25 @@
     .badgePro{ background: rgba(168,85,247,.16); border-color: rgba(168,85,247,.26); }
     .badgeElite{ background: rgba(251,191,36,.14); border-color: rgba(251,191,36,.28); }
 
+    /* ✅ NEW: Plan badge logo icon */
+    .badgeIcon{
+      width:16px;
+      height:16px;
+      border-radius:6px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(2,6,23,.35);
+      display:inline-grid;
+      place-items:center;
+      overflow:hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,.28);
+    }
+    .badgeIcon img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
     /* ✅ HERO */
     .hero{
       padding:78px 0 18px;
@@ -1790,7 +1809,6 @@
     </div>
   </div>
 </section>
-
 <!-- ✅ Profit Calculator -->
 <section class="reveal touchHighlight">
   <div class="container">
@@ -1878,10 +1896,18 @@
 
     <div class="planGrid">
 
+      <!-- ✅ Silver -->
       <div class="planCard tapHighlight" data-plan="silver">
         <div class="planHead">
           <div class="planName">
             Silver
+
+            <!-- ✅ Added logo badge icon -->
+            <span class="badgeIcon" aria-hidden="true">
+              <img src="assets/vgm-logo.png" alt=""
+                   onerror="this.closest('.badgeIcon').style.display='none';">
+            </span>
+
             <span class="planBadge badgeStarter">Starter</span>
           </div>
           <div class="planTag">Basic</div>
@@ -1906,11 +1932,19 @@
         </div>
       </div>
 
+      <!-- ✅ Gold -->
       <div class="planCard planFeatured tapHighlight" data-plan="gold">
         <div class="planGlow" aria-hidden="true"></div>
         <div class="planHead">
           <div class="planName">
             Gold
+
+            <!-- ✅ Added logo badge icon -->
+            <span class="badgeIcon" aria-hidden="true">
+              <img src="assets/vgm-logo.png" alt=""
+                   onerror="this.closest('.badgeIcon').style.display='none';">
+            </span>
+
             <span class="planBadge badgePopular">Popular</span>
           </div>
           <div class="planTag">Top</div>
@@ -1935,10 +1969,18 @@
         </div>
       </div>
 
+      <!-- ✅ Diamond -->
       <div class="planCard tapHighlight" data-plan="diamond">
         <div class="planHead">
           <div class="planName">
             Diamond
+
+            <!-- ✅ Added logo badge icon -->
+            <span class="badgeIcon" aria-hidden="true">
+              <img src="assets/vgm-logo.png" alt=""
+                   onerror="this.closest('.badgeIcon').style.display='none';">
+            </span>
+
             <span class="planBadge badgePro">Pro</span>
           </div>
           <div class="planTag">Advanced</div>
@@ -1963,10 +2005,18 @@
         </div>
       </div>
 
+      <!-- ✅ Platinum -->
       <div class="planCard tapHighlight" data-plan="platinum">
         <div class="planHead">
           <div class="planName">
             Platinum
+
+            <!-- ✅ Added logo badge icon -->
+            <span class="badgeIcon" aria-hidden="true">
+              <img src="assets/vgm-logo.png" alt=""
+                   onerror="this.closest('.badgeIcon').style.display='none';">
+            </span>
+
             <span class="planBadge badgeElite">Elite</span>
           </div>
           <div class="planTag">VIP</div>
@@ -1994,7 +2044,6 @@
     </div>
   </div>
 </section>
-
 <!-- ✅ Referral Commissions -->
 <section class="reveal touchHighlight">
   <div class="container">
@@ -2084,7 +2133,7 @@
   </div>
 </section>
 
-    <!-- ✅ CTA -->
+<!-- ✅ CTA -->
 <section class="ctaBand reveal touchHighlight">
   <div class="container">
     <div class="ctaBox tapHighlight">
@@ -2113,14 +2162,19 @@
         <a href="contact.html">Contact</a>
       </div>
 
+      <!-- ✅ UPDATED FOOTER TEXT YOU REQUESTED -->
       <div class="risk">
-        Risk Warning: Trading and investments involve risk. Past performance does not guarantee future results.
-        This website is provided for informational purposes and client account access only.
+        This website may use automated translations for your convenience. However, the English version is the definitive version and will prevail in the event of any discrepancy.
+        <br/><br/>
+        Trade responsibly: Trading CFDs is risky and may lead to permanent capital loss. Make sure you understand the risks before trading.
+        <br/><br/>
+        Veloci Global Markets is a registered trademark utilised under an approved licensing agreement. All rights reserved.
+        <br/><br/>
+        Veloci Global Markets does not offer Contracts for Difference to residents of certain jurisdictions including the Yemen and Iran
       </div>
     </div>
   </div>
 </footer>
-
 <script>
 /* =========================================================
    ✅ MENU BUTTON DROPDOWN
@@ -2188,7 +2242,7 @@ function setGoogleTranslateLang(lang){
 })();
 
 /* =========================================================
-   ✅ Scroll reveal
+   ✅ Scroll reveal (unfold + fade)
 ========================================================= */
 (function initReveal(){
   const items = document.querySelectorAll(".reveal");
@@ -2362,7 +2416,8 @@ function setGoogleTranslateLang(lang){
     spawn();
   });
 })();
-
+</script>
+<script>
 /* =========================================================
    ✅ 3D Realistic Trading Chart Animation
 ========================================================= */
@@ -2790,11 +2845,11 @@ async function loadMarkets(){
       }
     }
 
-   for(const item of data){
-  var selector = '.coinCard[data-coin="' + item.id + '"]';
-  const allCards = auto.querySelectorAll(selector);
-  allCards.forEach(card => applyTo(card, item));
-}
+    for(const item of data){
+      var selector = '.coinCard[data-coin="' + item.id + '"]';
+      const allCards = auto.querySelectorAll(selector);
+      allCards.forEach(card => applyTo(card, item));
+    }
 
   }catch(e){
     console.log("Market feed unavailable:", e);
