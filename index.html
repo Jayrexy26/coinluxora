@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -122,7 +122,7 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding:14px 0;
+      padding:18px 0; /* ✅ slightly increased to fit 3x logo */
       gap:12px;
     }
     .brand{
@@ -137,11 +137,12 @@
     /* ✅ REMOVE small logo box (no longer used) */
     .logo{ display:none !important; }
 
-    /* ✅ Bigger readable logo inside sticky bar WITHOUT increasing bar height */
+    /* ✅ 3x Bigger readable logo inside sticky bar */
     .brandLogoImg{
-      height:32px;          /* stays within sticky bar height */
+      height:96px;          /* ✅ 3x bigger than 32px */
       width:auto;
       max-width:240px;
+      max-height:96px;
       object-fit:contain;
       filter:
         drop-shadow(0 10px 30px rgba(0,0,0,.55))
@@ -1297,7 +1298,7 @@
       .planGrid{grid-template-columns: 1fr;}
       .statsGrid{grid-template-columns: 1fr;}
       .stepsGrid{grid-template-columns: 1fr;}
-      .brandLogoImg{height:28px; max-width:200px;}
+      .brandLogoImg{height:64px; max-width:220px; max-height:64px;} /* ✅ keeps 3x effect but safe on mobile */
     }
 
     /* ✅ Hide Google default translate banner (keeps UI clean) */
@@ -1356,10 +1357,13 @@
         <a href="contact.html">Contact</a>
       </nav>
 
-      <!-- ✅ MENU MOVED TO TOP RIGHT BESIDE GET STARTED -->
       <div class="navCTA">
         <a class="btn btnOutline" href="login.html">Client Login</a>
 
+        <!-- ✅ SWAPPED: Get Started moved BEFORE Menu -->
+        <a class="btn btnPrimary" href="signup.html">Get Started</a>
+
+        <!-- ✅ Menu moved to the far right -->
         <div class="menuWrap">
           <button id="menuBtn" class="menuBtn" type="button" aria-haspopup="true" aria-expanded="false">
             <svg viewBox="0 0 24 24" fill="none">
@@ -1377,8 +1381,6 @@
             <a href="contact.html" role="menuitem">Contact <small>Support</small></a>
           </div>
         </div>
-
-        <a class="btn btnPrimary" href="signup.html">Get Started</a>
       </div>
     </div>
   </div>
@@ -1903,7 +1905,7 @@
 
 <script>
 /* =========================================================
-   ✅ MENU BUTTON DROPDOWN (now next to Get Started)
+   ✅ MENU BUTTON DROPDOWN (now far right)
 ========================================================= */
 (function initMenu(){
   const btn = document.getElementById("menuBtn");
@@ -2284,12 +2286,7 @@ function setGoogleTranslateLang(lang){
 })();
 
 /* =========================================================
-   ✅ FIXED Profit Calculator Logic (as you requested)
-   - Silver: 100 => 10000 for 7 days
-   - Gold: 100 => 15000 for 7 days
-   - Diamond: 100 => 18000 for 7 days
-   - Platinum: 100 => 20000 for 7 days
-   - 14 days = x2, 30 days = x(30/7), 60 days = x(60/7)
+   ✅ FIXED Profit Calculator Logic
 ========================================================= */
 (function initCalculator(){
   const amountEl = document.getElementById("calcAmount");
@@ -2298,7 +2295,6 @@ function setGoogleTranslateLang(lang){
   const profitEl = document.getElementById("calcProfit");
   const totalEl  = document.getElementById("calcTotal");
 
-  // baseReturnPer100 = return amount at 7 days if user invests $100
   const baseReturnPer100_7d = {
     silver: 10000,
     gold: 15000,
@@ -2316,16 +2312,9 @@ function setGoogleTranslateLang(lang){
     const plan = planEl.value || "gold";
 
     const base7 = baseReturnPer100_7d[plan] || 15000;
-
-    // return for 7 days for the entered amount
-    // amt = 100 => base7, amt = 200 => base7*2
     const baseReturnForAmt_7d = (amt/100) * base7;
-
-    // scale to duration:
-    // 14 days => x2, 30 => x(30/7), 60 => x(60/7)
     const multiplier = days / 7;
     const totalReturn = baseReturnForAmt_7d * multiplier;
-
     const profit = Math.max(0, totalReturn - amt);
 
     totalEl.textContent = money(totalReturn);
