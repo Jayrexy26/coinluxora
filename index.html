@@ -2790,10 +2790,11 @@ async function loadMarkets(){
       }
     }
 
-    for(const item of data){
-      const allCards = auto.querySelectorAll(\`.coinCard[data-coin="\${item.id}"]\`);
-      allCards.forEach(card => applyTo(card, item));
-    }
+   for(const item of data){
+  var selector = '.coinCard[data-coin="' + item.id + '"]';
+  const allCards = auto.querySelectorAll(selector);
+  allCards.forEach(card => applyTo(card, item));
+}
 
   }catch(e){
     console.log("Market feed unavailable:", e);
