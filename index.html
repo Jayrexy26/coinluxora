@@ -1,2546 +1,2166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Veloci Global Markets | Client Portal</title>
+  <title>VGM | User Dashboard</title>
 
-  <meta name="description" content="Veloci Global Markets client portal for market tracking, portfolio tools, and account access." />
-  <meta name="robots" content="index, follow" />
-  <meta name="theme-color" content="#050a18" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root{
       --bg:#050a18;
-      --panel:#0b1226;
-      --panel2:#0f1a34;
       --stroke:rgba(255,255,255,.12);
       --text:#eaf0ff;
-      --muted:rgba(234,240,255,.70);
-      --muted2:rgba(234,240,255,.55);
-
-      --brand:#3b82f6;
-      --brand2:#6366f1;
+      --muted:rgba(234,240,255,.65);
       --ok:#22c55e;
       --err:#f87171;
-
-      --shadow: 0 30px 120px rgba(0,0,0,.62);
-      --shadow2: 0 16px 60px rgba(0,0,0,.55);
+      --blue:#5b6cff;
+      --purple:#7c4dff;
+      --green:#34d399;
+      --cyan:#38bdf8;
+      --pink:#ff4da6;
+      --shadow: 0 26px 90px rgba(0,0,0,.55);
     }
-
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
       margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--bg);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
+      padding:16px;
+      padding-bottom:140px;
       overflow-x:hidden;
+      background: var(--bg);
     }
 
-    a{color:inherit}
-    .container{
-      width:100%;
-      max-width:1220px;
-      margin:0 auto;
-      padding:0 18px;
-      position:relative;
-      z-index:2;
-    }
-
-    /* ✅ Twinkling dots background canvas */
-    #bgCanvas{
-      position:fixed;
-      inset:0;
-      z-index:0;
-      pointer-events:none;
+    /* ===== UPPER ECHELON BACKGROUND ===== */
+    .bgFlow{
+      position:fixed; inset:0; z-index:-4;
       background:
-        radial-gradient(1200px 640px at 12% 12%, rgba(59,130,246,.20), transparent 58%),
-        radial-gradient(900px 560px at 86% 14%, rgba(99,102,241,.18), transparent 62%),
-        radial-gradient(720px 520px at 50% 90%, rgba(59,130,246,.10), transparent 60%),
+        radial-gradient(900px 520px at 10% 10%, rgba(83,113,255,.30), transparent 55%),
+        radial-gradient(900px 520px at 90% 20%, rgba(52,211,153,.20), transparent 55%),
+        radial-gradient(900px 520px at 40% 92%, rgba(255,77,166,.16), transparent 60%),
+        linear-gradient(180deg, rgba(5,10,24,1), rgba(2,6,23,1));
+    }
+    .blob{
+      position:fixed;
+      width:520px;height:520px;border-radius:999px;
+      filter: blur(72px);
+      opacity:.60;
+      z-index:-3;
+      mix-blend-mode: screen;
+      will-change: transform;
+    }
+    .blob.b1{ background: rgba(91,108,255,.92); left:-150px; top:-160px; animation: drift1 10s ease-in-out infinite; }
+    .blob.b2{ background: rgba(124,77,255,.82); right:-220px; top:5%; animation: drift2 12s ease-in-out infinite; }
+    .blob.b3{ background: rgba(52,211,153,.55); left:10%; bottom:-250px; animation: drift3 14s ease-in-out infinite; }
+    .blob.b4{ background: rgba(255,77,166,.58); right:10%; bottom:-260px; animation: drift4 11s ease-in-out infinite; }
+
+    @keyframes drift1{0%{transform:translate(0,0) scale(1)}50%{transform:translate(250px,140px) scale(1.10)}100%{transform:translate(0,0) scale(1)}}
+    @keyframes drift2{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-280px,170px) scale(1.14)}100%{transform:translate(0,0) scale(1)}}
+    @keyframes drift3{0%{transform:translate(0,0) scale(1)}50%{transform:translate(210px,-210px) scale(1.10)}100%{transform:translate(0,0) scale(1)}}
+    @keyframes drift4{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-180px,-130px) scale(1.09)}100%{transform:translate(0,0) scale(1)}}
+
+    .shimmer{
+      position:fixed; inset:-30px; z-index:-2;
+      opacity:.28;
+      background:
+        radial-gradient(600px 280px at 30% 10%, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(700px 320px at 80% 60%, rgba(255,255,255,.07), transparent 60%),
+        linear-gradient(120deg, transparent, rgba(255,255,255,.05), transparent);
+      animation: shimmerMove 6s ease-in-out infinite alternate;
+      pointer-events:none;
+    }
+    @keyframes shimmerMove{
+      from{transform:translateY(0px) translateX(0px)}
+      to{transform:translateY(42px) translateX(22px)}
+    }
+
+    .container{max-width:920px;margin:0 auto}
+
+    /* ✅ DESKTOP WIDE VIEW */
+    @media (min-width: 1100px){
+      .container{max-width:1250px;}
+    }
+    @media (min-width: 1500px){
+      .container{max-width:1380px;}
+    }
+
+    /* ===== Loading Gate ===== */
+    #authGate{
+      position:fixed; inset:0; z-index:99999;
+      display:flex; align-items:center; justify-content:center;
+      background:
+        radial-gradient(900px 420px at 10% 0%, rgba(83,113,255,.22), transparent 55%),
+        radial-gradient(900px 420px at 90% 0%, rgba(52,211,153,.18), transparent 55%),
         var(--bg);
     }
-
-    /* ✅ Top bar */
-    .topbar{
-      position:relative;
-      z-index:3;
-      background: rgba(17,22,42,.56);
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-    .topbarInner{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:10px 0;
-      font-size:12.5px;
-      color:rgba(234,240,255,.72);
-      flex-wrap:wrap;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      user-select:none;
-    }
-
-    /* ✅ Translator selector */
-    .langSelect{
-      cursor:pointer;
-      appearance:none;
-      -webkit-appearance:none;
-      border-radius:999px;
-      padding:7px 12px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      color: rgba(234,240,255,.86);
-      font-weight:1100;
-      outline:none;
-      transition:.15s ease;
-    }
-    .langSelect:hover{ background: rgba(255,255,255,.06); transform: translateY(-1px); }
-    .langSelect option{ color:#0b0f19; }
-
-    /* ✅ Navbar */
-    header{
-      position:sticky;
-      top:0;
-      z-index:1000;
-      background: rgba(5,10,24,.72);
-      border-bottom:1px solid rgba(255,255,255,.08);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-    .nav{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:14px 0;
-      gap:12px;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      text-decoration:none;
-      user-select:none;
-      min-width: 260px;
-    }
-
-    /* ✅ REMOVE small logo box (no longer used) */
-    .logo{ display:none !important; }
-
-    /* ✅ Bigger readable logo inside sticky bar WITHOUT increasing bar height */
-    .brandLogoImg{
-      height:32px;          /* base */
-      width:auto;
-      max-width:240px;
-      object-fit:contain;
-      filter:
-        drop-shadow(0 10px 30px rgba(0,0,0,.55))
-        drop-shadow(0 0 22px rgba(59,130,246,.22));
-
-      /* ✅ 3X BIGGER BUT STILL INSIDE BAR */
-      transform: scale(3) translateY(1px);
-      transform-origin: left center;
-    }
-
-    .brandText{
-      display:flex;
-      flex-direction:column;
-      line-height:1.1;
-    }
-    .brandText strong{
-      font-weight:1000;
-      letter-spacing:-.2px;
-      font-size:14px;
-    }
-    .brandText span{
-      font-size:11.5px;
-      color:rgba(234,240,255,.62);
-      font-weight:800;
-      letter-spacing:.35px;
-      text-transform:uppercase;
-    }
-
-    nav{
-      display:flex;
-      align-items:center;
-      gap:18px;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-    nav a{
-      text-decoration:none;
-      font-size:14px;
-      color:rgba(234,240,255,.86);
-      font-weight:1100;
-      opacity:.92;
-      transition:.15s ease;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid transparent;
-    }
-    nav a:hover{
-      opacity:1;
-      background: rgba(255,255,255,.05);
-      border-color: rgba(255,255,255,.08);
-    }
-
-    .navCTA{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      min-width: 260px;
-    }
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      border-radius:999px;
-      padding:11px 16px;
-      font-weight:1100;
-      font-size:14px;
-      text-decoration:none;
-      transition:.15s ease;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      position:relative;
-      overflow:hidden;
-    }
-    .btn:hover{transform:translateY(-1px)}
-    .btnPrimary{
-      border:none;
-      color:white;
-      background: linear-gradient(180deg, var(--brand), #2563eb);
-      box-shadow: 0 18px 55px rgba(37,99,235,.35);
-    }
-    .btnOutline{
-      border:1px solid rgba(96,165,250,.40);
-      color:#a6c8ff;
-      background: rgba(2,6,23,.12);
-    }
-
-    /* ✅ MENU dropdown moved next to Get Started (top right) */
-    .menuWrap{ position:relative; }
-    .menuBtn{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      cursor:pointer;
-      font-weight:1100;
-      color:rgba(234,240,255,.85);
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      padding:10px 14px;
-      border-radius:999px;
-      transition:.15s ease;
-    }
-    .menuBtn:hover{ background: rgba(255,255,255,.06); transform: translateY(-1px); }
-    .menuBtn svg{ width:16px;height:16px; opacity:.95; }
-
-    .menuDropdown{
-      position:absolute;
-      top: 48px;
-      right:0;
-      min-width:220px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.80);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      box-shadow: 0 30px 120px rgba(0,0,0,.65);
-      padding:10px;
-      display:none;
-      z-index:9999;
-      overflow:hidden;
-    }
-    .menuDropdown::before{
-      content:"";
-      position:absolute;
-      inset:-60px;
-      background: radial-gradient(circle at 25% 20%, rgba(96,165,250,.20), transparent 62%);
-      filter: blur(20px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .menuDropdown a{
-      position:relative;
-      z-index:1;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      text-decoration:none;
-      padding:10px 12px;
-      border-radius:12px;
-      color:rgba(234,240,255,.86);
-      font-weight:1100;
-      border:1px solid transparent;
-      background: rgba(255,255,255,.02);
-      transition:.12s ease;
-      margin:6px 0;
-    }
-    .menuDropdown a:hover{
-      background: rgba(255,255,255,.06);
-      border-color: rgba(255,255,255,.10);
-    }
-    .menuDropdown small{
-      color: rgba(234,240,255,.55);
-      font-weight:1000;
-    }
-
-    /* ✅ TradingView Ticker Tape */
-    .tickerWrap{
-      position:relative;
-      z-index:3;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      background: rgba(2,6,23,.22);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-    .tickerInner{ padding: 12px 0; }
-    .tickerGlass{
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      overflow:hidden;
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-    }
-
-    /* ✅ HERO */
-    .hero{
-      padding:78px 0 18px;
-      position:relative;
-      z-index:2;
-    }
-    .heroGrid{
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap:30px;
-      align-items:center;
-    }
-
-    .kicker{
-      display:inline-flex;
-      gap:10px;
-      align-items:center;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      color:rgba(234,240,255,.78);
-      font-weight:1100;
-      font-size:13px;
-      width:fit-content;
-    }
-    .kicker b{
-      color:#fff;
-      background: rgba(59,130,246,.18);
-      border:1px solid rgba(96,165,250,.28);
-      padding:4px 8px;
-      border-radius:999px;
-      font-size:12px;
-    }
-
-    .hero h2{
-      margin:14px 0 10px;
-      font-size:52px;
-      line-height:1.03;
-      letter-spacing:-1.2px;
-      font-weight:1100;
-      background: linear-gradient(90deg, #eaf0ff, #9cc7ff, #aab4ff);
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-      text-shadow: 0 30px 120px rgba(0,0,0,.55);
-    }
-
-    .hero p{
-      margin:0;
-      font-size:16px;
-      color:rgba(234,240,255,.72);
-      line-height:1.72;
-      max-width:660px;
-    }
-
-    .heroBtns{
-      display:flex;
-      flex-wrap:wrap;
-      gap:12px;
-      margin-top:22px;
-    }
-
-    .badges{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:18px;
-    }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size:12.5px;
-      font-weight:1100;
-      color:rgba(234,240,255,.78);
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-    }
-    .badge svg{width:16px;height:16px;opacity:.95}
-
-    /* ✅ 3D chart card */
-    .chartCard{
-      border-radius:24px;
+    .gateCard{
+      width:min(520px,92vw);
       border:1px solid rgba(255,255,255,.14);
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
-      transform-style: preserve-3d;
-      perspective: 1100px;
-    }
-    .chartCard::before{
-      content:"";
-      position:absolute;
-      inset:-60px;
-      background: radial-gradient(circle at 50% 20%, rgba(96,165,250,.26), transparent 62%);
-      filter: blur(18px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .chartTop{
-      position:relative;
-      z-index:2;
-      padding:16px 16px 10px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-    }
-    .chartTop .title{
-      font-size:13px;
-      font-weight:1100;
-      color:rgba(234,240,255,.84);
-      letter-spacing:.2px;
-      padding:9px 12px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(2,6,23,.28);
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-    }
-    .livePulse{
-      width:8px;height:8px;border-radius:50%;
-      background: var(--ok);
-      box-shadow: 0 0 0 5px rgba(34,197,94,.12);
-    }
-    .chartTop .right{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-    .miniTag{
-      font-size:12px;
-      font-weight:1100;
-      color:rgba(234,240,255,.72);
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
+      background:rgba(0,0,0,.25);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 26px 90px rgba(0,0,0,.55);
+      backdrop-filter: blur(14px);
+      text-align:center;
     }
 
-    .chartArea{
-      position:relative;
-      z-index:2;
-      padding:0 14px 14px;
-    }
-
-    .chartFrame{
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.30);
-      overflow:hidden;
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      position:relative;
-      transform: translateZ(18px);
-    }
-    canvas#chartCanvas{
-      display:block;
+    /* ✅ LOGO IMAGE STYLE */
+    .logoImg{
       width:100%;
-      height:330px;
-    }
-    .glowLine{
-      position:absolute;
-      inset:auto -30px 14px -30px;
-      height:1px;
-      background: linear-gradient(90deg, transparent, rgba(96,165,250,.75), transparent);
-      filter: blur(.2px);
-      opacity:.9;
-      z-index:3;
+      height:100%;
+      object-fit:contain;
+      display:block;
     }
 
-    .chartFooter{
-      display:flex;
-      gap:10px;
-      padding:12px 14px 0;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-      color:rgba(234,240,255,.66);
-      font-size:12.5px;
-      font-weight:900;
+    /* ✅ Gate logo now image */
+    .gateLogo{
+      width:62px;height:62px;border-radius:18px;
+      margin:0 auto 10px;
+      display:grid;place-items:center;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(180deg, rgba(109,87,255,1), rgba(124,77,255,1));
+      box-shadow:0 18px 50px rgba(109,87,255,.28);
+      overflow:hidden;
     }
-    .chipRow{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .chip{
-      padding:7px 10px;
+    .gateTxt{font-weight:1000}
+    .gateSub{margin-top:6px;color:rgba(234,240,255,.70);font-weight:900;font-size:13px}
+    .spinner{
+      width:46px;height:46px;margin:14px auto 0;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      color:rgba(234,240,255,.72);
-      font-weight:1100;
-      font-size:12px;
+      border:3px solid rgba(255,255,255,.18);
+      border-top-color:#9bdcff;
+      animation:spin 1s linear infinite;
     }
+    @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* ✅ Sections */
-    section{
-      padding:56px 0;
-      position:relative;
-      z-index:2;
-      scroll-margin-top: 110px;
-    }
-
-    /* ✅ scroll unfold + fade */
-    .reveal{
-      opacity:0;
-      transform: translateY(26px) scale(.985);
-      transition: opacity .8s ease, transform .8s ease;
-      will-change: opacity, transform;
-    }
-    .reveal.show{
-      opacity:1;
-      transform: translateY(0) scale(1);
-    }
-
-    /* ✅ section highlight on touch */
-    .touchHighlight{
-      border-radius: 18px;
-      transition: box-shadow .35s ease, transform .25s ease;
-    }
-    .touchHighlight.active{
-      box-shadow:
-        0 0 0 1px rgba(96,165,250,.18),
-        0 0 0 6px rgba(59,130,246,.10),
-        0 28px 120px rgba(0,0,0,.40);
-      transform: translateY(-1px);
-    }
-
-    .sectionTitle{
-      text-align:center;
-      max-width:920px;
-      margin:0 auto 24px;
-    }
-    .sectionTitle h3{
-      margin:0;
-      font-size:32px;
-      font-weight:1100;
-      letter-spacing:-.7px;
-      background: linear-gradient(90deg, #eaf0ff, #a8c8ff);
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-    }
-    .sectionTitle p{
-      margin:10px 0 0;
-      color:rgba(234,240,255,.70);
-      line-height:1.7;
-      font-size:15px;
-    }
-
-    /* ✅ Stats counters */
-    .statsGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:14px;
-      margin-top:22px;
-    }
-    .statBox{
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      padding:18px 16px;
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      overflow:hidden;
-      position:relative;
-      text-align:center;
-    }
-    .statBox::before{
-      content:"";
-      position:absolute;
-      inset:-70px;
-      background: radial-gradient(circle at 30% 20%, rgba(96,165,250,.20), transparent 62%);
-      filter: blur(20px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .statBox > *{position:relative; z-index:1;}
-    .statNum{
-      font-size:30px;
-      font-weight:1200;
-      letter-spacing:-.6px;
-      color:#eaf0ff;
-    }
-    .statLbl{
-      margin-top:8px;
-      font-size:12.5px;
-      font-weight:1100;
-      color:rgba(234,240,255,.62);
-      letter-spacing:.35px;
-      text-transform:uppercase;
-    }
-
-    /* ✅ Steps */
-    .stepsGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:16px;
-    }
-    .stepCard{
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.28);
-      padding:18px 16px;
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      position:relative;
-      overflow:hidden;
-    }
-    .stepCard::before{
-      content:"";
-      position:absolute;
-      inset:-70px;
-      background: radial-gradient(circle at 25% 20%, rgba(59,130,246,.14), transparent 62%);
-      filter: blur(18px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .stepCard > *{position:relative; z-index:1;}
-    .stepTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+    /* ============================================================
+      ✅ STICKY MENU POLISH
+    ============================================================ */
+    .stickyMenu{
+      position:sticky;
+      top:12px;
+      z-index:3000;
       margin-bottom:10px;
     }
-    .stepIcon{
-      width:46px;height:46px;border-radius:16px;
-      display:grid;place-items:center;
-      background: rgba(59,130,246,.10);
-      border:1px solid rgba(96,165,250,.24);
-      box-shadow: 0 12px 38px rgba(0,0,0,.35);
-    }
-    .stepIcon svg{width:22px;height:22px}
-    .stepNum{
-      font-weight:1200;
-      color:rgba(234,240,255,.55);
-      letter-spacing:.4px;
-      font-size:12px;
-    }
-    .stepCard h4{
-      margin:0;
-      font-size:16px;
-      font-weight:1200;
-      letter-spacing:-.2px;
-    }
-    .stepCard p{
-      margin:8px 0 0;
-      color:rgba(234,240,255,.70);
-      font-size:14px;
-      line-height:1.65;
-    }
-
-    /* ✅ Profit Calculator */
-    .calcGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:16px;
-      align-items:stretch;
-      margin-top:18px;
-    }
-    .calcBox{
-      border-radius:24px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      box-shadow: var(--shadow);
-      padding:18px 16px;
-      position:relative;
-      overflow:hidden;
-    }
-    .calcBox::before{
+    .stickyMenu::before{
       content:"";
       position:absolute;
-      inset:-80px;
-      background: radial-gradient(circle at 30% 20%, rgba(96,165,250,.22), transparent 62%);
-      filter: blur(20px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .calcBox > *{position:relative; z-index:1;}
-    .calcTitle{
-      font-size:15px;
-      font-weight:1200;
-      color:rgba(234,240,255,.90);
-      margin:0 0 12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .calcTitle span{
-      font-size:12px;
-      font-weight:1100;
-      color:rgba(234,240,255,.65);
-      padding:6px 10px;
-      border-radius:999px;
+      inset:-10px -10px -8px -10px;
+      border-radius:26px;
+      background:rgba(5,10,24,.58);
       border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.20);
+      box-shadow:0 18px 70px rgba(0,0,0,.55);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      z-index:-1;
+      pointer-events:none;
+      opacity:0;
+      transform: translateY(-6px);
+      transition: .18s ease;
     }
-
-    .calcField{margin-top:12px;}
-    .calcLabel{
-      font-size:13px;
-      font-weight:1100;
-      color:rgba(234,240,255,.70);
+    .stickyMenu.isStuck::before{
+      opacity:1;
+      transform: translateY(0);
+    }
+    .stickyMenu.isStuck .topRow{
       margin-bottom:8px;
     }
-    .calcInput, .calcSelect{
-      width:100%;
-      padding:14px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.30);
-      color: var(--text);
-      font-size:15px;
-      font-weight:900;
-      outline:none;
-      transition:.18s ease;
-    }
-    .calcInput:focus, .calcSelect:focus{
-      border-color: rgba(96,165,250,.60);
-      box-shadow: 0 0 0 4px rgba(59,130,246,.18);
+
+    /* ===== TOP BAR ===== */
+    .topRow{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-bottom:14px;
     }
 
-    .calcResult{
-      margin-top:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.26);
-      padding:14px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    .resCard{
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      padding:12px 12px;
-    }
-    .resCard small{
-      display:block;
-      color:rgba(234,240,255,.62);
-      font-weight:1100;
-      font-size:12px;
-      margin-bottom:6px;
-    }
-    .resCard strong{
-      font-size:18px;
-      font-weight:1200;
-      letter-spacing:-.3px;
-    }
-
-    /* ✅ Plans */
-    .planGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:16px;
-      margin-top:18px;
-    }
-    .planCard{
-      border-radius:24px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      box-shadow: var(--shadow2);
-      padding:18px 16px;
-      position:relative;
-      overflow:hidden;
+    /* ✅ NEW: TOP LOGO HOLDER (NO BOX) */
+    .topLogoLink{
       display:flex;
-      flex-direction:column;
-      gap:12px;
-      min-height: 320px;
+      align-items:center;
+      justify-content:flex-start;
+      cursor:pointer;
+      user-select:none;
     }
-    .planCard::before{
-      content:"";
-      position:absolute;
-      inset:-90px;
-      background: radial-gradient(circle at 30% 20%, rgba(96,165,250,.22), transparent 62%);
-      filter: blur(22px);
-      opacity:.9;
+    .brandLogoWide{
+      height:86px;              /* 🔥 MORE MAGNIFIED */
+      width:auto;
+      max-width:520px;          /* 🔥 VERY WIDE */
+      display:block;
+      object-fit:contain;
+      filter:
+        drop-shadow(0 24px 46px rgba(0,0,0,.60))
+        drop-shadow(0 0 32px rgba(91,108,255,.24));
+      transform: translateY(2px);
+    }
+
+    /* mobile safe but still big */
+    @media(max-width:520px){
+      .brandLogoWide{
+        height:66px;
+        max-width:360px;
+      }
+    }
+
+    .headerActions{display:flex;gap:10px;align-items:center}
+
+    /* ✅ Avatar */
+    .avatarBtn{
+      width:46px;height:46px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(180deg, rgba(124,77,255,1), rgba(109,87,255,1));
+      cursor:pointer;
+      box-shadow:0 16px 40px rgba(124,77,255,.32);
+      display:grid;place-items:center;
+      position:relative;overflow:hidden;
+    }
+    .avatarBtn:hover{filter:brightness(1.05)}
+    .avatarFallback{font-size:18px;line-height:1;z-index:2;}
+    .avatarImgBtn{position:absolute; inset:0;width:100%; height:100%;object-fit:cover;display:none;z-index:3;}
+
+    .iconBtn{
+      width:46px;height:46px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      color:white;font-weight:1000;
+      cursor:pointer;
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+    }
+    .iconBtn:hover{background:rgba(255,255,255,.08)}
+
+    /* ============================================================
+      ✅ HIDE TOP LEFT + PROFILE + MENU BUTTON + DOCK WHEN MENU OPENS
+    ============================================================ */
+    body.menuOpen #stickyMenu{
+      visibility:hidden;
       pointer-events:none;
     }
-    .planCard > *{position:relative; z-index:1;}
-    .planHead{
+    body.menuOpen .dock{
+      display:none;
+    }
+
+    /* ===== HELLO CARD ===== */
+    .helloCard{
+      border-radius:20px;
+      padding:16px 16px;
+      overflow:hidden;
+      background:
+        radial-gradient(800px 220px at 20% 20%, rgba(255,255,255,.18), transparent 60%),
+        linear-gradient(90deg, rgba(109,87,255,1), rgba(255,77,166,0.98));
+      color:white;
+      box-shadow:0 22px 70px rgba(109,87,255,.22);
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+    }
+    .helloLeft{display:flex;align-items:center;gap:12px;}
+
+    /* ✅ verified icon (NOT logo) */
+    .verifiedIcon{
+      width:48px;height:48px;border-radius:18px;
+      background:rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.22);
+      display:grid;place-items:center;
+      font-weight:1000;
+      font-size:22px;
+      box-shadow:0 18px 50px rgba(0,0,0,.20);
+    }
+
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+    .miniChip{
+      font-size:12px;font-weight:1000;
+      padding:6px 10px;border-radius:999px;
+      background:rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.22);
+      display:flex;gap:6px;align-items:center;
+    }
+    .helloTitle{font-weight:1000;font-size:18px}
+    .helloSub{font-size:12px;font-weight:900;opacity:.92}
+
+    .helloRight{
+      display:flex;flex-direction:column;align-items:flex-end;gap:8px;
+    }
+    .helloRightTop{display:flex;align-items:center;gap:10px}
+    .idChip{
+      padding:8px 12px;border-radius:999px;
+      background:rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.22);
+      font-weight:1000;font-size:12px;
+    }
+    .logoutBtn{
+      width:46px;height:46px;border-radius:999px;border:none;
+      cursor:pointer;
+      background:rgba(239,68,68,0.95);
+      color:#fff;font-weight:1000;
+      box-shadow:0 16px 40px rgba(239,68,68,.22);
+    }
+    .datetimeChip{
+      padding:6px 10px;border-radius:999px;
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.20);
+      font-weight:1000;font-size:12px;
+      color:#fff;
+      white-space:nowrap;
+    }
+
+    /* ===== BOX ===== */
+    .box{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:24px;
+      padding:16px;
+      background:
+        radial-gradient(700px 220px at 12% 10%, rgba(56,189,248,.14), transparent 62%),
+        radial-gradient(700px 220px at 88% 18%, rgba(255,77,166,.10), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      box-shadow:0 26px 90px rgba(0,0,0,.55);
+      backdrop-filter: blur(12px);
+      margin-top:14px;
+    }
+    .box h2{margin:0;font-size:20px;font-weight:1000}
+    .small{color:var(--muted);font-size:13px;margin-top:8px}
+    .ok{color:var(--ok);font-weight:1000}
+    .err{color:var(--err);font-weight:1000}
+    .card{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;
+      padding:12px;
+      background:rgba(0,0,0,.22);
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+    }
+
+    /* ===== balanceCard ===== */
+    .balanceCard{
+      margin-top:14px;
+      border-radius:24px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(900px 400px at 15% 20%, rgba(0,0,0,0.55), transparent 55%),
+        radial-gradient(900px 400px at 70% 20%, rgba(52,211,153,.24), transparent 55%),
+        linear-gradient(135deg, rgba(3,7,18,0.92), rgba(15,23,42,0.84));
+      color:white;
+      box-shadow: 0 26px 60px rgba(0,0,0,0.25);
+      padding:16px;
+    }
+    .bTitle{font-size:13px;font-weight:1000;opacity:.85}
+    .bValue{font-size:34px;font-weight:1000;margin-top:8px}
+    .bHint{margin-top:6px;font-size:13px;font-weight:900;opacity:.88;display:flex;gap:10px;align-items:center}
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--green)}
+    .actionGrid{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+    }
+    .action{
+      border-radius:18px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      padding:12px;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    .action:hover{transform: translateY(-2px);background:rgba(255,255,255,.10)}
+    .aIcon{
+      width:48px;height:48px;border-radius:999px;
+      display:grid;place-items:center;
+      font-size:20px;
+      font-weight:1000;color:#fff;
+    }
+    .aSend{background:linear-gradient(180deg,#6d57ff,#7c4dff)}
+    .aReceive{background:linear-gradient(180deg,#18c07b,#11b981)}
+    .aPlans{background:linear-gradient(180deg,#f59e0b,#f97316)}
+    .aSupport{background:linear-gradient(180deg,#38bdf8,#5b6cff)}
+    .aText{font-weight:1000;font-size:13px}
+
+    /* ===== converters ===== */
+    .convGrid{margin-top:14px;display:grid;gap:12px}
+    .convRow{display:flex;gap:10px;flex-wrap:wrap}
+    .inp{
+      flex:1;min-width:140px;
+      height:50px;border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
+      color:var(--text);
+      padding:10px 12px;
+      font-weight:1000;
+      outline:none;
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+    }
+    .swapBtn{
+      width:54px;height:50px;border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      font-weight:1000;
+      cursor:pointer;
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+    }
+    .swapBtn:hover{filter:brightness(1.05)}
+    .convBtn{
+      width:100%;
+      height:54px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background:linear-gradient(180deg, rgba(91,108,255,1), rgba(124,77,255,1));
+      color:white;
+      font-weight:1000;
+      cursor:pointer;
+      box-shadow:0 18px 55px rgba(91,108,255,.18);
+      display:flex;align-items:center;justify-content:center;gap:10px;
+    }
+    .convBtn:hover{filter:brightness(1.05)}
+    .rateLine{
+      margin-top:10px;
+      font-size:12px;
+      color:rgba(234,240,255,.75);
+      font-weight:900;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .rateDot{
+      width:10px;height:10px;border-radius:999px;
+      background:rgba(52,211,153,1);
+      box-shadow:0 0 18px rgba(52,211,153,.55);
+    }
+
+    /* ===== searchable dropdown unlimited ===== */
+    .ddWrap{flex:1;min-width:220px;position:relative}
+    .ddBtn{
+      width:100%;
+      height:50px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
+      color:rgba(234,240,255,.95);
+      padding:10px 12px;
+      font-weight:1000;
+      outline:none;
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+      cursor:pointer;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
     }
-    .planName{
-      font-weight:1300;
-      font-size:18px;
-      letter-spacing:-.3px;
+    .ddLeft{display:flex;align-items:center;gap:10px;min-width:0}
+    .ddIcon{
+      width:34px;height:34px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      display:grid;place-items:center;
+      font-size:14px;
+      overflow:hidden;
     }
-    .planTag{
+    .ddName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .ddPanel{
+      position:absolute; top:56px; left:0; right:0;
+      z-index:100;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(2,6,23,.94);
+      box-shadow:0 26px 90px rgba(0,0,0,.65);
+      backdrop-filter: blur(16px);
+      overflow:hidden;
+      display:none;
+    }
+    .ddPanel.show{display:block;}
+    .ddSearch{
+      width:100%;
+      height:46px;
+      border:none; outline:none;
+      padding:0 12px;
+      font-weight:1000;
+      color:#fff;
+      background:rgba(0,0,0,.20);
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .ddList{max-height:320px;overflow:auto;}
+    .ddItem{
+      padding:12px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      cursor:pointer;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      color:rgba(234,240,255,.86);
+      font-weight:900;
+    }
+    .ddItem:hover{background:rgba(255,255,255,.06)}
+    .ddItem small{color:rgba(234,240,255,.55);font-weight:900}
+
+    /* ===== mini chart ===== */
+    .chartWrap{
+      margin-top:12px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      overflow:hidden;
+      background:rgba(0,0,0,.22);
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+    }
+    .chartHead{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      font-weight:1000;
+      color:rgba(234,240,255,.78);
+      font-size:13px;
+    }
+    .chartFrame{width:100%;height:340px;border:0;display:block}
+
+    /* ===== ORDER BOOK ===== */
+    .orderBookWrap{
+      margin-top:12px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      overflow:hidden;
+      background:rgba(0,0,0,.22);
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+    }
+    .obHead{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      font-weight:1000;
+      color:rgba(234,240,255,.78);
+      font-size:13px;
+    }
+    .obStatus{
+      display:flex;gap:8px;align-items:center;font-weight:1000;font-size:12px;color:rgba(234,240,255,.70);
+    }
+    .pulseDot{
+      width:9px;height:9px;border-radius:999px;background:rgba(34,197,94,1);
+      box-shadow:0 0 18px rgba(34,197,94,.55);
+      animation:pulse 1.3s ease-in-out infinite;
+    }
+    @keyframes pulse{
+      0%{transform:scale(.85);opacity:.7}
+      50%{transform:scale(1.1);opacity:1}
+      100%{transform:scale(.85);opacity:.7}
+    }
+    .obGrid{
+      display:grid;
+      grid-template-columns: 1fr 90px 1fr;
+      gap:10px;
+      padding:12px;
+    }
+    @media (max-width:720px){
+      .obGrid{ grid-template-columns:1fr; }
+    }
+    .obCol{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px;
+      overflow:hidden;
+      background:rgba(0,0,0,.18);
+    }
+    .obColHead{
+      display:flex;justify-content:space-between;gap:10px;
+      padding:10px 10px;
+      font-weight:1000;font-size:12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      color:rgba(234,240,255,.75);
+    }
+    .obRows{
+      max-height:320px;
+      overflow:auto;
+    }
+    .obRow{
+      position:relative;
+      display:grid;
+      grid-template-columns: 1.15fr 1fr 1fr;
+      gap:10px;
+      padding:8px 10px;
+      font-weight:1000;
       font-size:12px;
-      font-weight:1200;
-      color:rgba(234,240,255,.70);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .obRow:last-child{border-bottom:none}
+    .obRow span{z-index:2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .obRow .p{color:#f87171}
+    .obRow.ask .p{color:#f87171}
+    .obRow.bid .p{color:#22c55e}
+    .obRow .bgBar{
+      position:absolute; inset:0;
+      z-index:1;
+      opacity:.14;
+    }
+    .obRow.ask .bgBar{ background:linear-gradient(90deg, rgba(248,113,113,.0), rgba(248,113,113,.55)); transform-origin:right; }
+    .obRow.bid .bgBar{ background:linear-gradient(90deg, rgba(34,197,94,.55), rgba(34,197,94,.0)); transform-origin:left; }
+    .obMid{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 0;
+    }
+    .midPrice{
+      font-weight:1000;
+      font-size:15px;
+    }
+    .spreadPill{
+      font-size:11px;
+      font-weight:1000;
       padding:6px 10px;
       border-radius:999px;
       border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.20);
+      background:rgba(255,255,255,.08);
+      color:rgba(234,240,255,.80);
     }
-    .planPrice{
-      font-size:28px;
-      font-weight:1400;
-      letter-spacing:-.6px;
-      margin-top:4px;
+    .obFoot{
+      padding:10px 12px;
+      border-top:1px solid rgba(255,255,255,.10);
+      display:flex;justify-content:space-between;gap:10px;
+      color:rgba(234,240,255,.65);
+      font-size:12px;font-weight:900;
     }
-    .planPrice small{
-      font-size:12.5px;
-      font-weight:1100;
-      color:rgba(234,240,255,.62);
+
+    /* ===== SIDEBAR ===== */
+    .overlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.65);
+      display:none; z-index:999;
+      backdrop-filter: blur(4px);
     }
-    .planList{
-      margin:0;
-      padding:0;
-      list-style:none;
+    .overlay.show{display:block;}
+    .sidebar{
+      position:fixed; top:0; left:-315px;
+      width:292px; height:100vh;
+      padding:16px;
+      z-index:1000;
+      transition: .28s ease;
+      border-right:1px solid rgba(255,255,255,.10);
+      background:
+        radial-gradient(900px 420px at 15% 10%, rgba(91,108,255,.18), transparent 55%),
+        radial-gradient(900px 420px at 90% 20%, rgba(52,211,153,.12), transparent 55%),
+        linear-gradient(180deg, rgba(4,8,20,0.98), rgba(2,6,23,0.98));
+      box-shadow:0 26px 90px rgba(0,0,0,.60);
+      backdrop-filter: blur(16px);
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,.18) rgba(0,0,0,0);
+    }
+    .sidebar::-webkit-scrollbar{width:8px}
+    .sidebar::-webkit-scrollbar-track{background:transparent}
+    .sidebar::-webkit-scrollbar-thumb{
+      background:rgba(255,255,255,.16);
+      border-radius:999px;
+      border:2px solid rgba(0,0,0,0);
+      background-clip:padding-box;
+    }
+    .sidebar::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.22)}
+    .sidebar.open{ left:0; }
+
+    .sideTop{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:10px;margin-bottom:8px;
+    }
+
+    /* ✅ sidebar logo stands alone big (NO BOX) */
+    .sideLogoWrap{
       display:flex;
       flex-direction:column;
-      gap:10px;
-      color:rgba(234,240,255,.74);
-      font-size:13.5px;
-      font-weight:900;
-      line-height:1.45;
-    }
-    .planList li{
-      display:flex;
       align-items:flex-start;
       gap:8px;
+      padding:6px 0;
+      cursor:pointer;
+      user-select:none;
     }
-    .planList svg{width:18px;height:18px; margin-top:1px; opacity:.95;}
-    .planBtn{
-      margin-top:auto;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
+    .sideLogoWide{
+      height:92px;             /* 🔥 MORE MAGNIFIED */
+      width:auto;
+      max-width:260px;
+      display:block;
+      object-fit:contain;
+      filter:
+        drop-shadow(0 24px 46px rgba(0,0,0,.62))
+        drop-shadow(0 0 36px rgba(91,108,255,.22));
     }
-    .planBtn a{
-      width:100%;
-      text-align:center;
-      justify-content:center;
-    }
-    .planFeatured{
-      border-color: rgba(96,165,250,.34);
-      background: linear-gradient(180deg, rgba(59,130,246,.16), rgba(255,255,255,.04));
-      transform: translateY(-4px);
-    }
-    .planGlow{
-      position:absolute;
-      inset:-60px;
-      background: radial-gradient(circle at 50% 20%, rgba(96,165,250,.28), transparent 62%);
-      filter: blur(22px);
-      opacity:0.95;
-      pointer-events:none;
+    .sideLogoSub{
+      font-weight:900;
+      font-size:12px;
+      color:rgba(234,240,255,.62);
+      margin-left:2px;
     }
 
-    /* ✅ Referral section */
-    .refGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:14px;
-      margin-top:18px;
+    .closeBtn{
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.14);
+      color:rgba(234,240,255,.95);
+      border-radius:14px;
+      width:44px;height:44px;
+      cursor:pointer;
+      display:grid;place-items:center;
+      font-weight:1000;
+      flex:0 0 auto;
+      margin-top:10px;
     }
-    .refCard{
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.30);
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      padding:16px 14px;
-      position:relative;
-      overflow:hidden;
-      text-align:center;
+    .closeBtn:hover{background:rgba(255,255,255,.08)}
+
+    .userTag{
+      padding:12px 12px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      box-shadow:0 18px 55px rgba(0,0,0,.35);
+      margin:10px 0 14px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
     }
-    .refCard::before{
-      content:"";
-      position:absolute;
-      inset:-70px;
-      background: radial-gradient(circle at 30% 20%, rgba(59,130,246,.18), transparent 62%);
-      filter: blur(18px);
-      opacity:.9;
-      pointer-events:none;
+    .userTagLeft{min-width:0}
+    .userTag .t1{color:rgba(234,240,255,.55);font-weight:1000;font-size:12px}
+    .userTag .t2{
+      margin-top:6px;font-weight:1000;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      max-width:180px;
     }
-    .refCard > *{position:relative; z-index:1;}
-    .refPct{
-      font-size:32px;
-      font-weight:1400;
-      letter-spacing:-.7px;
+
+    .sideAvatar{
+      width:46px;height:46px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.25);
+      display:grid;place-items:center;
+      position:relative;overflow:hidden;
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+      flex:0 0 auto;
     }
-    .refLvl{
-      margin-top:8px;
-      font-size:12px;
-      font-weight:1200;
-      color:rgba(234,240,255,.62);
-      letter-spacing:.35px;
+    .sideAvatar span{font-size:18px}
+    .sideAvatar img{
+      position:absolute; inset:0;
+      width:100%;height:100%;
+      object-fit:cover;
+      display:none;
+    }
+
+    .menuGroupTitle{
+      margin:10px 0 8px;
+      font-size:12px;font-weight:1000;
+      color:rgba(234,240,255,.50);
+      letter-spacing:.8px;
       text-transform:uppercase;
     }
-    .refNote{
-      margin-top:10px;
-      color:rgba(234,240,255,.72);
-      font-size:13px;
-      line-height:1.55;
-      font-weight:900;
-    }
-
-    /* ✅ Partner slider */
-    .partnerTrack{
-      border-radius:22px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      overflow:hidden;
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      position:relative;
-      margin-top:18px;
-    }
-    .partnerTrack::before{
-      content:"";
-      position:absolute;
-      inset:-60px;
-      background: radial-gradient(circle at 25% 20%, rgba(96,165,250,.18), transparent 62%);
-      filter: blur(18px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .partnerRow{
-      display:flex;
-      gap:18px;
-      padding:16px 10px;
-      align-items:center;
-      animation: slidePartners 26s linear infinite;
-      width:max-content;
-      position:relative;
-      z-index:1;
-    }
-    .partnerPill{
-      min-width: 160px;
-      padding:12px 14px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(2,6,23,.26);
-      text-align:center;
-      font-weight:1200;
+    .sideItem{
+      display:flex;align-items:center;gap:12px;
+      padding:12px 12px;border-radius:18px;
       color:rgba(234,240,255,.82);
-      letter-spacing:.25px;
-      white-space:nowrap;
+      text-decoration:none;
+      font-weight:1000;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.22);
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+      margin-bottom:10px;
+      position:relative;overflow:hidden;
     }
-    @keyframes slidePartners{
-      from{ transform: translateX(0); }
-      to{ transform: translateX(-50%); }
-    }
-
-    /* ✅ Markets row */
-    .marketRowWrap{
-      max-width:1200px;
-      margin:0 auto;
-    }
-    .marketScroller{
-      display:flex;
-      gap:14px;
-      overflow:hidden;
-      padding: 6px 2px 10px;
-      position:relative;
-    }
-
-    .marketAuto{
-      display:flex;
-      gap:14px;
-      width:max-content;
-      animation: autoMarket 90s linear infinite;
-    }
-    .marketScroller:hover .marketAuto{
-      animation-play-state: paused; /* pause on hover */
-    }
-
-    @keyframes autoMarket{
-      from{ transform: translateX(0); }
-      to{ transform: translateX(-50%); }
-    }
-
-    .coinCard{
-      min-width: 360px;
-      max-width: 360px;
-      border-radius:20px;
+    .sideItem:hover{background:rgba(255,255,255,.08)}
+    .sideItem .i{
+      width:42px;height:42px;border-radius:16px;
+      display:grid;place-items:center;
       border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.32);
-      box-shadow: 0 18px 70px rgba(0,0,0,.38);
-      position:relative;
-      overflow:hidden;
-      padding:16px 14px;
+      background:rgba(255,255,255,.06);
+      font-size:18px;
     }
-    .coinCard::before{
+    .sideItem small{display:block;color:rgba(234,240,255,.55);font-size:12px;font-weight:900;margin-top:2px}
+    .activeLink{
+      border:1px solid rgba(56,189,248,.55);
+      background:linear-gradient(180deg, rgba(56,189,248,0.14), rgba(56,189,248,0.08));
+      color:#cfefff;
+    }
+    .activeLink::after{
       content:"";
-      position:absolute;
-      inset:-60px;
-      background: radial-gradient(circle at 25% 20%, rgba(59,130,246,.18), transparent 64%);
-      filter: blur(18px);
-      opacity:.9;
+      position:absolute; inset:0;
+      background: radial-gradient(600px 160px at 30% 20%, rgba(56,189,248,.20), transparent 60%);
       pointer-events:none;
     }
-    .coinCardInner{position:relative; z-index:1;}
-    .coinTop{
+    .sideLogout{
+      margin-top:10px;
+      background:linear-gradient(90deg, rgba(248,113,113,1), rgba(239,68,68,1));
+      color:#020617;border:none;width:100%;
+      padding:14px;border-radius:18px;font-weight:1000;cursor:pointer;
+      box-shadow:0 18px 55px rgba(239,68,68,.18);
+    }
+    .sideLogout:hover{filter:brightness(1.03)}
+
+    /* ===== DOCK ===== */
+    .dock{
+      position:fixed;
+      left:0; right:0; bottom:14px;
+      z-index:2000;
+      pointer-events:none;
+    }
+    .dockInner{
+      pointer-events:auto;
+      max-width:980px;
+      margin:0 auto;
+      padding:0 14px;
+    }
+    .dockBar{
+      height:76px;
+      border-radius:28px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 20px 70px rgba(0,0,0,.45);
+      backdrop-filter: blur(14px);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 12px;
+      gap:10px;
+    }
+    .dockItem{
+      flex:1;
+      min-width:70px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      border-radius:18px;
+      padding:10px 0;
+      color:rgba(234,240,255,.55);
+      font-size:12px;
+      font-weight:1000;
+      cursor:pointer;
+      user-select:none;
+      position:relative;
+    }
+    .dockItem .ico{font-size:18px;opacity:.95}
+    .dockItem:hover{background:rgba(255,255,255,.06)}
+    .dockActive{color:#9bdcff;background:rgba(56,189,248,.10)}
+
+    .dockHome{
+      width:78px;height:78px;border-radius:26px;
+      background:linear-gradient(180deg, rgba(109,87,255,1), rgba(91,108,255,1));
+      box-shadow:0 22px 55px rgba(109,87,255,.30);
+      display:grid;place-items:center;
+      margin-top:-32px;
+      border:1px solid rgba(255,255,255,.16);
+      cursor:pointer;user-select:none;
+      flex:0 0 auto;
+      pointer-events:auto;
+    }
+    .dockHome span{font-size:28px;color:white}
+    .dockHome:hover{filter:brightness(1.05)}
+
+    .dockBadge{
+      position:absolute;
+      top:2px;
+      right:18px;
+      min-width:18px;
+      height:18px;
+      padding:0 6px;
+      border-radius:999px;
+      background:#f87171;
+      color:#020617;
+      font-weight:1000;
+      font-size:11px;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(255,255,255,.18);
+    }
+
+    /* TOP 10 CRYPTO */
+    .crypto10Grid{
+      margin-top:12px;
+      display:grid;
+      gap:10px;
+    }
+    .cryptoRow{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
+      padding:12px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.22);
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
     }
-    .coinLeft{
+    .cryptoLeft{
       display:flex;
       align-items:center;
-      gap:10px;
-      min-width: 0;
+      gap:12px;
+      min-width:0;
     }
-    .coinLogo{
-      width:44px;height:44px;border-radius:16px;
+    .cryptoLogo{
+      width:42px;
+      height:42px;
+      border-radius:14px;
       border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
+      background:rgba(255,255,255,.06);
       display:grid;
       place-items:center;
       overflow:hidden;
-      box-shadow: 0 14px 46px rgba(0,0,0,.35);
       flex:0 0 auto;
     }
-    .coinLogo img{
-      width:26px;height:26px;
-      object-fit:contain;
-      filter: drop-shadow(0 10px 25px rgba(0,0,0,.55));
-    }
-    .coinMeta{
-      min-width: 0;
-      display:flex;
-      flex-direction:column;
-      line-height:1.1;
-    }
-    .coinName{
-      font-size:14px;
-      font-weight:1200;
-      letter-spacing:-.2px;
-      color:rgba(234,240,255,.92);
+    .cryptoLogo img{width:100%;height:100%;object-fit:cover;display:block;}
+    .cryptoName{
+      font-weight:1000;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-width: 200px;
     }
-    .coinSym{
+    .cryptoSym{
+      display:block;
+      font-size:12px;
+      font-weight:1000;
+      color:rgba(234,240,255,.55);
+      margin-top:2px;
+    }
+    .cryptoRight{
+      text-align:right;
+      flex:0 0 auto;
+    }
+    .cryptoPrice{
+      font-weight:1000;
+      font-size:14px;
+    }
+    .cryptoChg{
       margin-top:4px;
+      font-weight:1000;
       font-size:12px;
-      font-weight:1100;
-      color:rgba(234,240,255,.62);
-      letter-spacing:.35px;
-      text-transform:uppercase;
-    }
-    .coinRight{text-align:right;}
-    .coinPrice{
-      font-size:20px;
-      font-weight:1300;
-      letter-spacing:-.4px;
-      color:#eaf0ff;
-      white-space:nowrap;
-    }
-    .coinChange{
-      margin-top:6px;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      font-size:12px;
-      font-weight:1200;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      white-space:nowrap;
-    }
-    .chgUp{ color: rgba(34,197,94,.96); border-color: rgba(34,197,94,.20); background: rgba(34,197,94,.08);}
-    .chgDown{ color: rgba(248,113,113,.96); border-color: rgba(248,113,113,.22); background: rgba(248,113,113,.08);}
-
-    .coinBottom{
-      margin-top:12px;
-      border-top:1px solid rgba(255,255,255,.10);
-      padding-top:12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
       color:rgba(234,240,255,.65);
-      font-size:12.5px;
-      font-weight:900;
     }
-    .spark{
-      width:96px;
-      height:30px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.22);
-      overflow:hidden;
-      position:relative;
-    }
-    .spark canvas{ width:100%; height:100%; display:block; }
+    .cryptoChg.up{color:rgba(34,197,94,1)}
+    .cryptoChg.down{color:rgba(248,113,113,1)}
 
-    /* ✅ Testimonials */
-    .testGrid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:16px;
-      margin-top:18px;
-    }
-    .testCard{
-      border-radius:22px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      padding:18px 16px;
-      position:relative;
-      overflow:hidden;
-    }
-    .testCard::before{
-      content:"";
-      position:absolute;
-      inset:-70px;
-      background: radial-gradient(circle at 30% 20%, rgba(96,165,250,.20), transparent 62%);
-      filter: blur(18px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .testCard > *{position:relative; z-index:1;}
-    .stars{
+    /* NEWS */
+    .newsGrid{margin-top:12px;display:grid;gap:10px}
+    .newsItem{
       display:flex;
-      gap:4px;
-      margin-bottom:10px;
-    }
-    .stars svg{width:16px;height:16px; opacity:.95;}
-    .testText{
-      color:rgba(234,240,255,.74);
-      font-size:14px;
-      line-height:1.65;
-      font-weight:900;
-    }
-    .testUser{
-      margin-top:14px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .avatar{
-      width:42px;height:42px;border-radius:16px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.30);
-      display:grid;
-      place-items:center;
-      font-weight:1200;
-      color:#eaf0ff;
-    }
-    .userMeta{
-      line-height:1.1;
-    }
-    .userMeta strong{
-      display:block;
-      font-weight:1200;
-      font-size:13.5px;
-    }
-    .userMeta span{
-      display:block;
-      font-weight:900;
-      font-size:12px;
-      color:rgba(234,240,255,.62);
-      margin-top:4px;
-    }
-
-    /* ✅ Testimonials slider only on mobile (NO CHANGE on desktop) */
-    @media(max-width: 560px){
-      .testGrid{
-        display:flex;
-        gap:14px;
-        overflow-x:auto;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 10px;
-      }
-      .testCard{
-        min-width: 86%;
-        scroll-snap-align: start;
-      }
-    }
-
-    /* ✅ CTA band */
-    .ctaBand{padding:0;}
-    .ctaBox{
-      border-radius:28px;
-      border:1px solid rgba(255,255,255,.14);
-      background: linear-gradient(180deg, rgba(59,130,246,.18), rgba(2,6,23,.22));
-      box-shadow: 0 30px 130px rgba(0,0,0,.65);
-      padding:28px 20px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:18px;
-      overflow:hidden;
-      position:relative;
-    }
-    .ctaBox::before{
-      content:"";
-      position:absolute;
-      inset:-70px;
-      background: radial-gradient(circle at 20% 20%, rgba(96,165,250,.28), transparent 65%);
-      filter: blur(26px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .ctaBox .left{position:relative; z-index:1; max-width:760px;}
-    .ctaBox h4{
-      margin:0;
-      font-size:22px;
-      font-weight:1300;
-      letter-spacing:-.35px;
-      color:#eaf0ff;
-    }
-    .ctaBox p{
-      margin:8px 0 0;
-      color:rgba(234,240,255,.70);
-      line-height:1.65;
-      font-size:14px;
-    }
-    .ctaBox .right{
-      position:relative;
-      z-index:1;
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-
-    /* ✅ Footer */
-    footer{
-      padding:26px 0 34px;
-      border-top:1px solid rgba(255,255,255,.10);
-      background: rgba(2,6,23,.26);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      position:relative;
-      z-index:2;
-    }
-    .footInner{
-      text-align:center;
-      font-size:12px;
-      color:rgba(234,240,255,.66);
-      line-height:1.6;
-    }
-    .footer-links{
-      margin-top:12px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      justify-content:center;
-    }
-    .footer-links a{
-      color:#9cc7ff;
-      font-weight:1100;
-      text-decoration:none;
-      font-size:12px;
-      padding:6px 10px;
-      border-radius:999px;
+      flex-direction:column;
+      gap:8px;
+      padding:12px;
+      border-radius:18px;
       border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
+      background:rgba(0,0,0,.22);
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+      text-decoration:none;
+      color:rgba(234,240,255,.92);
     }
-    .footer-links a:hover{background: rgba(255,255,255,.06);}
-    .risk{
-      margin-top:12px;
-      max-width:920px;
-      margin-left:auto;
-      margin-right:auto;
-      color: rgba(234,240,255,.55);
-      font-size:11.5px;
+    .newsItem:hover{background:rgba(255,255,255,.06)}
+    .newsTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .newsTitle{font-weight:1000;font-size:14px;line-height:1.25}
+    .newsMeta{
+      font-weight:900;
+      font-size:12px;
+      color:rgba(234,240,255,.55);
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap
     }
-
-    /* ✅ Responsive */
-    @media(max-width: 1100px){
-      .heroGrid{grid-template-columns: 1fr; gap:18px;}
-      .hero h2{font-size:44px;}
-      .chartCard{max-width:600px;}
-      .statsGrid{grid-template-columns: 1fr 1fr;}
-      .stepsGrid{grid-template-columns: 1fr 1fr;}
-      .calcGrid{grid-template-columns: 1fr;}
-      .planGrid{grid-template-columns: 1fr 1fr;}
-      .refGrid{grid-template-columns: 1fr 1fr;}
-      .testGrid{grid-template-columns: 1fr;}
+    .newsTag{
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.08);
+      font-weight:1000;
+      font-size:11px;
+      color:rgba(234,240,255,.80)
     }
-    @media(max-width: 560px){
-      nav{display:none;}
-      .hero{padding:56px 0 18px;}
-      .hero h2{font-size:36px;}
-      .brand{min-width:auto;}
-      .navCTA{min-width:auto;}
-
-      .coinCard{min-width: 310px; max-width:310px;}
-      .planGrid{grid-template-columns: 1fr;}
-      .statsGrid{grid-template-columns: 1fr;}
-      .stepsGrid{grid-template-columns: 1fr;}
-
-      /* keep inside sticky bar */
-      .brandLogoImg{height:28px; max-width:200px; transform: scale(3) translateY(1px);}
-    }
-
-    /* ✅ Hide Google default translate banner (keeps UI clean) */
-    .goog-te-banner-frame.skiptranslate { display: none !important; }
-    body { top: 0px !important; }
-    #goog-gt-tt, .goog-te-balloon-frame { display:none !important; }
+    .newsBottom{font-weight:900;font-size:12px;color:rgba(234,240,255,.65)}
   </style>
 </head>
 
 <body>
+  <div class="bgFlow"></div>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="blob b4"></div>
+  <div class="shimmer"></div>
 
-<canvas id="bgCanvas"></canvas>
-
-<!-- ✅ Top bar -->
-<div class="topbar">
-  <div class="container">
-    <div class="topbarInner">
-      <span class="pill">Support: <b style="color:#eaf0ff;">support@veloci-global-markets.online</b></span>
-
-      <!-- TRANSLATOR -->
-      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-        <select id="langSelect" class="langSelect" aria-label="Translate this page">
-          <option value="">Translate</option>
-          <option value="en">English</option>
-          <option value="fr">French</option>
-          <option value="es">Spanish</option>
-          <option value="de">German</option>
-          <option value="it">Italian</option>
-          <option value="pt">Portuguese</option>
-          <option value="nl">Dutch</option>
-          <option value="tr">Turkish</option>
-          <option value="ar">Arabic</option>
-          <option value="hi">Hindi</option>
-          <option value="zh-CN">Chinese (Simplified)</option>
-        </select>
-
-        <div id="google_translate_element" style="display:none;"></div>
+  <!-- Loading -->
+  <div id="authGate">
+    <div class="gateCard">
+      <div class="gateLogo">
+        <img class="logoImg" src="assets/vgm-logo.png" alt="Veloci Global Markets Logo">
       </div>
+      <div class="gateTxt">Veloci Global Markets</div>
+      <div class="gateSub">Precision trading. Real-time execution.</div>
+      <div class="spinner"></div>
     </div>
   </div>
-</div>
 
-<!-- ✅ Navbar -->
-<header>
+  <div id="overlay" class="overlay" onclick="closeMenu()"></div>
+
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar">
+    <div class="sideTop">
+      <div class="sideLogoWrap" onclick="goDashboard()" title="Home">
+        <img class="sideLogoWide" src="assets/vgm-logo.png" alt="Veloci Markets Logo">
+        <div class="sideLogoSub">Veloci Global Markets</div>
+      </div>
+      <button class="closeBtn" onclick="closeMenu()">✕</button>
+    </div>
+
+    <div class="userTag">
+      <div class="userTagLeft">
+        <div class="t1">Logged in as</div>
+        <div id="sideName" class="t2">---</div>
+      </div>
+      <div class="sideAvatar" title="Profile photo">
+        <span id="sideAvatarFallback">👤</span>
+        <img id="sideAvatarImg" alt="Avatar"/>
+      </div>
+    </div>
+
+    <div class="menuGroupTitle">Navigation</div>
+    <a class="sideItem activeLink" href="user-dashboard.html"><div class="i">🏠</div><div>Dashboard<small>Main overview</small></div></a>
+    <a class="sideItem" href="portfolio.html"><div class="i">📊</div><div>Portfolio<small>Your assets</small></div></a>
+    <a class="sideItem" href="deposits.html"><div class="i">💳</div><div>Deposit<small>Fund your account</small></div></a>
+    <a class="sideItem" href="withdraw.html"><div class="i">➡</div><div>Withdraw Funds<small>Request payout</small></div></a>
+    <a class="sideItem" href="support.html"><div class="i">🧑‍💻</div><div>Support / Contact<small>Tickets & help</small></div></a>
+    <a class="sideItem" href="plans.html"><div class="i">💼</div><div>Investment Plans<small>Start investing</small></div></a>
+    <a class="sideItem" href="profile.html"><div class="i">👤</div><div>Profile / Settings<small>Account security</small></div></a>
+    <button class="sideLogout" onclick="logout()">Logout</button>
+  </div>
+
   <div class="container">
-    <div class="nav">
-      <a class="brand" href="index.html" aria-label="Veloci Global Markets">
-        <!-- ✅ Bigger readable logo in sticky bar -->
-        <img class="brandLogoImg" src="assets/vgm-logo.png" alt="Veloci Global Markets" onerror="this.style.display='none';" />
-      </a>
+    <div id="stickyMenu" class="stickyMenu">
+      <div class="topRow">
 
-      <nav aria-label="Primary navigation">
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="faq.html">FAQ</a>
-        <a href="contact.html">Contact</a>
-      </nav>
+        <!-- ✅ TOP LOGO STANDING ALONE (NO BOX, NO TEXT) -->
+        <div class="topLogoLink" onclick="goDashboard()" title="Home">
+          <img class="brandLogoWide" src="assets/vgm-logo.png" alt="Veloci Global Markets">
+        </div>
 
-      <!-- ✅ ONLY INTERCHANGED POSITIONS: Get Started moved before Menu -->
-      <div class="navCTA">
-        <a class="btn btnOutline" href="login.html">Client Login</a>
-
-        <!-- ✅ Get Started moved left -->
-        <a class="btn btnPrimary" href="signup.html">Get Started</a>
-
-        <!-- ✅ Menu moved right -->
-        <div class="menuWrap">
-          <button id="menuBtn" class="menuBtn" type="button" aria-haspopup="true" aria-expanded="false">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M4 7h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <path d="M4 12h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <path d="M4 17h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Menu
+        <div class="headerActions">
+          <button class="avatarBtn" onclick="goProfile()" title="Profile">
+            <span id="avatarFallback" class="avatarFallback">👤</span>
+            <img id="avatarImgBtn" class="avatarImgBtn" alt="Avatar"/>
           </button>
+          <button class="iconBtn" onclick="openMenu()" title="Menu">☰</button>
+        </div>
+      </div>
+    </div>
 
-          <div id="menuDropdown" class="menuDropdown" role="menu" aria-label="Top menu">
-            <a href="about.html" role="menuitem">About <small>Company</small></a>
-            <a href="terms.html" role="menuitem">Terms <small>Policy</small></a>
-            <a href="faq.html" role="menuitem">FAQ <small>Help</small></a>
-            <a href="contact.html" role="menuitem">Contact <small>Support</small></a>
+    <div class="helloCard">
+      <div class="helloLeft">
+        <!-- ✅ VERIFIED ICON (NOT LOGO) -->
+        <div class="verifiedIcon" title="Verified">🛡️</div>
+
+        <div>
+          <div class="chips">
+            <div class="miniChip">🟢 active</div>
+            <div class="miniChip" id="countryChip" style="display:none"></div>
+          </div>
+          <div class="helloTitle" id="greetingTitle">Greetings…</div>
+          <div class="helloSub" id="helloName">Loading…</div>
+        </div>
+      </div>
+
+      <div class="helloRight">
+        <div class="helloRightTop">
+          <div class="idChip" id="userIdChip">ID:</div>
+          <button class="logoutBtn" onclick="logout()" title="Logout">⎋</button>
+        </div>
+        <div class="datetimeChip" id="dateTimeNow">--- | ---</div>
+      </div>
+    </div>
+
+    <div class="balanceCard">
+      <div class="bTitle">Total Portfolio Value</div>
+      <div class="bValue" id="balance">--</div>
+      <div class="bHint"><div class="dot"></div> <div>Your trading account balance</div></div>
+
+      <div class="actionGrid">
+        <div class="action" onclick="goWithdrawAndClear()"><div class="aIcon aSend">✈️</div><div class="aText">Send</div></div>
+        <div class="action" onclick="goDepositAndClear()"><div class="aIcon aReceive">⬇️</div><div class="aText">Receive</div></div>
+        <div class="action" onclick="goPlans()"><div class="aIcon aPlans">📈</div><div class="aText">Plans</div></div>
+        <div class="action" onclick="goSupportAndClear()"><div class="aIcon aSupport">💬</div><div class="aText">Support</div></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>Active Investment Plan</h2>
+      <div id="planMsg" class="small">Loading…</div>
+      <div id="planBox"></div>
+    </div>
+
+    <div class="box">
+      <h2>Top 10 Major Cryptos</h2>
+      <div class="small">Live market prices (auto refresh every 20 seconds).</div>
+      <div id="top10Msg" class="small">Loading…</div>
+      <div id="top10List" class="crypto10Grid"></div>
+    </div>
+
+    <div class="box">
+      <h2>Crypto Converter</h2>
+      <div class="small">Search & convert from ALL coins to ALL fiat currencies.</div>
+      <div class="convGrid">
+        <div class="convRow">
+          <div class="ddWrap" id="ddCryptoA"></div>
+          <button class="swapBtn" onclick="swapCrypto()">⇄</button>
+          <div class="ddWrap" id="ddCryptoB"></div>
+        </div>
+
+        <div class="convRow">
+          <input id="cryptoAmount" class="inp" type="number" min="0" step="0.00000001" placeholder="Enter amount"/>
+        </div>
+
+        <button class="convBtn" onclick="convertCrypto()">⚡ Convert</button>
+
+        <div class="card">
+          <div class="rateLine"><span class="rateDot"></span> <span id="cryptoRate">Rate: --</span></div>
+          <div class="small" style="margin-top:10px;font-size:14px;">Result: <strong id="cryptoResult">--</strong></div>
+          <div class="small" style="margin-top:10px;font-size:14px;">Reverse: <strong id="cryptoReverse">--</strong></div>
+          <div class="small" style="margin-top:10px;font-size:13px;color:rgba(234,240,255,.55)">
+            Tip: Search by coin name or symbol (example: “btc”, “eth”, “sol”, “xrp”).
           </div>
         </div>
       </div>
     </div>
-  </div>
-</header>
 
-<!-- ✅ Live ticker tape -->
-<div class="tickerWrap">
-  <div class="container">
-    <div class="tickerInner">
-      <div class="tickerGlass">
-        <div class="tradingview-widget-container">
-          <div class="tradingview-widget-container__widget"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-          {
-            "symbols": [
-              {"proName": "FOREXCOM:SPXUSD", "title": "S&P 500"},
-              {"proName": "NASDAQ:NDX", "title": "NASDAQ 100"},
-              {"proName": "FX:EURUSD", "title": "EUR/USD"},
-              {"proName": "FX:GBPUSD", "title": "GBP/USD"},
-              {"proName": "CRYPTO:BTCUSD", "title": "Bitcoin"},
-              {"proName": "CRYPTO:ETHUSD", "title": "Ethereum"},
-              {"proName": "CRYPTO:SOLUSD", "title": "Solana"},
-              {"proName": "OANDA:XAUUSD", "title": "Gold"}
-            ],
-            "showSymbolLogo": true,
-            "isTransparent": true,
-            "displayMode": "adaptive",
-            "colorTheme": "dark",
-            "locale": "en"
-          }
-          </script>
+    <div class="box">
+      <h2>Fiat Currency Converter</h2>
+      <div class="small">Search & convert from ALL fiat currencies to ALL fiat currencies.</div>
+      <div class="convGrid">
+        <div class="convRow">
+          <div class="ddWrap" id="ddFiatA"></div>
+          <button class="swapBtn" onclick="swapFiat()">⇄</button>
+          <div class="ddWrap" id="ddFiatB"></div>
+        </div>
+
+        <div class="convRow">
+          <input id="fiatAmount" class="inp" type="number" min="0" step="0.01" placeholder="Enter amount"/>
+        </div>
+
+        <button class="convBtn" onclick="convertFiat()">💱 Convert Fiat</button>
+
+        <div class="card">
+          <div class="rateLine"><span class="rateDot"></span> <span id="fiatRate">Rate: --</span></div>
+          <div class="small" style="margin-top:10px;font-size:14px;">Result: <strong id="fiatResult">--</strong></div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- ✅ Hero -->
-<section class="hero reveal touchHighlight">
-  <div class="container">
-    <div class="heroGrid">
+    <div class="box">
+      <h2>Live Crypto Order Book</h2>
+      <div class="small">Auto refresh every 3 seconds. Binance → OKX → Bybit fallback.</div>
 
-      <div>
-        <div class="kicker"><b>Secure</b> Advanced Client Portal & Market Tools</div>
-        <h2>Trade Smarter.<br/>Track Faster.<br/>Grow Confidently.</h2>
-        <p>
-          Veloci Global Markets delivers a premium client experience built for speed and security —
-          with modern onboarding, real-time market visibility, and an elite portal designed for control.
-        </p>
-
-        <div class="heroBtns">
-          <a class="btn btnPrimary" href="signup.html">Create Account</a>
-          <a class="btn btnOutline" href="login.html">Login</a>
-        </div>
-
-        <div class="badges">
-          <span class="badge">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M12 2l7 4v6c0 5-3 9-7 10C8 21 5 17 5 12V6l7-4Z" stroke="white" opacity=".9" stroke-width="1.7"/>
-              <path d="M9 12l2 2 4-5" stroke="white" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Bank-grade Security
-          </span>
-          <span class="badge">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M4 19V5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M4 19h16" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M7 15l3-3 3 2 4-6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Live Market Tracking
-          </span>
-          <span class="badge">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M12 2v20" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M6 8h12" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M6 16h12" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            Elite Client Tools
-          </span>
-        </div>
+      <div class="convRow" style="margin-top:12px">
+        <div class="ddWrap" id="obPairWrap"></div>
+        <select id="obPair" style="display:none">
+          <option value="BTCUSDT">BTC/USDT</option>
+          <option value="ETHUSDT">ETH/USDT</option>
+          <option value="BNBUSDT">BNB/USDT</option>
+          <option value="XRPUSDT">XRP/USDT</option>
+          <option value="SOLUSDT">SOL/USDT</option>
+        </select>
       </div>
 
-      <div class="chartCard" id="tiltCard" aria-label="3D Trading Chart">
-        <div class="chartTop">
-          <div class="title">
-            <span class="livePulse" aria-hidden="true"></span>
-            3D Trading Chart
-          </div>
-          <div class="right">
-            <span class="miniTag">BTC • ETH • FX</span>
-            <span class="miniTag">Realtime Motion</span>
+      <div class="chartWrap">
+        <div class="chartHead">
+          <span>Mini Candlestick Chart</span>
+          <span id="chartPair">BTC/USDT</span>
+        </div>
+        <iframe id="tvChart" class="chartFrame"></iframe>
+      </div>
+
+      <div class="orderBookWrap">
+        <div class="obHead">
+          <span>Order Book</span>
+          <div class="obStatus">
+            <span class="pulseDot"></span>
+            <span id="obStatusTxt">Connecting…</span>
           </div>
         </div>
 
-        <div class="chartArea">
-          <div class="chartFrame">
-            <div class="glowLine" aria-hidden="true"></div>
-            <canvas id="chartCanvas"></canvas>
+        <div class="obGrid">
+          <div class="obCol">
+            <div class="obColHead"><span>Asks</span><span>Price / Amount / Total</span></div>
+            <div id="obAsks" class="obRows"></div>
           </div>
 
-          <div class="chartFooter">
-            <div class="chipRow">
-              <span class="chip">Volatility AI</span>
-              <span class="chip">Trend Detection</span>
-              <span class="chip">Liquidity Zones</span>
+          <div class="obMid">
+            <div class="midPrice" id="obMidPrice">--</div>
+            <div class="spreadPill" id="obSpread">Spread: --</div>
+          </div>
+
+          <div class="obCol">
+            <div class="obColHead"><span>Bids</span><span>Price / Amount / Total</span></div>
+            <div id="obBids" class="obRows"></div>
+          </div>
+        </div>
+
+        <div class="obFoot">
+          <div id="obExchange">Source: --</div>
+          <div id="obUpdated">Updated: --</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>Live Crypto News</h2>
+      <div class="small">Latest crypto headlines (auto refresh every 60 seconds).</div>
+      <div id="newsMsg" class="small">Loading…</div>
+      <div id="newsList" class="newsGrid"></div>
+    </div>
+
+  </div>
+
+  <!-- DOCK (HOME ICON stays HOME) -->
+  <div class="dock">
+    <div class="dockInner">
+      <div class="dockBar">
+        <div class="dockItem" onclick="goDepositAndClear()">
+          <div id="badgeDepositDock" class="dockBadge">0</div>
+          <div class="ico">💳</div><div>Deposit</div>
+        </div>
+
+        <div class="dockItem" onclick="goWithdrawAndClear()">
+          <div id="badgeWithdrawDock" class="dockBadge">0</div>
+          <div class="ico">➡</div><div>Withdraw</div>
+        </div>
+
+        <div class="dockHome" onclick="goDashboard()"><span>🏠</span></div>
+
+        <div class="dockItem" onclick="goPlans()"><div class="ico">💼</div><div>Plans</div></div>
+        <div class="dockItem" onclick="goProfile()"><div class="ico">👤</div><div>Profile</div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ============================================================
+      ✅ STICKY MENU POLISH SCRIPT
+    ============================================================ */
+    (function(){
+      const sticky = document.getElementById("stickyMenu");
+      if(!sticky) return;
+      const onScroll = ()=>{
+        if(window.scrollY > 14) sticky.classList.add("isStuck");
+        else sticky.classList.remove("isStuck");
+      };
+      onScroll();
+      window.addEventListener("scroll", onScroll, {passive:true});
+    })();
+
+    /* ============================================================
+      ✅ AUTH GUARD
+    ============================================================ */
+    const SUPABASE_URL="https://xdcscknfomlzwysczegc.supabase.co";
+    const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkY3Nja25mb21send5c2N6ZWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTYzMDMsImV4cCI6MjA4MzI5MjMwM30.E6o2wFFMOpK1DghLUqnxG6Ig09djy4bmDQexprhAiB4";
+    const EDGE_CLEAR_BADGE_URL = `${SUPABASE_URL}/functions/v1/clear_badge`;
+    const supabaseClient=supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentUserEmail="";
+    let currentUserId="";
+    let badgeChannel=null;
+
+    let ALL_COINS=[];
+    let FIATS=[];
+    let FX_RATES=null;
+
+    let cryptoDirection="crypto_to_fiat";
+    let selectedCryptoA={ id:"bitcoin", label:"Bitcoin (BTC)", icon:"₿", symbol:"btc" };
+    let selectedCryptoB={ id:"USD", label:"USD", icon:"$", symbol:"usd" };
+    let selectedFiatA={ id:"USD", label:"USD", icon:"$" };
+    let selectedFiatB={ id:"NGN", label:"NGN", icon:"₦" };
+
+    let top10Timer=null;
+    let newsTimer=null;
+
+    /* NEWS */
+    const NEWS_RSS_URL="https://cryptopanic.com/news/rss/";
+    const RSS_TO_JSON="https://api.rss2json.com/v1/api.json?rss_url=";
+
+    function timeAgo(ts){
+      try{
+        const t=new Date(ts).getTime();
+        const now=Date.now();
+        const s=Math.max(1, Math.floor((now-t)/1000));
+        const m=Math.floor(s/60), h=Math.floor(m/60), d=Math.floor(h/24);
+        if(d>0) return d+"d ago";
+        if(h>0) return h+"h ago";
+        if(m>0) return m+"m ago";
+        return s+"s ago";
+      }catch(e){return ""}
+    }
+    function esc(s){
+      return String(s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+    }
+    async function loadNews(){
+      const msg=document.getElementById("newsMsg");
+      const list=document.getElementById("newsList");
+      if(!msg||!list) return;
+      try{
+        msg.textContent="Loading…";
+        const url = RSS_TO_JSON + encodeURIComponent(NEWS_RSS_URL);
+        const res = await fetch(url);
+        const data = await res.json();
+        const items = (data?.items || []).slice(0, 12);
+        if(!items.length) throw new Error("no news");
+        msg.textContent="";
+        list.innerHTML = items.map(it=>{
+          const title=esc(it.title||"");
+          const link=it.link||"#";
+          const pub=it.pubDate||it.published||"";
+          const src=esc((it.author||"CryptoPanic").trim()||"CryptoPanic");
+          const ago = pub ? timeAgo(pub) : "";
+          return `<a class="newsItem" href="${link}" target="_blank" rel="noopener">
+            <div class="newsTop">
+              <div class="newsTitle">${title}</div>
             </div>
-            <div style="opacity:.9;">Secure Visual Analytics</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<section class="reveal touchHighlight">
-  <div class="container">
-    <div class="sectionTitle">
-      <h3>Platform Activity</h3>
-      <p>Our infrastructure is designed for high-performance access and global clients.</p>
-    </div>
-
-    <div class="statsGrid">
-      <div class="statBox">
-        <div class="statNum" data-count="250000">0</div>
-        <div class="statLbl">Clients Served</div>
-      </div>
-      <div class="statBox">
-        <div class="statNum" data-count="48">0</div>
-        <div class="statLbl">Countries</div>
-      </div>
-      <div class="statBox">
-        <div class="statNum" data-count="12000000">0</div>
-        <div class="statLbl">Processed Volume ($)</div>
-      </div>
-      <div class="statBox">
-        <div class="statNum" data-count="99.9">0</div>
-        <div class="statLbl">Uptime (%)</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="reveal touchHighlight">
-  <div class="container">
-    <div class="sectionTitle">
-      <h3>Start in Minutes</h3>
-      <p>Get onboarded quickly with a premium and secure flow.</p>
-    </div>
-
-    <div class="stepsGrid">
-      <div class="stepCard">
-        <div class="stepTop">
-          <div class="stepIcon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M4 7h16" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M4 12h10" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M4 17h13" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="stepNum">STEP 01</div>
-        </div>
-        <h4>Create Account</h4>
-        <p>Sign up and verify your email to activate your secure client access.</p>
-      </div>
-
-      <div class="stepCard">
-        <div class="stepTop">
-          <div class="stepIcon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M12 2l8 4v6c0 5-3 9-8 10C7 21 4 17 4 12V6l8-4Z" stroke="white" stroke-width="1.8"/>
-              <path d="M9 12l2 2 4-5" stroke="white" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="stepNum">STEP 02</div>
-        </div>
-        <h4>Secure Session</h4>
-        <p>Set up your secure PIN session for protected portal entry.</p>
-      </div>
-
-      <div class="stepCard">
-        <div class="stepTop">
-          <div class="stepIcon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M4 19V5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M4 19h16" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M7 15l3-3 3 2 4-6" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div class="stepNum">STEP 03</div>
-        </div>
-        <h4>Track Markets</h4>
-        <p>Monitor live instruments with premium visualization and tickers.</p>
-      </div>
-
-      <div class="stepCard">
-        <div class="stepTop">
-          <div class="stepIcon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M7 7h10M7 12h10M7 17h10" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M4 4h16v16H4V4Z" stroke="white" opacity=".9" stroke-width="1.7"/>
-            </svg>
-          </div>
-          <div class="stepNum">STEP 04</div>
-        </div>
-        <h4>Manage Account</h4>
-        <p>Use your dashboard to access tools, profile settings and support.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ✅ Profit Calculator -->
-<section class="reveal touchHighlight">
-  <div class="container">
-    <div class="sectionTitle">
-      <h3>Profit Calculator</h3>
-      <!-- ✅ REMOVED YOUR LINE AS REQUESTED -->
-    </div>
-
-    <div class="calcGrid">
-      <div class="calcBox">
-        <div class="calcTitle">
-          Investment Settings
-          <span>Simulation</span>
-        </div>
-
-        <div class="calcField">
-          <div class="calcLabel">Amount (USD)</div>
-          <input id="calcAmount" class="calcInput" type="number" min="10" value="100" />
-        </div>
-
-        <div class="calcField">
-          <div class="calcLabel">Plan</div>
-          <select id="calcPlan" class="calcSelect">
-            <option value="silver">Silver</option>
-            <option value="gold" selected>Gold</option>
-            <option value="diamond">Diamond</option>
-            <option value="platinum">Platinum</option>
-          </select>
-        </div>
-
-        <div class="calcField">
-          <div class="calcLabel">Duration (Days)</div>
-          <select id="calcDays" class="calcSelect">
-            <option value="7" selected>7 days</option>
-            <option value="14">14 days</option>
-            <option value="30">30 days</option>
-            <option value="60">60 days</option>
-          </select>
-        </div>
-
-        <div class="calcResult">
-          <div class="resCard">
-            <small>Projected Return</small>
-            <strong id="calcTotal">$0</strong>
-          </div>
-          <div class="resCard">
-            <small>Projected Profit</small>
-            <strong id="calcProfit">$0</strong>
-          </div>
-        </div>
-      </div>
-
-      <div class="calcBox">
-        <div class="calcTitle">
-          Projection Overview
-          <span>Insights</span>
-        </div>
-
-        <div style="color:rgba(234,240,255,.72); font-weight:950; line-height:1.75; font-size:14px;">
-          This calculator is built on your fixed plan projection rules:
-          <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;">
-            <span class="pill">Silver: <b style="color:#eaf0ff;">$100 → $10,000 (7d)</b></span>
-            <span class="pill">Gold: <b style="color:#eaf0ff;">$100 → $15,000 (7d)</b></span>
-            <span class="pill">Diamond: <b style="color:#eaf0ff;">$100 → $18,000 (7d)</b></span>
-            <span class="pill">Platinum: <b style="color:#eaf0ff;">$100 → $20,000 (7d)</b></span>
-          </div>
-
-          <div style="margin-top:14px; color:rgba(234,240,255,.60); font-weight:900; font-size:12.5px;">
-            Risk Warning: Trading and investments involve risk. Past performance does not guarantee future results.
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="reveal touchHighlight">
-  <div class="container">
-    <div class="sectionTitle">
-      <h3>Plans</h3>
-      <p>Choose the plan tier that best fits your goals. Designed for premium clients.</p>
-    </div>
-
-    <div class="planGrid">
-
-      <div class="planCard">
-        <div class="planHead">
-          <div class="planName">Silver</div>
-          <div class="planTag">Starter</div>
-        </div>
-        <div class="planPrice">$500 <small>minimum</small></div>
-        <ul class="planList">
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Premium client onboarding
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Secure portal session
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Live market visibility
-          </li>
-        </ul>
-        <div class="planBtn">
-          <a class="btn btnPrimary" href="signup.html">Get Started</a>
-        </div>
-      </div>
-
-      <div class="planCard planFeatured">
-        <div class="planGlow" aria-hidden="true"></div>
-        <div class="planHead">
-          <div class="planName">Gold</div>
-          <div class="planTag">Popular</div>
-        </div>
-        <div class="planPrice">$2,000 <small>minimum</small></div>
-        <ul class="planList">
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Enhanced analytics
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Priority support
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Advanced tools suite
-          </li>
-        </ul>
-        <div class="planBtn">
-          <a class="btn btnPrimary" href="signup.html">Choose Gold</a>
-        </div>
-      </div>
-
-      <div class="planCard">
-        <div class="planHead">
-          <div class="planName">Diamond</div>
-          <div class="planTag">Advanced</div>
-        </div>
-        <div class="planPrice">$5,000 <small>minimum</small></div>
-        <ul class="planList">
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Premium insights suite
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Dedicated assistance
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Higher performance tracking
-          </li>
-        </ul>
-        <div class="planBtn">
-          <a class="btn btnPrimary" href="signup.html">Choose Diamond</a>
-        </div>
-      </div>
-
-      <div class="planCard">
-        <div class="planHead">
-          <div class="planName">Platinum</div>
-          <div class="planTag">Elite</div>
-        </div>
-        <div class="planPrice">$10,000 <small>minimum</small></div>
-        <ul class="planList">
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Elite analytics suite
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            VIP client support
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Highest tier access tools
-          </li>
-        </ul>
-        <div class="planBtn">
-          <a class="btn btnPrimary" href="signup.html">Choose Platinum</a>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<section class="reveal touchHighlight">
-  <div class="container">
-    <div class="sectionTitle">
-      <h3>Referral Commissions</h3>
-      <p>Invite clients and earn commission levels in a structured system.</p>
-    </div>
-
-    <div class="refGrid">
-      <div class="refCard">
-        <div class="refPct">5%</div>
-        <div class="refLvl">Level 1</div>
-        <div class="refNote">Earn commission on direct referrals.</div>
-      </div>
-      <div class="refCard">
-        <div class="refPct">3%</div>
-        <div class="refLvl">Level 2</div>
-        <div class="refNote">Earn additional rewards from level 2 network.</div>
-      </div>
-      <div class="refCard">
-        <div class="refPct">2%</div>
-        <div class="refLvl">Level 3</div>
-        <div class="refNote">Grow your team and increase earning power.</div>
-      </div>
-      <div class="refCard">
-        <div class="refPct">1%</div>
-        <div class="refLvl">Level 4</div>
-        <div class="refNote">Final tier commission for extended referrals.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="reveal touchHighlight">
-  <div class="container">
-    <div class="sectionTitle">
-      <h3>Trusted Partners</h3>
-      <p>We integrate modern tools and market providers to improve client experience.</p>
-    </div>
-
-    <div class="partnerTrack" aria-label="Partner slider">
-      <div class="partnerRow" id="partnerRow">
-        <div class="partnerPill">TradingView</div>
-        <div class="partnerPill">CoinGecko</div>
-        <div class="partnerPill">MetaTrader</div>
-        <div class="partnerPill">FX Liquidity</div>
-        <div class="partnerPill">Market Analytics</div>
-        <div class="partnerPill">Cloud Security</div>
-
-        <div class="partnerPill">TradingView</div>
-        <div class="partnerPill">CoinGecko</div>
-        <div class="partnerPill">MetaTrader</div>
-        <div class="partnerPill">FX Liquidity</div>
-        <div class="partnerPill">Market Analytics</div>
-        <div class="partnerPill">Cloud Security</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="reveal touchHighlight">
-  <div class="container">
-    <div class="sectionTitle">
-      <h3>Live Markets</h3>
-      <p>Realistic tracking with symbols, live prices, sparkline motion, and 24h percentage changes.</p>
-    </div>
-
-    <div class="marketRowWrap">
-      <div id="marketScroller" class="marketScroller" aria-label="Live markets row">
-        <div id="marketAuto" class="marketAuto"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="reveal touchHighlight">
-  <div class="container">
-    <div class="sectionTitle">
-      <h3>What clients say</h3>
-      <p>Testimonials are displayed from a configurable data source (backend-ready).</p>
-    </div>
-
-    <div id="testimonials" class="testGrid"></div>
-  </div>
-</section>
-
-<section class="ctaBand reveal touchHighlight">
-  <div class="container">
-    <div class="ctaBox">
-      <div class="left">
-        <h4>Ready to access your secure client portal?</h4>
-        <p>Create an account and verify your email to unlock your client session and set up your secure PIN.</p>
-      </div>
-      <div class="right">
-        <a class="btn btnOutline" href="login.html">I already have an account</a>
-        <a class="btn btnPrimary" href="signup.html">Get Started</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer class="reveal touchHighlight">
-  <div class="container">
-    <div class="footInner">
-      © 2026 Veloci Global Markets. All rights reserved.
-
-      <div class="footer-links">
-        <a href="privacy.html">Privacy</a>
-        <a href="terms.html">Terms</a>
-        <a href="risk.html">Risk Disclosure</a>
-        <a href="contact.html">Contact</a>
-      </div>
-
-      <div class="risk">
-        Risk Warning: Trading and investments involve risk. Past performance does not guarantee future results.
-        This website is provided for informational purposes and client account access only.
-      </div>
-    </div>
-  </div>
-</footer>
-
-<script>
-/* =========================================================
-   ✅ MENU BUTTON DROPDOWN (now next to Get Started)
-========================================================= */
-(function initMenu(){
-  const btn = document.getElementById("menuBtn");
-  const dd  = document.getElementById("menuDropdown");
-  if(!btn || !dd) return;
-
-  function close(){
-    dd.style.display = "none";
-    btn.setAttribute("aria-expanded","false");
-  }
-  function open(){
-    dd.style.display = "block";
-    btn.setAttribute("aria-expanded","true");
-  }
-
-  btn.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    const openNow = dd.style.display === "block";
-    if(openNow) close();
-    else open();
-  });
-
-  document.addEventListener("click", ()=> close());
-  dd.addEventListener("click", (e)=> e.stopPropagation());
-})();
-
-/* =========================================================
-   ✅ TRANSLATOR (Google Translate engine — user selects language)
-========================================================= */
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({pageLanguage: 'en', autoDisplay: false}, 'google_translate_element');
-}
-
-function setGoogleTranslateLang(lang){
-  const combo = document.querySelector("select.goog-te-combo");
-  if(combo){
-    combo.value = lang;
-    combo.dispatchEvent(new Event("change"));
-    return true;
-  }
-  return false;
-}
-
-(function initTranslator(){
-  const select = document.getElementById("langSelect");
-  if(!select) return;
-
-  select.addEventListener("change", ()=>{
-    const lang = select.value;
-    if(!lang) return;
-
-    if(setGoogleTranslateLang(lang)) return;
-
-    let tries = 0;
-    const interval = setInterval(()=>{
-      tries++;
-      if(setGoogleTranslateLang(lang) || tries > 25){
-        clearInterval(interval);
+            <div class="newsMeta">
+              <span class="newsTag">News</span>
+              <span>${src}</span>
+              ${ago?`<span>• ${ago}</span>`:""}
+            </div>
+            <div class="newsBottom">Tap to open full story</div>
+          </a>`;
+        }).join("");
+      }catch(e){
+        msg.innerHTML="<span class='err'>Unable to load news (network blocked).</span>";
+        list.innerHTML="";
       }
-    }, 200);
-  });
-})();
+    }
+    function startNewsAutoRefresh(){
+      if(newsTimer) clearInterval(newsTimer);
+      newsTimer=setInterval(loadNews, 60000);
+    }
 
-/* =========================================================
-   ✅ Scroll unfold + fade reveal
-========================================================= */
-(function initReveal(){
-  const items = document.querySelectorAll(".reveal");
-  if(!items.length) return;
+    /* TOP 10 */
+    const TOP10_IDS = [
+      "bitcoin","ethereum","tether","binancecoin","solana",
+      "ripple","usd-coin","dogecoin","cardano","tron"
+    ];
 
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        entry.target.classList.add("show");
-        io.unobserve(entry.target);
+    function fmtMoneySmart(n){
+      const num=Number(n||0);
+      if(num >= 1000) return "$" + num.toLocaleString(undefined,{maximumFractionDigits:2});
+      if(num >= 1) return "$" + num.toLocaleString(undefined,{maximumFractionDigits:4});
+      return "$" + num.toLocaleString(undefined,{maximumFractionDigits:8});
+    }
+    function nfmt(n, dp=2){
+      return Number(n).toLocaleString(undefined,{minimumFractionDigits:dp, maximumFractionDigits:dp});
+    }
+
+    async function loadTop10MajorCryptos(){
+      const msg=document.getElementById("top10Msg");
+      const list=document.getElementById("top10List");
+      if(!msg || !list) return;
+
+      try{
+        msg.textContent="Loading…";
+        const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${encodeURIComponent(TOP10_IDS.join(","))}&order=market_cap_desc&per_page=10&page=1&sparkline=false`;
+        const res=await fetch(url);
+        const data=await res.json();
+        if(!Array.isArray(data) || data.length===0) throw new Error("No data");
+
+        msg.textContent="";
+        list.innerHTML = data.map(c=>{
+          const chg=Number(c.price_change_percentage_24h||0);
+          const chgClass = chg>=0 ? "up" : "down";
+          const sign = chg>=0 ? "+" : "";
+          return `
+            <div class="cryptoRow">
+              <div class="cryptoLeft">
+                <div class="cryptoLogo">
+                  <img src="${c.image}" alt="${c.symbol}"/>
+                </div>
+                <div style="min-width:0">
+                  <div class="cryptoName">${c.name}</div>
+                  <span class="cryptoSym">${String(c.symbol||"").toUpperCase()}</span>
+                </div>
+              </div>
+              <div class="cryptoRight">
+                <div class="cryptoPrice">${fmtMoneySmart(c.current_price)}</div>
+                <div class="cryptoChg ${chgClass}">${sign}${chg.toFixed(2)}% (24h)</div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }catch(e){
+        msg.innerHTML = "<span class='err'>Unable to load live crypto prices (network blocked).</span>";
+        list.innerHTML = "";
       }
-    });
-  }, {threshold: 0.12});
+    }
 
-  items.forEach(el => io.observe(el));
-})();
+    function startTop10AutoRefresh(){
+      if(top10Timer) clearInterval(top10Timer);
+      top10Timer=setInterval(loadTop10MajorCryptos, 20000);
+    }
 
-/* =========================================================
-   ✅ Touch highlight per section
-========================================================= */
-(function initTouchHighlight(){
-  const blocks = document.querySelectorAll(".touchHighlight");
-  if(!blocks.length) return;
+    /* ORDER BOOK PAIRS */
+    const OB_PAIRS = [
+      { value:"BTCUSDT", label:"Bitcoin (BTC/USDT)", search:"bitcoin btc usdt btcusdt" },
+      { value:"ETHUSDT", label:"Ethereum (ETH/USDT)", search:"ethereum eth usdt ethusdt" },
+      { value:"BNBUSDT", label:"BNB (BNB/USDT)", search:"bnb binance bnbusdt usdt" },
+      { value:"SOLUSDT", label:"Solana (SOL/USDT)", search:"solana sol solusdt usdt" },
+      { value:"XRPUSDT", label:"XRP (XRP/USDT)", search:"xrp ripple xrpusdt usdt" }
+    ];
 
-  function activate(el){
-    blocks.forEach(b => b.classList.remove("active"));
-    el.classList.add("active");
-    setTimeout(()=> el.classList.remove("active"), 700);
-  }
+    function mountOBPairs(){
+      const wrap=document.getElementById("obPairWrap");
+      const hidden=document.getElementById("obPair");
+      if(!wrap || !hidden) return;
 
-  blocks.forEach(el=>{
-    el.addEventListener("touchstart", ()=> activate(el), {passive:true});
-    el.addEventListener("mousedown", ()=> activate(el));
-  });
-})();
+      wrap.innerHTML = `
+        <button class="ddBtn" type="button" id="obPairBtn">
+          <div class="ddLeft">
+            <div class="ddIcon">◈</div>
+            <div class="ddName" id="obPairName">BTC/USDT</div>
+          </div>
+          <div>▾</div>
+        </button>
+        <div class="ddPanel" id="obPairPanel">
+          <input class="ddSearch" id="obPairSearch" placeholder="Search coin/pair..." />
+          <div class="ddList" id="obPairList"></div>
+        </div>
+      `;
 
-/* =========================================================
-   ✅ Twinkling Dots Background (astrofx-style)
-========================================================= */
-(function initTwinklingBackground(){
-  const canvas = document.getElementById("bgCanvas");
-  const ctx = canvas.getContext("2d");
-  let w=0,h=0, dpr=1;
-  const particles=[];
-  const PCOUNT = 130;
+      const btn=document.getElementById("obPairBtn");
+      const panel=document.getElementById("obPairPanel");
+      const search=document.getElementById("obPairSearch");
+      const list=document.getElementById("obPairList");
+      const nameEl=document.getElementById("obPairName");
 
-  function resize(){
-    dpr = Math.max(1, window.devicePixelRatio || 1);
-    w = window.innerWidth;
-    h = window.innerHeight;
-    canvas.width = Math.floor(w*dpr);
-    canvas.height = Math.floor(h*dpr);
-    canvas.style.width = w+"px";
-    canvas.style.height = h+"px";
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-  }
+      function render(q=""){
+        const s=(q||"").trim().toLowerCase();
+        const items = !s ? OB_PAIRS : OB_PAIRS.filter(x => x.search.includes(s) || x.label.toLowerCase().includes(s) || x.value.toLowerCase().includes(s));
+        list.innerHTML = items.map(x=>`
+          <div class="ddItem" data-val="${x.value}" data-label="${x.label}">
+            <span>${x.label}</span>
+            <small>tap</small>
+          </div>
+        `).join("") || `<div class="ddItem"><span>No results</span></div>`;
+      }
 
-  function rand(min,max){ return Math.random()*(max-min)+min; }
+      function setPair(val, label){
+        hidden.value = val;
+        nameEl.textContent = label.includes("(") ? label.split("(")[1].replace(")","") : label;
+        document.getElementById("chartPair").textContent = nameEl.textContent;
+        hidden.dispatchEvent(new Event("change"));
+      }
 
-  function spawn(){
-    particles.length = 0;
-    for(let i=0;i<PCOUNT;i++){
-      particles.push({
-        x: Math.random()*w,
-        y: Math.random()*h,
-        r: rand(0.8, 2.2),
-        a: rand(0.12, 0.85),
-        tw: rand(0.003, 0.012),
-        vx: rand(-0.08, 0.08),
-        vy: rand(-0.06, 0.06),
-        hue: (Math.random() < 0.55) ? 210 : 240
+      const init = OB_PAIRS.find(x=>x.value===hidden.value) || OB_PAIRS[0];
+      setTimeout(()=>setPair(init.value, init.label), 0);
+
+      render("");
+
+      btn.addEventListener("click",(e)=>{
+        e.stopPropagation();
+        panel.classList.toggle("show");
+        if(panel.classList.contains("show")){
+          search.value="";
+          render("");
+          setTimeout(()=>search.focus(),40);
+        }
       });
-    }
-  }
 
-  function draw(){
-    ctx.clearRect(0,0,w,h);
+      search.addEventListener("input",()=>render(search.value));
 
-    const grd = ctx.createRadialGradient(w*0.2, h*0.2, 0, w*0.2, h*0.2, 650);
-    grd.addColorStop(0, "rgba(59,130,246,0.10)");
-    grd.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.fillStyle = grd;
-    ctx.fillRect(0,0,w,h);
+      list.addEventListener("click",(e)=>{
+        const item=e.target.closest(".ddItem");
+        if(!item) return;
+        const val=item.getAttribute("data-val");
+        const label=item.getAttribute("data-label");
+        if(!val) return;
+        setPair(val,label);
+        panel.classList.remove("show");
+      });
 
-    for(const p of particles){
-      p.x += p.vx;
-      p.y += p.vy;
-      if(p.x < -50) p.x = w+50;
-      if(p.x > w+50) p.x = -50;
-      if(p.y < -50) p.y = h+50;
-      if(p.y > h+50) p.y = -50;
-
-      p.a += p.tw * (Math.random() > 0.5 ? 1 : -1);
-      p.a = Math.max(0.06, Math.min(0.95, p.a));
-
-      const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*12);
-      glow.addColorStop(0, `hsla(${p.hue}, 92%, 65%, ${p.a})`);
-      glow.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r*12, 0, Math.PI*2);
-      ctx.fill();
-
-      ctx.fillStyle = `rgba(255,255,255,${p.a})`;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      ctx.fill();
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  resize();
-  spawn();
-  draw();
-
-  window.addEventListener("resize", () => {
-    resize();
-    spawn();
-  });
-})();
-
-/* =========================================================
-   ✅ 3D Realistic Trading Chart Animation
-========================================================= */
-(function initChart(){
-  const canvas = document.getElementById("chartCanvas");
-  const ctx = canvas.getContext("2d");
-
-  let w=0,h=0,dpr=1;
-  let t=0;
-  let series = [];
-
-  function resize(){
-    dpr = Math.max(1, window.devicePixelRatio || 1);
-    const rect = canvas.getBoundingClientRect();
-    w = Math.floor(rect.width);
-    h = Math.floor(rect.height);
-    canvas.width = Math.floor(w*dpr);
-    canvas.height = Math.floor(h*dpr);
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-  }
-
-  function rand(min,max){ return Math.random()*(max-min)+min; }
-
-  function initSeries(){
-    series = [];
-    let base = h*0.58;
-    for(let i=0;i<90;i++){
-      base += rand(-10,10);
-      base = Math.max(h*0.25, Math.min(h*0.78, base));
-      series.push(base);
-    }
-  }
-
-  function drawGrid(){
-    ctx.save();
-    ctx.globalAlpha = 0.9;
-
-    for(let i=1;i<=5;i++){
-      const y = (h/6)*i;
-      ctx.strokeStyle = "rgba(255,255,255,0.06)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
-    }
-
-    for(let i=1;i<=6;i++){
-      const x = (w/7)*i;
-      ctx.strokeStyle = "rgba(255,255,255,0.05)";
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, h);
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  function drawGlowLine(points){
-    ctx.save();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = "rgba(96,165,250,0.35)";
-    ctx.shadowColor = "rgba(96,165,250,0.55)";
-    ctx.shadowBlur = 16;
-    ctx.beginPath();
-    for(let i=0;i<points.length;i++){
-      const p=points[i];
-      if(i===0) ctx.moveTo(p.x,p.y);
-      else ctx.lineTo(p.x,p.y);
-    }
-    ctx.stroke();
-    ctx.restore();
-
-    ctx.save();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(234,240,255,0.85)";
-    ctx.beginPath();
-    for(let i=0;i<points.length;i++){
-      const p=points[i];
-      if(i===0) ctx.moveTo(p.x,p.y);
-      else ctx.lineTo(p.x,p.y);
-    }
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  function drawArea(points){
-    ctx.save();
-    const grd = ctx.createLinearGradient(0, 0, 0, h);
-    grd.addColorStop(0, "rgba(59,130,246,0.22)");
-    grd.addColorStop(1, "rgba(59,130,246,0)");
-    ctx.fillStyle = grd;
-
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, h);
-    for(const p of points) ctx.lineTo(p.x, p.y);
-    ctx.lineTo(points[points.length-1].x, h);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-  }
-
-  function draw(){
-    t += 0.015;
-    ctx.clearRect(0,0,w,h);
-
-    const bg = ctx.createLinearGradient(0,0,0,h);
-    bg.addColorStop(0, "rgba(2,6,23,0.00)");
-    bg.addColorStop(1, "rgba(2,6,23,0.35)");
-    ctx.fillStyle = bg;
-    ctx.fillRect(0,0,w,h);
-
-    drawGrid();
-
-    const last = series[series.length-1];
-    let next = last + Math.sin(t*2.3)*rand(-3.5,3.5) + rand(-6,6);
-    next = Math.max(h*0.22, Math.min(h*0.82, next));
-    series.push(next);
-    series.shift();
-
-    const points=[];
-    for(let i=0;i<series.length;i++){
-      const x = (w/(series.length-1))*i;
-      points.push({x, y: series[i]});
-    }
-
-    drawArea(points);
-    drawGlowLine(points);
-
-    const idx = Math.floor((Math.sin(t)*0.5 + 0.5) * (points.length-1));
-    const orb = points[idx];
-    if(orb){
-      ctx.save();
-      ctx.shadowColor="rgba(96,165,250,0.80)";
-      ctx.shadowBlur=22;
-      ctx.fillStyle="rgba(96,165,250,0.95)";
-      ctx.beginPath();
-      ctx.arc(orb.x, orb.y, 4.2, 0, Math.PI*2);
-      ctx.fill();
-
-      ctx.globalAlpha=0.35;
-      ctx.beginPath();
-      ctx.arc(orb.x, orb.y, 14, 0, Math.PI*2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  resize();
-  initSeries();
-  draw();
-
-  window.addEventListener("resize", () => {
-    resize();
-    initSeries();
-  });
-})();
-
-/* =========================================================
-   ✅ 3D Card Tilt
-========================================================= */
-(function initTilt(){
-  const card = document.getElementById("tiltCard");
-  if(!card) return;
-  let bounds = null;
-
-  function onMove(e){
-    if(!bounds) bounds = card.getBoundingClientRect();
-    const mx = (e.touches ? e.touches[0].clientX : e.clientX);
-    const my = (e.touches ? e.touches[0].clientY : e.clientY);
-    const px = (mx - bounds.left) / bounds.width;
-    const py = (my - bounds.top) / bounds.height;
-
-    const rotY = (px - 0.5) * 10;
-    const rotX = (0.5 - py) * 10;
-
-    card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(0)`;
-  }
-
-  function reset(){
-    bounds = null;
-    card.style.transform = "rotateX(0deg) rotateY(0deg) translateZ(0)";
-  }
-
-  card.addEventListener("mousemove", onMove);
-  card.addEventListener("mouseleave", reset);
-  card.addEventListener("touchmove", onMove, {passive:true});
-  card.addEventListener("touchend", reset);
-})();
-
-/* =========================================================
-   ✅ FIXED Profit Calculator Logic
-========================================================= */
-(function initCalculator(){
-  const amountEl = document.getElementById("calcAmount");
-  const planEl = document.getElementById("calcPlan");
-  const daysEl = document.getElementById("calcDays");
-  const profitEl = document.getElementById("calcProfit");
-  const totalEl  = document.getElementById("calcTotal");
-
-  const baseReturnPer100_7d = {
-    silver: 10000,
-    gold: 15000,
-    diamond: 18000,
-    platinum: 20000
-  };
-
-  function money(v){
-    return "$" + Number(v).toLocaleString(undefined, {maximumFractionDigits: 0});
-  }
-
-  function update(){
-    const amt = Math.max(0, Number(amountEl.value || 0));
-    const days = Math.max(7, Number(daysEl.value || 7));
-    const plan = planEl.value || "gold";
-
-    const base7 = baseReturnPer100_7d[plan] || 15000;
-    const baseReturnForAmt_7d = (amt/100) * base7;
-    const multiplier = days / 7;
-    const totalReturn = baseReturnForAmt_7d * multiplier;
-    const profit = Math.max(0, totalReturn - amt);
-
-    totalEl.textContent = money(totalReturn);
-    profitEl.textContent = money(profit);
-  }
-
-  amountEl.addEventListener("input", update);
-  planEl.addEventListener("change", update);
-  daysEl.addEventListener("change", update);
-  update();
-})();
-
-/* =========================================================
-   ✅ Stats Counter Animation
-========================================================= */
-(function initCounters(){
-  const nums = document.querySelectorAll(".statNum");
-  if(!nums.length) return;
-
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        const el = entry.target;
-        const target = parseFloat(el.getAttribute("data-count") || "0");
-        const duration = 1200;
-        const startTime = performance.now();
-
-        function step(now){
-          const t = Math.min(1, (now-startTime)/duration);
-          const eased = 1 - Math.pow(1-t, 3);
-          const val = target * eased;
-
-          if(String(target).includes(".")){
-            el.textContent = val.toFixed(1);
-          }else{
-            el.textContent = Math.floor(val).toLocaleString();
-          }
-
-          if(t < 1) requestAnimationFrame(step);
-          else{
-            if(String(target).includes(".")) el.textContent = target.toFixed(1);
-            else el.textContent = Math.floor(target).toLocaleString();
-          }
-        }
-
-        requestAnimationFrame(step);
-        io.unobserve(el);
-      }
-    });
-  }, {threshold: 0.2});
-
-  nums.forEach(n => io.observe(n));
-})();
-
-/* =========================================================
-   ✅ Live Markets
-========================================================= */
-const coins = [
-  "bitcoin","ethereum","tether","binancecoin","solana","ripple","cardano","dogecoin",
-  "tron","polkadot","chainlink","litecoin","polygon","avalanche-2","uniswap","shiba-inu"
-];
-
-function fmtMoney(v){
-  if(v >= 1000) return "$" + v.toLocaleString(undefined, {maximumFractionDigits: 0});
-  if(v >= 10) return "$" + v.toLocaleString(undefined, {maximumFractionDigits: 2});
-  return "$" + v.toLocaleString(undefined, {maximumFractionDigits: 4});
-}
-
-function createCoinCard(coin){
-  const wrap = document.createElement("div");
-  wrap.className = "coinCard";
-  wrap.innerHTML = `
-    <div class="coinCardInner">
-      <div class="coinTop">
-        <div class="coinLeft">
-          <div class="coinLogo">
-            <img alt="" />
-          </div>
-          <div class="coinMeta">
-            <div class="coinName">Loading…</div>
-            <div class="coinSym">—</div>
-          </div>
-        </div>
-        <div class="coinRight">
-          <div class="coinPrice">$ --</div>
-          <div class="coinChange">—</div>
-        </div>
-      </div>
-
-      <div class="coinBottom">
-        <div style="display:flex; flex-direction:column; gap:4px;">
-          <div style="opacity:.95;">24h change</div>
-          <div style="opacity:.75; font-size:12px;">Live update</div>
-        </div>
-        <div class="spark"><canvas></canvas></div>
-      </div>
-    </div>
-  `;
-
-  wrap.dataset.coin = coin;
-  return wrap;
-}
-
-async function loadMarkets(){
-  const auto = document.getElementById("marketAuto");
-  if(!auto) return;
-
-  auto.innerHTML = "";
-  coins.forEach(c=> auto.appendChild(createCoinCard(c)));
-  coins.forEach(c=> auto.appendChild(createCoinCard(c)));
-
-  try{
-    const res = await fetch(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=" +
-      encodeURIComponent(coins.join(",")) +
-      "&order=market_cap_desc&per_page=250&page=1&sparkline=true&price_change_percentage=24h"
-    );
-    const data = await res.json();
-
-    for(const item of data){
-      const allCards = auto.querySelectorAll(\`.coinCard[data-coin="\${item.id}"]\`);
-      allCards.forEach(card=>{
-        const logoImg = card.querySelector(".coinLogo img");
-        const nameEl = card.querySelector(".coinName");
-        const symEl  = card.querySelector(".coinSym");
-        const priceEl = card.querySelector(".coinPrice");
-        const chgEl = card.querySelector(".coinChange");
-
-        if(logoImg) logoImg.src = item.image || "";
-        if(nameEl) nameEl.textContent = item.name || item.id;
-        if(symEl) symEl.textContent = (item.symbol || "").toUpperCase();
-        if(priceEl) priceEl.textContent = fmtMoney(item.current_price || 0);
-
-        const pct = item.price_change_percentage_24h;
-        if(chgEl && typeof pct === "number"){
-          const up = pct >= 0;
-          chgEl.textContent = (up ? "▲ " : "▼ ") + Math.abs(pct).toFixed(2) + "%";
-          chgEl.className = "coinChange " + (up ? "chgUp" : "chgDown");
-        }
+      document.addEventListener("click",(e)=>{
+        if(!wrap.contains(e.target)) panel.classList.remove("show");
       });
     }
 
-  }catch(e){
-    console.log("Market feed unavailable:", e);
-  }
-}
+    /* ORDER BOOK WS */
+    let obWS=null;
+    let obReconnectTimer=null;
+    let obLastRender=0;
+    let obActiveSource="--";
 
-loadMarkets();
-setInterval(loadMarkets, 45000);
+    function setOBStatus(text, ok=true){
+      const el=document.getElementById("obStatusTxt");
+      if(!el) return;
+      el.textContent=text;
+      el.style.color = ok ? "rgba(234,240,255,.75)" : "rgba(248,113,113,1)";
+    }
+    function setOBMeta(exchangeName){
+      const ex=document.getElementById("obExchange");
+      const up=document.getElementById("obUpdated");
+      if(ex) ex.textContent = "Source: " + (exchangeName || "--");
+      if(up) up.textContent = "Updated: " + new Date().toLocaleTimeString();
+    }
 
-/* =========================================================
-   ✅ Testimonials
-========================================================= */
-async function getTestimonials(){
-  return [
-    { name:"Daniel K.", role:"Client", text:"Veloci Global Markets feels premium. The portal is fast, clean and secure.", stars:5 },
-    { name:"Amina S.", role:"Investor", text:"The live markets and ticker give it a real terminal feel. Smooth experience.", stars:5 },
-    { name:"Michael R.", role:"Trader", text:"Verification and session PIN made me trust the security. Great UI and flow.", stars:5 }
-  ];
-}
+    function renderOB(asks, bids){
+      const aEl=document.getElementById("obAsks");
+      const bEl=document.getElementById("obBids");
+      if(!aEl || !bEl) return;
 
-function starIcons(n){
-  let s="";
-  for(let i=0;i<n;i++){
-    s += `
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M12 2l3 7 7 .6-5.3 4.4 1.7 7-6.4-3.9-6.4 3.9 1.7-7L2 9.6 9 9l3-7Z" stroke="#60a5fa" stroke-width="1.8" fill="rgba(96,165,250,0.18)"/>
-      </svg>
-    `;
-  }
-  return s;
-}
+      const depthA=asks.slice(0,18);
+      const depthB=bids.slice(0,18);
 
-(async function initTestimonials(){
-  const box = document.getElementById("testimonials");
-  if(!box) return;
+      const maxAsk = Math.max(...depthA.map(x=>x.q), 0.0000001);
+      const maxBid = Math.max(...depthB.map(x=>x.q), 0.0000001);
 
-  const list = await getTestimonials();
+      const asksSorted=[...depthA].sort((x,y)=>y.p-x.p);
+      const bidsSorted=[...depthB].sort((x,y)=>y.p-x.p);
 
-  box.innerHTML = list.map(t => `
-    <div class="testCard">
-      <div class="stars">${starIcons(t.stars || 5)}</div>
-      <div class="testText">“${t.text}”</div>
-      <div class="testUser">
-        <div class="avatar">${(t.name || "U").trim().slice(0,1).toUpperCase()}</div>
-        <div class="userMeta">
-          <strong>${t.name || "Client"}</strong>
-          <span>${t.role || "User"}</span>
+      let askTotal=0;
+      aEl.innerHTML = asksSorted.map(x=>{
+        askTotal += x.q;
+        const w = Math.min(100, (x.q/maxAsk)*100);
+        return `
+          <div class="obRow ask">
+            <div class="bgBar" style="transform:scaleX(${w/100});"></div>
+            <span class="p">${nfmt(x.p, x.p<1?8:2)}</span>
+            <span>${nfmt(x.q, x.q<1?6:4)}</span>
+            <span>${nfmt(askTotal, askTotal<1?6:4)}</span>
+          </div>
+        `;
+      }).join("") || `<div class="small" style="padding:10px">No asks</div>`;
+
+      let bidTotal=0;
+      bEl.innerHTML = bidsSorted.map(x=>{
+        bidTotal += x.q;
+        const w = Math.min(100, (x.q/maxBid)*100);
+        return `
+          <div class="obRow bid">
+            <div class="bgBar" style="transform:scaleX(${w/100});"></div>
+            <span class="p">${nfmt(x.p, x.p<1?8:2)}</span>
+            <span>${nfmt(x.q, x.q<1?6:4)}</span>
+            <span>${nfmt(bidTotal, bidTotal<1?6:4)}</span>
+          </div>
+        `;
+      }).join("") || `<div class="small" style="padding:10px">No bids</div>`;
+
+      const bestAsk = asks.length ? Math.min(...asks.map(x=>x.p)) : 0;
+      const bestBid = bids.length ? Math.max(...bids.map(x=>x.p)) : 0;
+      const mid = (bestAsk && bestBid) ? ((bestAsk + bestBid)/2) : 0;
+      const spread = (bestAsk && bestBid) ? (bestAsk - bestBid) : 0;
+
+      const midEl=document.getElementById("obMidPrice");
+      const spEl=document.getElementById("obSpread");
+      if(midEl) midEl.textContent = mid ? nfmt(mid, mid<1?8:2) : "--";
+      if(spEl) spEl.textContent = spread ? `Spread: ${nfmt(spread, spread<1?8:4)}` : "Spread: --";
+    }
+
+    function stopOB(){
+      try{ if(obReconnectTimer) clearTimeout(obReconnectTimer); }catch(e){}
+      obReconnectTimer=null;
+      try{
+        if(obWS){
+          obWS.onopen=null; obWS.onmessage=null; obWS.onerror=null; obWS.onclose=null;
+          obWS.close();
+        }
+      }catch(e){}
+      obWS=null;
+    }
+    function scheduleOBReconnect(){
+      try{ if(obReconnectTimer) clearTimeout(obReconnectTimer); }catch(e){}
+      obReconnectTimer=setTimeout(()=>startOrderBook(), 1500);
+    }
+
+    function connectBinanceWS(pair){
+      return new Promise((resolve,reject)=>{
+        const url = `wss://stream.binance.com:9443/ws/${pair.toLowerCase()}@depth20@100ms`;
+        const ws = new WebSocket(url);
+        const timer=setTimeout(()=>{
+          try{ ws.close(); }catch(e){}
+          reject(new Error("binance timeout"));
+        }, 1800);
+        ws.onopen=()=>{
+          clearTimeout(timer);
+          resolve({ws, source:"Binance (WS)"});
+        };
+        ws.onerror=()=>{
+          clearTimeout(timer);
+          try{ ws.close(); }catch(e){}
+          reject(new Error("binance blocked"));
+        };
+      });
+    }
+
+    async function startOrderBook(){
+      const pair = document.getElementById("obPair")?.value || "BTCUSDT";
+      stopOB();
+      setOBStatus("Connecting…", true);
+      setOBMeta("--");
+
+      let connected=null;
+      try{
+        connected = await connectBinanceWS(pair);
+      }catch(e){}
+
+      if(!connected){
+        setOBStatus("Disconnected (Network blocked)", false);
+        setOBMeta("--");
+        return;
+      }
+
+      obWS = connected.ws;
+      obActiveSource = connected.source;
+
+      setOBStatus("Live", true);
+      setOBMeta(obActiveSource);
+
+      obWS.onclose=()=>{
+        setOBStatus("Disconnected", false);
+        setOBMeta("--");
+        scheduleOBReconnect();
+      };
+      obWS.onerror=()=>{
+        setOBStatus("Disconnected", false);
+        setOBMeta("--");
+        scheduleOBReconnect();
+      };
+
+      obWS.onmessage=(ev)=>{
+        try{
+          const raw = JSON.parse(ev.data);
+          const asks=(raw?.a || []).map(x=>({p:Number(x[0]), q:Number(x[1])})).filter(x=>x.p>0 && x.q>0);
+          const bids=(raw?.b || []).map(x=>({p:Number(x[0]), q:Number(x[1])})).filter(x=>x.p>0 && x.q>0);
+          if(!asks.length || !bids.length) return;
+
+          const now=Date.now();
+          if(now - obLastRender < 150) return;
+          obLastRender = now;
+
+          renderOB(asks.sort((x,y)=>x.p-y.p), bids.sort((x,y)=>y.p-x.p));
+          setOBMeta(obActiveSource);
+        }catch(e){}
+      };
+    }
+
+    /* ===== nav ===== */
+    function goPlans(){ window.location.href="plans.html"; }
+    function goProfile(){ window.location.href="profile.html"; }
+    function goDepositAndClear(){ clearBadge("deposits"); window.location.href="deposits.html"; }
+    function goWithdrawAndClear(){ clearBadge("withdrawals"); window.location.href="withdraw.html"; }
+    function goSupportAndClear(){ clearBadge("notifications"); window.location.href="support.html"; }
+    function goDashboard(){ window.scrollTo({top:0,behavior:"smooth"}); }
+
+    function openMenu(){
+      document.getElementById("sidebar").classList.add("open");
+      document.getElementById("overlay").classList.add("show");
+      document.body.classList.add("menuOpen");
+    }
+    function closeMenu(){
+      document.getElementById("sidebar").classList.remove("open");
+      document.getElementById("overlay").classList.remove("show");
+      document.body.classList.remove("menuOpen");
+    }
+
+    function hideGate(){
+      const g=document.getElementById("authGate");
+      if(g) g.style.display="none";
+    }
+
+    function setGreeting(){
+      const h = new Date().getHours();
+      let text="Greetings", emoji="✨";
+      if(h>=5 && h<12){ text="Good Morning"; emoji="🌞"; }
+      else if(h>=12 && h<17){ text="Good Afternoon"; emoji="☀️"; }
+      else { text="Good Evening"; emoji="🌙"; }
+      document.getElementById("greetingTitle").textContent = `${text} ${emoji}`;
+    }
+
+    function startClock(){
+      const dtEl=document.getElementById("dateTimeNow");
+      const days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+      const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const tick=()=>{
+        const now=new Date();
+        const dayName=days[now.getDay()];
+        const day=String(now.getDate()).padStart(2,"0");
+        const mon=months[now.getMonth()];
+        const yr=now.getFullYear();
+        let hh=now.getHours();
+        const ampm=hh>=12?"PM":"AM";
+        hh=hh%12; hh=hh?hh:12;
+        const hhs=String(hh).padStart(2,"0");
+        const mm=String(now.getMinutes()).padStart(2,"0");
+        const ss=String(now.getSeconds()).padStart(2,"0");
+        dtEl.textContent=`${dayName}, ${day} ${mon} ${yr} | ${hhs}:${mm}:${ss} ${ampm}`;
+      };
+      tick(); setInterval(tick,1000);
+    }
+
+    function setTopAvatar(avatarUrl){
+      const fallback=document.getElementById("avatarFallback");
+      const img=document.getElementById("avatarImgBtn");
+      if(avatarUrl){
+        img.src=avatarUrl+"?t="+Date.now();
+        img.style.display="block";
+        fallback.style.display="none";
+      }else{
+        img.style.display="none";
+        fallback.style.display="block";
+      }
+    }
+    function setSideAvatar(avatarUrl){
+      const fb=document.getElementById("sideAvatarFallback");
+      const img=document.getElementById("sideAvatarImg");
+      if(avatarUrl){
+        img.src=avatarUrl+"?t="+Date.now();
+        img.style.display="block";
+        fb.style.display="none";
+      }else{
+        img.style.display="none";
+        fb.style.display="block";
+      }
+    }
+    function setNameEverywhere(fullName){
+      const nice=(fullName && fullName.trim()) ? fullName.trim() : "User";
+      document.getElementById("helloName").innerHTML=`<span class="ok">${nice}</span>`;
+      document.getElementById("sideName").textContent=nice;
+    }
+
+    async function loadDashboardIdentity(){
+      try{
+        let fullName="", avatarUrl="";
+        const { data: row } = await supabaseClient.from("users").select("full_name, avatar_url").eq("email", currentUserEmail).maybeSingle();
+        if(row){ fullName=row.full_name||""; avatarUrl=row.avatar_url||""; }
+
+        const md=(window.COINLUXORA_USER?.user_metadata||{});
+        if(!fullName) fullName=md.full_name||"User";
+        if(!avatarUrl) avatarUrl=md.avatar_url||"";
+
+        setNameEverywhere(fullName);
+        setTopAvatar(avatarUrl);
+        setSideAvatar(avatarUrl);
+      }catch(e){
+        setNameEverywhere("User");
+        setTopAvatar("");
+        setSideAvatar("");
+      }
+    }
+
+    function mountDropdown(elId, items, getLabel, getSearch, onPick, initial){
+      const root=document.getElementById(elId);
+      root.innerHTML = `
+        <button class="ddBtn" type="button">
+          <div class="ddLeft">
+            <div class="ddIcon">◈</div>
+            <div class="ddName">Select</div>
+          </div>
+          <div>▾</div>
+        </button>
+        <div class="ddPanel">
+          <input class="ddSearch" placeholder="Search..." />
+          <div class="ddList"></div>
         </div>
-      </div>
-    </div>
-  `).join("");
-})();
+      `;
+      const btn=root.querySelector(".ddBtn");
+      const panel=root.querySelector(".ddPanel");
+      const list=root.querySelector(".ddList");
+      const search=root.querySelector(".ddSearch");
+      const nameEl=root.querySelector(".ddName");
 
-/* =========================================================
-   ✅ Google Translate loader script
-========================================================= */
-(function loadGoogleTranslate(){
-  const s = document.createElement("script");
-  s.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-  s.async = true;
-  document.head.appendChild(s);
-})();
-</script>
+      let renderItems = items;
 
+      function render(filter=""){
+        const q=filter.trim().toLowerCase();
+        if(!q){ renderItems = items; }
+        else{ renderItems = items.filter(x => getSearch(x).includes(q)); }
+        const MAX = Math.min(renderItems.length, 600);
+        const slice = renderItems.slice(0, MAX);
+
+        list.innerHTML = slice.map(x => {
+          const lab=getLabel(x);
+          return `<div class="ddItem" data-id="${encodeURIComponent(JSON.stringify(x))}">
+            <span>${lab}</span>
+            <small>tap</small>
+          </div>`;
+        }).join("") || `<div class="ddItem"><span>No results</span></div>`;
+
+        if(renderItems.length > MAX){
+          const remain = renderItems.length - MAX;
+          list.innerHTML += `<div class="ddItem" style="opacity:.7"><span>Scroll/search to narrow results (${remain} more)…</span></div>`;
+        }
+      }
+
+      function setSelected(obj){
+        nameEl.textContent = getLabel(obj);
+        onPick(obj);
+      }
+
+      if(initial) setSelected(initial);
+      render("");
+
+      btn.addEventListener("click",(e)=>{
+        e.stopPropagation();
+        panel.classList.toggle("show");
+        if(panel.classList.contains("show")){
+          search.value="";
+          render("");
+          setTimeout(()=>search.focus(),40);
+        }
+      });
+
+      search.addEventListener("input",()=>render(search.value));
+
+      list.addEventListener("click",(e)=>{
+        const item=e.target.closest(".ddItem");
+        if(!item) return;
+        const raw=item.getAttribute("data-id");
+        if(!raw) return;
+        try{
+          const obj=JSON.parse(decodeURIComponent(raw));
+          setSelected(obj);
+          panel.classList.remove("show");
+        }catch{}
+      });
+
+      document.addEventListener("click",(e)=>{
+        if(!root.contains(e.target)) panel.classList.remove("show");
+      });
+    }
+
+    const FAVORITES = [
+      { id:"bitcoin", label:"Bitcoin (BTC)", icon:"₿", symbol:"btc" },
+      { id:"ethereum", label:"Ethereum (ETH)", icon:"Ξ", symbol:"eth" },
+      { id:"tether", label:"Tether (USDT)", icon:"₮", symbol:"usdt" },
+      { id:"binancecoin", label:"BNB (BNB)", icon:"◎", symbol:"bnb" },
+      { id:"solana", label:"Solana (SOL)", icon:"⟠", symbol:"sol" },
+      { id:"ripple", label:"XRP (XRP)", icon:"✕", symbol:"xrp" }
+    ];
+
+    async function loadCoinGeckoLists(){
+      try{
+        const fiatRes = await fetch("https://api.coingecko.com/api/v3/simple/supported_vs_currencies");
+        const fiats = await fiatRes.json();
+        FIATS = (fiats || []).map(x => String(x).toUpperCase());
+      }catch{
+        FIATS = ["USD","NGN","EUR","GBP","CAD","AUD","JPY","CNY","INR"];
+      }
+
+      try{
+        const coinRes = await fetch("https://api.coingecko.com/api/v3/coins/list?include_platform=false");
+        const coins = await coinRes.json();
+        const favMap = new Map(FAVORITES.map(f=>[f.id,f]));
+        const list = [];
+        for(const c of (coins||[])){
+          if(!c?.id || !c?.name) continue;
+          if(favMap.has(c.id)) continue;
+          const sym = (c.symbol||"").toLowerCase();
+          list.push({ id:c.id, label:`${c.name}${sym?` (${sym.toUpperCase()})`:""}`, icon:"◈", symbol:sym });
+        }
+        ALL_COINS = [...FAVORITES, ...list];
+      }catch{
+        ALL_COINS = [...FAVORITES];
+      }
+
+      const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$", symbol:f.toLowerCase() }));
+
+      mountDropdown("ddCryptoA", ALL_COINS, x=>x.label, x=>(`${x.label} ${x.symbol} ${x.id}`).toLowerCase(), x=>{ selectedCryptoA=x; }, selectedCryptoA);
+      mountDropdown("ddCryptoB", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{ selectedCryptoB=x; }, selectedCryptoB);
+      mountDropdown("ddFiatA", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{ selectedFiatA=x; }, selectedFiatA);
+      mountDropdown("ddFiatB", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{ selectedFiatB=x; }, selectedFiatB);
+
+      await loadFxRates();
+    }
+
+    async function loadFxRates(){
+      try{
+        const res = await fetch("https://open.er-api.com/v6/latest/USD");
+        const data = await res.json();
+        if(data?.result !== "success") throw new Error("fx fail");
+        FX_RATES = data.rates || {};
+      }catch{
+        FX_RATES = null;
+      }
+    }
+
+    function swapCrypto(){
+      cryptoDirection = (cryptoDirection === "crypto_to_fiat") ? "fiat_to_crypto" : "crypto_to_fiat";
+      const tmp = selectedCryptoA; selectedCryptoA = selectedCryptoB; selectedCryptoB = tmp;
+
+      const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$", symbol:f.toLowerCase() }));
+
+      if(cryptoDirection === "crypto_to_fiat"){
+        if(!selectedCryptoA?.id || typeof selectedCryptoA.id !== "string" || selectedCryptoA.id.length<=4){ selectedCryptoA = FAVORITES[0]; }
+        if(!selectedCryptoB?.id || selectedCryptoB.id.length>4) selectedCryptoB = {id:"USD",label:"USD",icon:"$",symbol:"usd"};
+
+        mountDropdown("ddCryptoA", ALL_COINS, x=>x.label, x=>(`${x.label} ${x.symbol} ${x.id}`).toLowerCase(), x=>{selectedCryptoA=x;}, selectedCryptoA);
+        mountDropdown("ddCryptoB", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{selectedCryptoB=x;}, selectedCryptoB);
+      }else{
+        selectedCryptoA = {id:"USD",label:"USD",icon:"$",symbol:"usd"};
+        if(!selectedCryptoB?.id || selectedCryptoB.id.length<=4) selectedCryptoB = FAVORITES[0];
+
+        mountDropdown("ddCryptoA", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{selectedCryptoA=x;}, selectedCryptoA);
+        mountDropdown("ddCryptoB", ALL_COINS, x=>x.label, x=>(`${x.label} ${x.symbol} ${x.id}`).toLowerCase(), x=>{selectedCryptoB=x;}, selectedCryptoB);
+      }
+
+      document.getElementById("cryptoRate").textContent="Rate: --";
+      document.getElementById("cryptoResult").textContent="--";
+      document.getElementById("cryptoReverse").textContent="--";
+    }
+
+    async function convertCrypto(){
+      const amt = Number(document.getElementById("cryptoAmount").value || 0);
+      if(!amt || amt<=0){
+        document.getElementById("cryptoResult").textContent="--";
+        document.getElementById("cryptoReverse").textContent="--";
+        return;
+      }
+      try{
+        if(cryptoDirection === "crypto_to_fiat"){
+          const coinId = selectedCryptoA?.id || "bitcoin";
+          const fiat   = String(selectedCryptoB?.id || "USD").toLowerCase();
+          const url = `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(coinId)}&vs_currencies=${encodeURIComponent(fiat)}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          const rate = Number(data?.[coinId]?.[fiat] || 0);
+          if(!rate) throw new Error("rate missing");
+
+          const result = rate * amt;
+          document.getElementById("cryptoRate").textContent = `Rate: 1 ${selectedCryptoA.label} = ${nfmt(rate,6)} ${fiat.toUpperCase()}`;
+          document.getElementById("cryptoResult").textContent = `${nfmt(result,2)} ${fiat.toUpperCase()}`;
+          document.getElementById("cryptoReverse").textContent = `1 ${fiat.toUpperCase()} ≈ ${(1/rate).toFixed(10)} ${selectedCryptoA.symbol?.toUpperCase()||coinId}`;
+        }else{
+          const fiat = String(selectedCryptoA?.id || "USD").toLowerCase();
+          const coinId = selectedCryptoB?.id || "bitcoin";
+          const url = `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(coinId)}&vs_currencies=${encodeURIComponent(fiat)}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          const rate = Number(data?.[coinId]?.[fiat] || 0);
+          if(!rate) throw new Error("rate missing");
+
+          const cryptoAmount = amt / rate;
+          document.getElementById("cryptoRate").textContent = `Rate: 1 ${selectedCryptoB.label} = ${nfmt(rate,6)} ${fiat.toUpperCase()}`;
+          document.getElementById("cryptoResult").textContent = `${cryptoAmount.toFixed(10)} ${selectedCryptoB.symbol?.toUpperCase()||coinId}`;
+          document.getElementById("cryptoReverse").textContent = `1 ${selectedCryptoB.symbol?.toUpperCase()||coinId} ≈ ${nfmt(rate,6)} ${fiat.toUpperCase()}`;
+        }
+      }catch(e){
+        document.getElementById("cryptoRate").textContent="Rate: unavailable (network)";
+        document.getElementById("cryptoResult").textContent="--";
+        document.getElementById("cryptoReverse").textContent="--";
+      }
+    }
+
+    function swapFiat(){
+      const tmp = selectedFiatA; selectedFiatA = selectedFiatB; selectedFiatB = tmp;
+      const FIAT_ITEMS = FIATS.map(f => ({ id:f, label:f, icon:"$", symbol:f.toLowerCase() }));
+      mountDropdown("ddFiatA", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{selectedFiatA=x;}, selectedFiatA);
+      mountDropdown("ddFiatB", FIAT_ITEMS, x=>x.label, x=>(`${x.label} ${x.id}`).toLowerCase(), x=>{selectedFiatB=x;}, selectedFiatB);
+      document.getElementById("fiatRate").textContent="Rate: --";
+      document.getElementById("fiatResult").textContent="--";
+    }
+
+    async function convertFiat(){
+      const amt = Number(document.getElementById("fiatAmount").value || 0);
+      if(!amt || amt<=0){
+        document.getElementById("fiatResult").textContent="--";
+        return;
+      }
+      const from = String(selectedFiatA?.id || "USD").toUpperCase();
+      const to   = String(selectedFiatB?.id || "NGN").toUpperCase();
+
+      try{
+        if(!FX_RATES) await loadFxRates();
+        if(!FX_RATES) throw new Error("fx missing");
+
+        const fromRate = Number(FX_RATES[from] || 0);
+        const toRate   = Number(FX_RATES[to] || 0);
+        if(!fromRate || !toRate) throw new Error("rate missing");
+
+        const usdAmount = amt / fromRate;
+        const result = usdAmount * toRate;
+        const rate = toRate / fromRate;
+
+        document.getElementById("fiatRate").textContent = `Rate: 1 ${from} = ${nfmt(rate,6)} ${to}`;
+        document.getElementById("fiatResult").textContent = `${nfmt(result,2)} ${to}`;
+      }catch(e){
+        document.getElementById("fiatRate").textContent="Rate: unavailable (network)";
+        document.getElementById("fiatResult").textContent="--";
+      }
+    }
+
+    function loadChart(){
+      const pair=document.getElementById("obPair").value;
+      const base=pair.replace("USDT","").toUpperCase();
+      const tvSymbol = `BINANCE:${base}USDT`;
+      document.getElementById("chartPair").textContent = `${base}/USDT`;
+      const frame=document.getElementById("tvChart");
+      frame.src = `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_chart&symbol=${encodeURIComponent(tvSymbol)}&interval=60&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=rgba(0,0,0,0)&studies=[]&theme=dark&style=1&timezone=Etc/UTC&withdateranges=1&hideideas=1`;
+    }
+
+    document.getElementById("obPair").addEventListener("change",()=>{
+      loadChart();
+      startOrderBook();
+    });
+
+    async function loadBalance(){
+      const { data } = await supabaseClient.from("users").select("*").eq("email", currentUserEmail).single();
+      const balNum = Number(data?.balance || 0);
+      const bal = balNum.toLocaleString(undefined,{ minimumFractionDigits:2, maximumFractionDigits:2 });
+      document.getElementById("balance").innerHTML = "$" + bal;
+    }
+
+    function money(n){ return "$" + Number(n||0).toFixed(2); }
+
+    async function loadActivePlan(){
+      const planMsg=document.getElementById("planMsg");
+      const planBox=document.getElementById("planBox");
+
+      const { data, error } = await supabaseClient
+        .from("investment_plans")
+        .select("*")
+        .eq("user_email", currentUserEmail)
+        .order("created_at",{ascending:false})
+        .limit(1);
+
+      if(error){
+        planMsg.innerHTML="<span class='err'>"+error.message+"</span>";
+        planBox.innerHTML="";
+        return;
+      }
+
+      if(!data || data.length===0){
+        planMsg.innerHTML="<span class='err'>No investment plan started yet.</span>";
+        planBox.innerHTML=`<div class="small">Go to <a style="color:#9bdcff;font-weight:1000" href="plans.html">Investment Plans</a> to start.</div>`;
+        return;
+      }
+
+      planMsg.innerHTML="";
+      const plan=data[0];
+      const amount=Number(plan.amount||0);
+      const roi=Number(plan.roi_percent||0);
+      const expected=amount+(amount*(roi/100));
+
+      planBox.innerHTML=`
+        <div class="card">
+          <strong>${plan.plan_name} Plan</strong>
+          <div class="small" style="margin-top:10px">Amount: <strong>${money(amount)}</strong></div>
+          <div class="small">ROI: <strong>${roi}%</strong></div>
+          <div class="small">Expected Return: <strong>${money(expected)}</strong></div>
+        </div>
+      `;
+    }
+
+    function setBadge(elId, count){
+      const el=document.getElementById(elId);
+      if(!el) return;
+      const n=Number(count||0);
+      if(n<=0) el.style.display="none";
+      else { el.style.display="flex"; el.innerText = n>99?"99+":String(n); }
+    }
+    function setBadgeFromKey(key,val){
+      if(key==="deposits") setBadge("badgeDepositDock", val);
+      else if(key==="withdrawals") setBadge("badgeWithdrawDock", val);
+    }
+
+    async function loadRealtimeBadgesOnce(){
+      if(!currentUserId) return;
+      setBadge("badgeDepositDock", 0);
+      setBadge("badgeWithdrawDock", 0);
+
+      const { data, error } = await supabaseClient
+        .from("user_badges")
+        .select("badge_key, badge_value")
+        .eq("user_id", currentUserId);
+
+      if(error) return;
+      (data || []).forEach(row => setBadgeFromKey(row.badge_key, row.badge_value));
+    }
+
+    function subscribeToRealtimeBadges(){
+      if(!currentUserId) return;
+      if(badgeChannel){
+        supabaseClient.removeChannel(badgeChannel);
+        badgeChannel=null;
+      }
+      badgeChannel = supabaseClient
+        .channel("realtime-user-badges-dashboard")
+        .on("postgres_changes", {
+          event: "*",
+          schema: "public",
+          table: "user_badges",
+          filter: `user_id=eq.${currentUserId}`
+        }, payload => {
+          const row = payload.new;
+          if(!row) return;
+          setBadgeFromKey(row.badge_key, row.badge_value);
+        })
+        .subscribe();
+    }
+
+    async function clearBadge(badge_key){
+      try{
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const accessToken = sessionData?.session?.access_token;
+        if(!accessToken) return;
+
+        await fetch(EDGE_CLEAR_BADGE_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`,
+            "apikey": SUPABASE_ANON_KEY
+          },
+          body: JSON.stringify({ badge_key })
+        });
+      }catch(e){}
+    }
+
+    async function logout(){
+      await supabaseClient.auth.signOut();
+      window.location.replace("login.html");
+    }
+
+    function initWithUser(user){
+      currentUserEmail=user.email;
+      currentUserId=user.id;
+
+      setGreeting();
+      startClock();
+      document.getElementById("userIdChip").innerText = "ID: " + currentUserId.slice(0,6).toUpperCase();
+
+      hideGate();
+      loadDashboardIdentity();
+      loadBalance();
+      loadActivePlan();
+      loadRealtimeBadgesOnce();
+      subscribeToRealtimeBadges();
+
+      loadTop10MajorCryptos();
+      startTop10AutoRefresh();
+
+      loadNews();
+      startNewsAutoRefresh();
+
+      loadCoinGeckoLists().then(async ()=>{
+        mountOBPairs();
+        loadChart();
+        startOrderBook();
+      });
+    }
+
+    (async function authGuard(){
+      try{
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const session = sessionData?.session;
+        if(!session){ window.location.replace("login.html"); return; }
+
+        const { data, error } = await supabaseClient.auth.getUser();
+        const user = data?.user;
+        if(error || !user){ window.location.replace("login.html"); return; }
+
+        const confirmed = !!(user.email_confirmed_at || user.confirmed_at || user.user_metadata?.email_verified === true);
+
+        if(!confirmed){
+          await supabaseClient.auth.signOut();
+          window.location.replace("verify.html?status=unverified");
+          return;
+        }
+
+        window.COINLUXORA_USER=user;
+        initWithUser(user);
+      }catch(e){
+        window.location.replace("login.html");
+      }
+    })();
+  </script>
 </body>
 </html>
