@@ -55,8 +55,8 @@
     }
 
     /* =========================================================
-       ✅ Particle Starfield Background (RESTORED)
-       Matches reference screenshot background
+       ✅ Particle Starfield Background (FIXED: NO GRID)
+       Random floating particles like reference (no tiled dots)
     ========================================================= */
 
     #particleBg{
@@ -73,22 +73,50 @@
         linear-gradient(180deg, #030817 0%, #050a18 100%);
     }
 
+    /* ✅ FIX: remove background-size grid + create organic star particles */
     #particleBg::before,
     #particleBg::after{
       content:"";
       position:absolute;
-      inset:-200px;
-      background-image:
-        radial-gradient(circle, rgba(170,210,255,.95) 1px, transparent 1px);
-      background-size: 22px 22px;
-      opacity:.22;
-      animation: particleFloat 120s linear infinite;
+      inset:0;
+      width:2px;
+      height:2px;
+      background: transparent;
+
+      /* random particle clusters via box-shadow (no tiling grid) */
+      box-shadow:
+        8vw 12vh rgba(180,220,255,.92),
+        14vw 78vh rgba(150,200,255,.78),
+        20vw 34vh rgba(210,240,255,.92),
+        27vw 56vh rgba(175,220,255,.84),
+        33vw 18vh rgba(160,210,255,.86),
+        38vw 86vh rgba(205,235,255,.90),
+        44vw 46vh rgba(140,190,255,.76),
+        49vw 10vh rgba(190,230,255,.92),
+        55vw 72vh rgba(170,215,255,.82),
+        61vw 28vh rgba(210,245,255,.95),
+        66vw 88vh rgba(160,210,255,.80),
+        70vw 40vh rgba(195,235,255,.92),
+        76vw 16vh rgba(155,205,255,.78),
+        81vw 60vh rgba(210,240,255,.92),
+        86vw 82vh rgba(165,215,255,.78),
+        92vw 44vh rgba(190,230,255,.92),
+        96vw 18vh rgba(140,190,255,.70),
+        10vw 92vh rgba(210,240,255,.88),
+        46vw 95vh rgba(210,240,255,.90),
+        72vw 94vh rgba(170,215,255,.82);
+
+      filter: blur(.45px);
+      opacity:.88;
+      animation: particleFloat 170s linear infinite;
+      will-change: transform;
     }
 
     #particleBg::after{
-      background-size: 36px 36px;
-      opacity:.14;
-      animation-duration: 200s;
+      transform: scale(1.65);
+      opacity:.55;
+      filter: blur(.75px);
+      animation-duration: 260s;
     }
 
     @keyframes particleFloat{
@@ -699,7 +727,6 @@
       letter-spacing:.35px;
       text-transform:uppercase;
     }
-
     /* ✅ Steps */
     .stepsGrid{
       display:grid;
@@ -1633,7 +1660,6 @@
     </div>
   </div>
 </div>
-
 <!-- ✅ Navbar -->
 <header>
   <div class="container">
@@ -2213,7 +2239,6 @@
     </div>
   </div>
 </section>
-
 <!-- ✅ Footer -->
 <footer class="reveal touchHighlight">
   <div class="container">
