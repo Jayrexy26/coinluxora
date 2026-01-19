@@ -145,18 +145,17 @@
     /* ✅ REMOVE small logo box (no longer used) */
     .logo{ display:none !important; }
 
-    /* ✅ FIXED: BIG logo WITHOUT risky transform scaling */
+    /* ✅ BIG logo WITHOUT changing bar height */
     .brandLogoImg{
-      height:52px;                 /* ✅ proper visual sizing */
+      height:32px;
       width:auto;
       max-width:260px;
       object-fit:contain;
       filter:
         drop-shadow(0 10px 30px rgba(0,0,0,.55))
         drop-shadow(0 0 22px rgba(59,130,246,.22));
-      margin-top:-10px;            /* ✅ keeps bar height stable visually */
-      margin-bottom:-10px;         /* ✅ avoids increasing navbar height */
-      transform:none !important;   /* ✅ remove overlap bugs */
+      transform: translateY(1px) scale(2.6);
+      transform-origin:left center;
     }
 
     nav{
@@ -1327,6 +1326,7 @@
       color:rgba(234,240,255,.66);
       line-height:1.6;
     }
+
     .footer-links{
       margin-top:12px;
       display:flex;
@@ -1356,6 +1356,24 @@
       font-size:11.5px;
       line-height:1.75;
       white-space:pre-line;
+    }
+
+    /* ✅ NEW: Footer bottom row for copyright + links */
+    .footerBottom{
+      margin-top:16px;
+      padding-top:16px;
+      border-top:1px solid rgba(255,255,255,.08);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+    }
+    .footerCopy{
+      font-size:12px;
+      color:rgba(234,240,255,.66);
+      font-weight:1000;
+      text-align:center;
     }
 
     /* ✅ Responsive */
@@ -1390,12 +1408,12 @@
         gap:8px;
       }
 
-      /* ✅ FIXED: Logo still big but safe on mobile */
+      /* Logo smaller scaling so it doesn't hit buttons */
       .brandLogoImg{
-        height:44px;
+        height:28px;
         max-width:200px;
-        margin-top:-8px;
-        margin-bottom:-8px;
+        transform: translateY(1px) scale(2.15);
+        transform-origin:left center;
       }
 
       .coinCard{min-width: 310px; max-width:310px;}
@@ -1634,6 +1652,7 @@
     </div>
   </div>
 </div>
+
     <!-- ✅ Hero -->
 <section class="hero reveal touchHighlight">
   <div class="container">
@@ -2062,6 +2081,7 @@
     </div>
   </div>
 </section>
+
 <!-- ✅ Trusted Partners -->
 <section class="reveal touchHighlight">
   <div class="container">
@@ -2138,14 +2158,6 @@
 <footer class="reveal touchHighlight">
   <div class="container">
     <div class="footInner">
-      © 2026 Veloci Global Markets. All rights reserved.
-
-      <div class="footer-links">
-        <a href="privacy.html">Privacy</a>
-        <a href="terms.html">Terms</a>
-        <a href="risk.html">Risk Disclosure</a>
-        <a href="contact.html">Contact</a>
-      </div>
 
       <!-- ✅ UPDATED FOOTER TEXT (EXACTLY WHAT YOU SENT) -->
       <div class="risk" style="margin-top:14px;">
@@ -2153,6 +2165,18 @@
         Trade responsibly: Trading CFDs is risky and may lead to permanent capital loss. Make sure you understand the risks before trading.<br/><br/>
         Veloci Global Markets is a registered trademark utilised under an approved licensing agreement. All rights reserved.<br/><br/>
         Veloci Global Markets does not offer Contracts for Difference to residents of certain jurisdictions including the Yemen and Iran
+      </div>
+
+      <!-- ✅ MOVED LINKS + COPYRIGHT TO VERY BOTTOM (CENTERED) -->
+      <div class="footerBottom">
+        <div class="footerCopy">© 2026 Veloci Global Markets. All rights reserved</div>
+
+        <div class="footer-links">
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+          <a href="risk.html">Risk Disclosure</a>
+          <a href="contact.html">Contact</a>
+        </div>
       </div>
 
     </div>
@@ -2265,9 +2289,6 @@ function setGoogleTranslateLang(lang){
 
 /* =========================================================
    ✅ INDIVIDUAL BOX highlight (tapHighlight)
-   ✅ FIXED:
-   - no more click + touchstart double fire
-   - plan glow works when tapping ANY child inside plan card
 ========================================================= */
 (function initTapHighlight(){
   const nodes = document.querySelectorAll(".tapHighlight");
@@ -2282,13 +2303,26 @@ function setGoogleTranslateLang(lang){
   nodes.forEach(el=>{
     el.addEventListener("click", ()=>{
       removeAll();
-
-      // ✅ plan detection fixed: closest planCard parent
-      const planCard = el.closest(".planCard");
-      const plan = planCard ? planCard.getAttribute("data-plan") : el.getAttribute("data-plan");
-
       el.classList.add("tapActive");
 
+      const plan = el.getAttribute("data-plan");
+      if(plan){
+        if(plan === "silver") el.classList.add("starterGlow");
+        if(plan === "gold") el.classList.add("popularGlow");
+        if(plan === "diamond") el.classList.add("proGlow");
+        if(plan === "platinum") el.classList.add("eliteGlow");
+      }
+
+      setTimeout(()=>{
+        el.classList.remove("tapActive","starterGlow","popularGlow","proGlow","eliteGlow");
+      }, 900);
+    });
+
+    el.addEventListener("touchstart", ()=>{
+      removeAll();
+      el.classList.add("tapActive");
+
+      const plan = el.getAttribute("data-plan");
       if(plan){
         if(plan === "silver") el.classList.add("starterGlow");
         if(plan === "gold") el.classList.add("popularGlow");
@@ -2418,10 +2452,6 @@ function setGoogleTranslateLang(lang){
 
 /* =========================================================
    ✅ Live Markets (CoinGecko)
-   ✅ FIXED:
-   - handles response.ok / 429 rate limit
-   - shows fallback message instead of blank UI
-   - safer sparkline redraw
 ========================================================= */
 const coins = [
   "bitcoin","ethereum","tether","binancecoin","solana","ripple","cardano","dogecoin",
@@ -2472,11 +2502,8 @@ function createCoinCard(coin){
 function drawSparkline(canvas, values, up=true){
   const ctx = canvas.getContext("2d");
   const rect = canvas.getBoundingClientRect();
-
-  // ✅ FIX: avoid 0-width/height draw (causes blank lines)
-  const w = Math.max(1, Math.floor(rect.width || 96));
-  const h = Math.max(1, Math.floor(rect.height || 30));
-
+  const w = Math.max(1, Math.floor(rect.width));
+  const h = Math.max(1, Math.floor(rect.height));
   const dpr = Math.max(1, window.devicePixelRatio || 1);
   canvas.width = Math.floor(w*dpr);
   canvas.height = Math.floor(h*dpr);
@@ -2520,44 +2547,22 @@ function drawSparkline(canvas, values, up=true){
   ctx.restore();
 }
 
-let marketBackoffMs = 45000;
-
 async function loadMarkets(){
   const auto = document.getElementById("marketAuto");
   if(!auto) return;
 
-  // only build cards once
-  if(!auto.dataset.built){
-    auto.innerHTML = "";
-    coins.forEach(c=> auto.appendChild(createCoinCard(c)));
-    coins.forEach(c=> auto.appendChild(createCoinCard(c)));
-    auto.dataset.built = "1";
-  }
+  auto.innerHTML = "";
+
+  coins.forEach(c=> auto.appendChild(createCoinCard(c)));
+  coins.forEach(c=> auto.appendChild(createCoinCard(c)));
 
   try{
-    const url =
+    const res = await fetch(
       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=" +
       encodeURIComponent(coins.join(",")) +
-      "&order=market_cap_desc&per_page=250&page=1&sparkline=true&price_change_percentage=24h";
-
-    const res = await fetch(url, { cache: "no-store" });
-
-    // ✅ FIX: handle non-200 responses safely
-    if(!res.ok){
-      // rate limit = slow down retries
-      if(res.status === 429){
-        marketBackoffMs = Math.min(180000, marketBackoffMs + 30000);
-      }else{
-        marketBackoffMs = Math.min(180000, marketBackoffMs + 15000);
-      }
-      throw new Error("CoinGecko error: " + res.status);
-    }
-
-    // reset backoff on success
-    marketBackoffMs = 45000;
-
+      "&order=market_cap_desc&per_page=250&page=1&sparkline=true&price_change_percentage=24h"
+    );
     const data = await res.json();
-    if(!Array.isArray(data)) throw new Error("Invalid market response");
 
     function applyTo(card, item){
       const logoImg = card.querySelector(".coinLogo img");
@@ -2590,10 +2595,7 @@ async function loadMarkets(){
       if(sparkCanvas && Array.isArray(spark) && spark.length > 10){
         const sliced = spark.slice(-40);
         const up = pct !== null ? (pct >= 0) : true;
-
-        // ✅ FIX: draw now + draw again shortly (layout timing)
         drawSparkline(sparkCanvas, sliced, up);
-        setTimeout(()=> drawSparkline(sparkCanvas, sliced, up), 120);
       }
     }
 
@@ -2605,48 +2607,11 @@ async function loadMarkets(){
 
   }catch(e){
     console.log("Market feed unavailable:", e);
-
-    // ✅ FIX: show fallback label so it doesn't look broken
-    const auto = document.getElementById("marketAuto");
-    if(auto){
-      const cards = auto.querySelectorAll(".coinCard");
-      cards.forEach(card=>{
-        const nameEl = card.querySelector(".coinName");
-        const priceEl = card.querySelector(".coinPrice");
-        const chgEl = card.querySelector(".coinChange");
-        if(nameEl && nameEl.textContent === "Loading…") nameEl.textContent = "Market feed unavailable";
-        if(priceEl) priceEl.textContent = "$ --";
-        if(chgEl){
-          chgEl.textContent = "Retrying…";
-          chgEl.className = "coinChange";
-        }
-      });
-    }
   }
-
-  // ✅ schedule next fetch using backoff
-  clearTimeout(window.__vgmMarketTimer);
-  window.__vgmMarketTimer = setTimeout(loadMarkets, marketBackoffMs);
 }
 
 loadMarkets();
-
-/* ✅ FIX: ResizeObserver redraw sparklines properly on resize */
-(function initSparkResize(){
-  const scroller = document.getElementById("marketScroller");
-  if(!scroller || !("ResizeObserver" in window)) return;
-
-  const ro = new ResizeObserver(()=>{
-    // redraw visible sparks quickly
-    const canvases = scroller.querySelectorAll(".spark canvas");
-    canvases.forEach(c=>{
-      // nothing to redraw if we don't have data yet
-      // loadMarkets triggers redraw after data arrives
-    });
-  });
-
-  ro.observe(scroller);
-})();
+setInterval(loadMarkets, 45000);
 
 /* =========================================================
    ✅ Testimonials (auto slide slow on mobile, swipeable)
