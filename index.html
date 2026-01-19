@@ -26,6 +26,12 @@
 
       --shadow: 0 30px 120px rgba(0,0,0,.62);
       --shadow2: 0 16px 60px rgba(0,0,0,.55);
+
+      /* ✅ Plan badge colors */
+      --badgeStarter: rgba(59,130,246,.45);
+      --badgePopular: rgba(34,197,94,.45);
+      --badgePro: rgba(168,85,247,.45);
+      --badgeElite: rgba(251,191,36,.45);
     }
 
     *{box-sizing:border-box}
@@ -143,6 +149,14 @@
   });
 })();
 
+      /* ✅ FIX TOP LEFT "shadow block" by softening + shifting the glow */
+      background:
+        radial-gradient(860px 520px at 24% 20%, rgba(59,130,246,.11), transparent 74%),
+        radial-gradient(900px 560px at 86% 14%, rgba(99,102,241,.16), transparent 70%),
+        radial-gradient(720px 520px at 50% 90%, rgba(59,130,246,.08), transparent 72%),
+        var(--bg);
+    }
+
     /* ✅ Top bar */
     .topbar{
       position:relative;
@@ -186,6 +200,7 @@
       font-weight:1100;
       outline:none;
       transition:.15s ease;
+      max-width:360px;
     }
     .langSelect:hover{ background: rgba(255,255,255,.06); transform: translateY(-1px); }
     .langSelect option{ color:#0b0f19; }
@@ -214,39 +229,26 @@
       text-decoration:none;
       user-select:none;
       min-width: 260px;
+      overflow:visible;
+      position:relative;
+      z-index:5;
     }
 
     /* ✅ REMOVE small logo box (no longer used) */
     .logo{ display:none !important; }
 
-    /* ✅ Bigger readable logo inside sticky bar WITHOUT increasing bar height */
+    /* ✅ BIG logo WITHOUT changing bar height */
     .brandLogoImg{
-      height:32px;          /* stays within sticky bar height */
+      height:32px;
       width:auto;
-      max-width:240px;
+      max-width:260px;
       object-fit:contain;
       filter:
         drop-shadow(0 10px 30px rgba(0,0,0,.55))
         drop-shadow(0 0 22px rgba(59,130,246,.22));
-      transform: translateY(1px);
-    }
-
-    .brandText{
-      display:flex;
-      flex-direction:column;
-      line-height:1.1;
-    }
-    .brandText strong{
-      font-weight:1000;
-      letter-spacing:-.2px;
-      font-size:14px;
-    }
-    .brandText span{
-      font-size:11.5px;
-      color:rgba(234,240,255,.62);
-      font-weight:800;
-      letter-spacing:.35px;
-      text-transform:uppercase;
+      transform: translateY(1px) scale(2.6);
+      transform-origin:left center;
+      background: transparent !important;
     }
 
     nav{
@@ -296,6 +298,7 @@
       background: rgba(255,255,255,.05);
       position:relative;
       overflow:hidden;
+      white-space:nowrap;
     }
     .btn:hover{transform:translateY(-1px)}
     .btnPrimary{
@@ -310,23 +313,25 @@
       background: rgba(2,6,23,.12);
     }
 
-    /* ✅ MENU dropdown moved next to Get Started (top right) */
+    /* ✅ MENU dropdown */
     .menuWrap{ position:relative; }
     .menuBtn{
       display:inline-flex;
       align-items:center;
-      gap:8px;
+      justify-content:center;
       cursor:pointer;
       font-weight:1100;
       color:rgba(234,240,255,.85);
       border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.04);
-      padding:10px 14px;
+      padding:10px 12px;
       border-radius:999px;
       transition:.15s ease;
+      width:44px;
+      height:44px;
     }
     .menuBtn:hover{ background: rgba(255,255,255,.06); transform: translateY(-1px); }
-    .menuBtn svg{ width:16px;height:16px; opacity:.95; }
+    .menuBtn svg{ width:18px;height:18px; opacity:.98; }
 
     .menuDropdown{
       position:absolute;
@@ -335,7 +340,7 @@
       min-width:220px;
       border-radius:16px;
       border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.80);
+      background: rgba(2,6,23,.90);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       box-shadow: 0 30px 120px rgba(0,0,0,.65);
@@ -396,6 +401,100 @@
       box-shadow: 0 18px 70px rgba(0,0,0,.35);
     }
 
+    /* ✅ Sections */
+    section{
+      padding:56px 0;
+      position:relative;
+      z-index:2;
+      scroll-margin-top: 110px;
+    }
+
+    /* ✅ scroll unfold + fade */
+    .reveal{
+      opacity:0;
+      transform: translateY(26px) scale(.985);
+      transition: opacity .8s ease, transform .8s ease;
+      will-change: opacity, transform;
+    }
+    .reveal.show{
+      opacity:1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* ✅ section highlight on touch */
+    .touchHighlight{
+      border-radius: 18px;
+      transition: box-shadow .35s ease, transform .25s ease;
+    }
+    .touchHighlight.active{
+      box-shadow:
+        0 0 0 1px rgba(96,165,250,.18),
+        0 0 0 6px rgba(59,130,246,.10),
+        0 28px 120px rgba(0,0,0,.40);
+      transform: translateY(-1px);
+    }
+
+    /* ✅ individual cards highlight */
+    .tapHighlight{
+      border-radius: 18px;
+      transition: box-shadow .35s ease, transform .25s ease, border-color .25s ease;
+      will-change: transform, box-shadow;
+    }
+    .tapHighlight.tapActive{
+      box-shadow:
+        0 0 0 1px rgba(96,165,250,.18),
+        0 0 0 6px rgba(59,130,246,.10),
+        0 28px 120px rgba(0,0,0,.40);
+      transform: translateY(-1px);
+    }
+
+    /* ✅ Plan highlight colors */
+    .tapActive.starterGlow{
+      box-shadow:
+        0 0 0 1px rgba(59,130,246,.22),
+        0 0 0 6px rgba(59,130,246,.14),
+        0 30px 130px rgba(0,0,0,.55);
+    }
+    .tapActive.popularGlow{
+      box-shadow:
+        0 0 0 1px rgba(34,197,94,.22),
+        0 0 0 6px rgba(34,197,94,.14),
+        0 30px 130px rgba(0,0,0,.55);
+    }
+    .tapActive.proGlow{
+      box-shadow:
+        0 0 0 1px rgba(168,85,247,.22),
+        0 0 0 6px rgba(168,85,247,.14),
+        0 30px 130px rgba(0,0,0,.55);
+    }
+    .tapActive.eliteGlow{
+      box-shadow:
+        0 0 0 1px rgba(251,191,36,.22),
+        0 0 0 6px rgba(251,191,36,.14),
+        0 30px 130px rgba(0,0,0,.55);
+    }
+
+    /* ✅ Plan badge */
+    .planBadge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin-left:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:1200;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: rgba(234,240,255,.92);
+      transform: translateY(-2px);
+      white-space:nowrap;
+    }
+    .badgeStarter{ background: rgba(59,130,246,.18); border-color: rgba(59,130,246,.26); }
+    .badgePopular{ background: rgba(34,197,94,.16); border-color: rgba(34,197,94,.26); }
+    .badgePro{ background: rgba(168,85,247,.16); border-color: rgba(168,85,247,.26); }
+    .badgeElite{ background: rgba(251,191,36,.14); border-color: rgba(251,191,36,.28); }
+
     /* ✅ HERO */
     .hero{
       padding:78px 0 18px;
@@ -451,7 +550,6 @@
       line-height:1.72;
       max-width:660px;
     }
-
     .heroBtns{
       display:flex;
       flex-wrap:wrap;
@@ -598,39 +696,7 @@
       font-size:12px;
     }
 
-    /* ✅ Sections */
-    section{
-      padding:56px 0;
-      position:relative;
-      z-index:2;
-      scroll-margin-top: 110px;
-    }
-
-    /* ✅ scroll unfold + fade */
-    .reveal{
-      opacity:0;
-      transform: translateY(26px) scale(.985);
-      transition: opacity .8s ease, transform .8s ease;
-      will-change: opacity, transform;
-    }
-    .reveal.show{
-      opacity:1;
-      transform: translateY(0) scale(1);
-    }
-
-    /* ✅ section highlight on touch */
-    .touchHighlight{
-      border-radius: 18px;
-      transition: box-shadow .35s ease, transform .25s ease;
-    }
-    .touchHighlight.active{
-      box-shadow:
-        0 0 0 1px rgba(96,165,250,.18),
-        0 0 0 6px rgba(59,130,246,.10),
-        0 28px 120px rgba(0,0,0,.40);
-      transform: translateY(-1px);
-    }
-
+    /* ✅ section title */
     .sectionTitle{
       text-align:center;
       max-width:920px;
@@ -883,6 +949,27 @@
       pointer-events:none;
     }
     .planCard > *{position:relative; z-index:1;}
+
+    /* ✅ NEW: Plan logo moved ABOVE name (inside card, premium) */
+    .planLogoTop{
+      display:flex;
+      justify-content:center;
+      margin-top:2px;
+      margin-bottom:6px;
+    }
+    .planLogoTop img{
+      width:92px;
+      height:auto;
+      object-fit:contain;
+      filter:
+        drop-shadow(0 18px 60px rgba(0,0,0,.55))
+        drop-shadow(0 0 24px rgba(96,165,250,.18));
+      opacity:.98;
+      user-select:none;
+      pointer-events:none;
+      transform: translateY(-2px);
+    }
+
     .planHead{
       display:flex;
       align-items:center;
@@ -893,6 +980,10 @@
       font-weight:1300;
       font-size:18px;
       letter-spacing:-.3px;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:6px;
     }
     .planTag{
       font-size:12px;
@@ -1071,14 +1162,13 @@
       animation: autoMarket 90s linear infinite;
     }
     .marketScroller:hover .marketAuto{
-      animation-play-state: paused; /* pause on hover */
+      animation-play-state: paused;
     }
 
     @keyframes autoMarket{
       from{ transform: translateX(0); }
       to{ transform: translateX(-50%); }
     }
-
     .coinCard{
       min-width: 360px;
       max-width: 360px;
@@ -1330,6 +1420,25 @@
       color:rgba(234,240,255,.66);
       line-height:1.6;
     }
+
+    /* ✅ Footer Veloci Logo (3x bigger) */
+    .footerLogoWrap{
+      display:flex;
+      justify-content:center;
+      margin: 6px 0 10px;
+    }
+    .footerLogo{
+      height:38px;
+      width:auto;
+      max-width:260px;
+      object-fit:contain;
+      filter:
+        drop-shadow(0 18px 60px rgba(0,0,0,.55))
+        drop-shadow(0 0 28px rgba(59,130,246,.22));
+      transform: scale(3);
+      transform-origin:center;
+    }
+
     .footer-links{
       margin-top:12px;
       display:flex;
@@ -1348,13 +1457,35 @@
       background: rgba(255,255,255,.04);
     }
     .footer-links a:hover{background: rgba(255,255,255,.06);}
+
+    /* ✅ Footer Disclaimer / Risk Block */
     .risk{
       margin-top:12px;
-      max-width:920px;
+      max-width:980px;
       margin-left:auto;
       margin-right:auto;
       color: rgba(234,240,255,.55);
       font-size:11.5px;
+      line-height:1.75;
+      white-space:pre-line;
+    }
+
+    /* ✅ Footer bottom row (copyright centered + links below disclaimer) */
+    .footerBottom{
+      margin-top:16px;
+      padding-top:16px;
+      border-top:1px solid rgba(255,255,255,.08);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+    }
+    .footerCopy{
+      font-size:12px;
+      color:rgba(234,240,255,.66);
+      font-weight:1000;
+      text-align:center;
     }
 
     /* ✅ Responsive */
@@ -1371,24 +1502,70 @@
     }
     @media(max-width: 560px){
       nav{display:none;}
+
+      .topbarInner{
+        justify-content:space-between;
+      }
+
       .hero{padding:56px 0 18px;}
       .hero h2{font-size:36px;}
-      .brand{min-width:auto;}
-      .navCTA{min-width:auto;}
+
+      .brand{
+        min-width:auto;
+        max-width: 52%;
+      }
+
+      .navCTA{
+        min-width:auto;
+        gap:8px;
+      }
+
+      /* Logo smaller scaling so it doesn't hit buttons */
+      .brandLogoImg{
+        height:28px;
+        max-width:200px;
+        transform: translateY(1px) scale(2.15);
+        transform-origin:left center;
+      }
+
       .coinCard{min-width: 310px; max-width:310px;}
       .planGrid{grid-template-columns: 1fr;}
       .statsGrid{grid-template-columns: 1fr;}
       .stepsGrid{grid-template-columns: 1fr;}
-      .brandLogoImg{height:28px; max-width:200px;}
+
+      /* ✅ Testimonials slider on mobile */
+      .testGrid{
+        display:flex !important;
+        overflow-x:auto;
+        gap:14px;
+        padding: 6px 2px 12px;
+        scroll-snap-type:x mandatory;
+        -webkit-overflow-scrolling:touch;
+        scroll-behavior:smooth;
+      }
+      .testCard{
+        min-width: 86%;
+        scroll-snap-align:center;
+      }
+      .testGrid::-webkit-scrollbar{ height: 8px; }
+      .testGrid::-webkit-scrollbar-thumb{
+        background: rgba(255,255,255,.10);
+        border-radius: 999px;
+      }
+
+      /* Footer logo scale down slightly on mobile */
+      .footerLogo{
+        height:30px;
+        transform: scale(2.45);
+      }
     }
 
-    /* ✅ Hide Google default translate banner (keeps UI clean) */
+    /* ✅ Hide Google default translate banner */
     .goog-te-banner-frame.skiptranslate { display: none !important; }
     body { top: 0px !important; }
     #goog-gt-tt, .goog-te-balloon-frame { display:none !important; }
   </style>
 </head>
-
 <body>
 
 <canvas id="bgCanvas"></canvas>
@@ -1399,21 +1576,116 @@
     <div class="topbarInner">
       <span class="pill">Support: <b style="color:#eaf0ff;">support@veloci-global-markets.online</b></span>
 
-      <!-- TRANSLATOR -->
-      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <!-- ✅ TRANSLATOR TOP RIGHT -->
+      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:flex-end;">
         <select id="langSelect" class="langSelect" aria-label="Translate this page">
           <option value="">Translate</option>
-          <option value="en">English</option>
-          <option value="fr">French</option>
-          <option value="es">Spanish</option>
-          <option value="de">German</option>
-          <option value="it">Italian</option>
-          <option value="pt">Portuguese</option>
-          <option value="nl">Dutch</option>
-          <option value="tr">Turkish</option>
+
+          <!-- ✅ MASSIVE language list -->
+          <option value="af">Afrikaans</option>
+          <option value="sq">Albanian</option>
+          <option value="am">Amharic</option>
           <option value="ar">Arabic</option>
-          <option value="hi">Hindi</option>
+          <option value="hy">Armenian</option>
+          <option value="az">Azerbaijani</option>
+          <option value="eu">Basque</option>
+          <option value="be">Belarusian</option>
+          <option value="bn">Bengali</option>
+          <option value="bs">Bosnian</option>
+          <option value="bg">Bulgarian</option>
+          <option value="ca">Catalan</option>
+          <option value="ceb">Cebuano</option>
+          <option value="ny">Chichewa</option>
           <option value="zh-CN">Chinese (Simplified)</option>
+          <option value="zh-TW">Chinese (Traditional)</option>
+          <option value="co">Corsican</option>
+          <option value="hr">Croatian</option>
+          <option value="cs">Czech</option>
+          <option value="da">Danish</option>
+          <option value="nl">Dutch</option>
+          <option value="en">English</option>
+          <option value="eo">Esperanto</option>
+          <option value="et">Estonian</option>
+          <option value="tl">Filipino</option>
+          <option value="fi">Finnish</option>
+          <option value="fr">French</option>
+          <option value="fy">Frisian</option>
+          <option value="gl">Galician</option>
+          <option value="ka">Georgian</option>
+          <option value="de">German</option>
+          <option value="el">Greek</option>
+          <option value="gu">Gujarati</option>
+          <option value="ht">Haitian Creole</option>
+          <option value="ha">Hausa</option>
+          <option value="haw">Hawaiian</option>
+          <option value="iw">Hebrew</option>
+          <option value="hi">Hindi</option>
+          <option value="hmn">Hmong</option>
+          <option value="hu">Hungarian</option>
+          <option value="is">Icelandic</option>
+          <option value="ig">Igbo</option>
+          <option value="id">Indonesian</option>
+          <option value="ga">Irish</option>
+          <option value="it">Italian</option>
+          <option value="ja">Japanese</option>
+          <option value="jw">Javanese</option>
+          <option value="kn">Kannada</option>
+          <option value="kk">Kazakh</option>
+          <option value="km">Khmer</option>
+          <option value="ko">Korean</option>
+          <option value="ku">Kurdish (Kurmanji)</option>
+          <option value="ky">Kyrgyz</option>
+          <option value="lo">Lao</option>
+          <option value="la">Latin</option>
+          <option value="lv">Latvian</option>
+          <option value="lt">Lithuanian</option>
+          <option value="lb">Luxembourgish</option>
+          <option value="mk">Macedonian</option>
+          <option value="mg">Malagasy</option>
+          <option value="ms">Malay</option>
+          <option value="ml">Malayalam</option>
+          <option value="mt">Maltese</option>
+          <option value="mi">Maori</option>
+          <option value="mr">Marathi</option>
+          <option value="mn">Mongolian</option>
+          <option value="my">Myanmar (Burmese)</option>
+          <option value="ne">Nepali</option>
+          <option value="no">Norwegian</option>
+          <option value="ps">Pashto</option>
+          <option value="fa">Persian</option>
+          <option value="pl">Polish</option>
+          <option value="pt">Portuguese</option>
+          <option value="pa">Punjabi</option>
+          <option value="ro">Romanian</option>
+          <option value="ru">Russian</option>
+          <option value="sm">Samoan</option>
+          <option value="gd">Scots Gaelic</option>
+          <option value="sr">Serbian</option>
+          <option value="st">Sesotho</option>
+          <option value="sn">Shona</option>
+          <option value="sd">Sindhi</option>
+          <option value="si">Sinhala</option>
+          <option value="sk">Slovak</option>
+          <option value="sl">Slovenian</option>
+          <option value="so">Somali</option>
+          <option value="es">Spanish</option>
+          <option value="su">Sundanese</option>
+          <option value="sw">Swahili</option>
+          <option value="sv">Swedish</option>
+          <option value="tg">Tajik</option>
+          <option value="ta">Tamil</option>
+          <option value="te">Telugu</option>
+          <option value="th">Thai</option>
+          <option value="tr">Turkish</option>
+          <option value="uk">Ukrainian</option>
+          <option value="ur">Urdu</option>
+          <option value="uz">Uzbek</option>
+          <option value="vi">Vietnamese</option>
+          <option value="cy">Welsh</option>
+          <option value="xh">Xhosa</option>
+          <option value="yi">Yiddish</option>
+          <option value="yo">Yoruba</option>
+          <option value="zu">Zulu</option>
         </select>
 
         <div id="google_translate_element" style="display:none;"></div>
@@ -1426,9 +1698,12 @@
 <header>
   <div class="container">
     <div class="nav">
+
       <a class="brand" href="index.html" aria-label="Veloci Global Markets">
-        <!-- ✅ Bigger readable logo in sticky bar -->
-        <img class="brandLogoImg" src="assets/vgm-logo.png" alt="Veloci Global Markets" onerror="this.style.display='none';" />
+        <!-- ✅ FIX: logo cannot create overlay shadow -->
+        <img class="brandLogoImg" src="assets/vgm-logo.png" alt="Veloci Global Markets"
+             onerror="this.style.display='none';"
+             style="isolation:isolate; mix-blend-mode:normal; pointer-events:none;" />
       </a>
 
       <nav aria-label="Primary navigation">
@@ -1438,18 +1713,18 @@
         <a href="contact.html">Contact</a>
       </nav>
 
-      <!-- ✅ MENU MOVED TO TOP RIGHT BESIDE GET STARTED -->
       <div class="navCTA">
-        <a class="btn btnOutline" href="login.html">Client Login</a>
+        <a class="btn btnOutline" href="login.html">Login</a>
+
+        <a class="btn btnPrimary" href="signup.html">Get Started</a>
 
         <div class="menuWrap">
-          <button id="menuBtn" class="menuBtn" type="button" aria-haspopup="true" aria-expanded="false">
+          <button id="menuBtn" class="menuBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Open menu">
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M4 7h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
               <path d="M4 12h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
               <path d="M4 17h16" stroke="white" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            Menu
           </button>
 
           <div id="menuDropdown" class="menuDropdown" role="menu" aria-label="Top menu">
@@ -1459,14 +1734,13 @@
             <a href="contact.html" role="menuitem">Contact <small>Support</small></a>
           </div>
         </div>
-
-        <a class="btn btnPrimary" href="signup.html">Get Started</a>
       </div>
+
     </div>
   </div>
 </header>
 
-<!-- ✅ Live ticker tape -->
+<!-- ✅ Live ticker tape (SAFE TradingView embed) -->
 <div class="tickerWrap">
   <div class="container">
     <div class="tickerInner">
@@ -1517,14 +1791,15 @@
         </div>
 
         <div class="badges">
-          <span class="badge">
+          <span class="badge tapHighlight">
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M12 2l7 4v6c0 5-3 9-7 10C8 21 5 17 5 12V6l7-4Z" stroke="white" opacity=".9" stroke-width="1.7"/>
               <path d="M9 12l2 2 4-5" stroke="white" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             Bank-grade Security
           </span>
-          <span class="badge">
+
+          <span class="badge tapHighlight">
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M4 19V5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
               <path d="M4 19h16" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
@@ -1532,7 +1807,8 @@
             </svg>
             Live Market Tracking
           </span>
-          <span class="badge">
+
+          <span class="badge tapHighlight">
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M12 2v20" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
               <path d="M6 8h12" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
@@ -1543,15 +1819,15 @@
         </div>
       </div>
 
-      <div class="chartCard" id="tiltCard" aria-label="3D Trading Chart">
+      <div class="chartCard tapHighlight" id="tiltCard" aria-label="3D Trading Chart">
         <div class="chartTop">
           <div class="title">
             <span class="livePulse" aria-hidden="true"></span>
             3D Trading Chart
           </div>
           <div class="right">
-            <span class="miniTag">BTC • ETH • FX</span>
-            <span class="miniTag">Realtime Motion</span>
+            <span class="miniTag tapHighlight">BTC • ETH • FX</span>
+            <span class="miniTag tapHighlight">Realtime Motion</span>
           </div>
         </div>
 
@@ -1563,9 +1839,9 @@
 
           <div class="chartFooter">
             <div class="chipRow">
-              <span class="chip">Volatility AI</span>
-              <span class="chip">Trend Detection</span>
-              <span class="chip">Liquidity Zones</span>
+              <span class="chip tapHighlight">Volatility AI</span>
+              <span class="chip tapHighlight">Trend Detection</span>
+              <span class="chip tapHighlight">Liquidity Zones</span>
             </div>
             <div style="opacity:.9;">Secure Visual Analytics</div>
           </div>
@@ -1576,6 +1852,7 @@
   </div>
 </section>
 
+<!-- ✅ Platform Activity -->
 <section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
@@ -1584,19 +1861,22 @@
     </div>
 
     <div class="statsGrid">
-      <div class="statBox">
-        <div class="statNum" data-count="250000">0</div>
+      <div class="statBox tapHighlight">
+        <div class="statNum" id="clientsServed" data-base="250000">0</div>
         <div class="statLbl">Clients Served</div>
       </div>
-      <div class="statBox">
+
+      <div class="statBox tapHighlight">
         <div class="statNum" data-count="48">0</div>
         <div class="statLbl">Countries</div>
       </div>
-      <div class="statBox">
-        <div class="statNum" data-count="12000000">0</div>
+
+      <div class="statBox tapHighlight">
+        <div class="statNum" id="processedVolume" data-base="12000000">0</div>
         <div class="statLbl">Processed Volume ($)</div>
       </div>
-      <div class="statBox">
+
+      <div class="statBox tapHighlight">
         <div class="statNum" data-count="99.9">0</div>
         <div class="statLbl">Uptime (%)</div>
       </div>
@@ -1604,6 +1884,7 @@
   </div>
 </section>
 
+<!-- ✅ Start in Minutes -->
 <section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
@@ -1612,7 +1893,7 @@
     </div>
 
     <div class="stepsGrid">
-      <div class="stepCard">
+      <div class="stepCard tapHighlight">
         <div class="stepTop">
           <div class="stepIcon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
@@ -1627,7 +1908,7 @@
         <p>Sign up and verify your email to activate your secure client access.</p>
       </div>
 
-      <div class="stepCard">
+      <div class="stepCard tapHighlight">
         <div class="stepTop">
           <div class="stepIcon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
@@ -1641,7 +1922,7 @@
         <p>Set up your secure PIN session for protected portal entry.</p>
       </div>
 
-      <div class="stepCard">
+      <div class="stepCard tapHighlight">
         <div class="stepTop">
           <div class="stepIcon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
@@ -1656,7 +1937,7 @@
         <p>Monitor live instruments with premium visualization and tickers.</p>
       </div>
 
-      <div class="stepCard">
+      <div class="stepCard tapHighlight">
         <div class="stepTop">
           <div class="stepIcon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none">
@@ -1678,11 +1959,11 @@
   <div class="container">
     <div class="sectionTitle">
       <h3>Profit Calculator</h3>
-      <p>Fixed plan projections (7 days base). 14 days = x2, 30 days = x(30/7), 60 days = x(60/7).</p>
+      <p>Estimate your projected return based on plan tier and duration.</p>
     </div>
 
     <div class="calcGrid">
-      <div class="calcBox">
+      <div class="calcBox tapHighlight">
         <div class="calcTitle">
           Investment Settings
           <span>Simulation</span>
@@ -1714,18 +1995,18 @@
         </div>
 
         <div class="calcResult">
-          <div class="resCard">
+          <div class="resCard tapHighlight">
             <small>Projected Return</small>
             <strong id="calcTotal">$0</strong>
           </div>
-          <div class="resCard">
+          <div class="resCard tapHighlight">
             <small>Projected Profit</small>
             <strong id="calcProfit">$0</strong>
           </div>
         </div>
       </div>
 
-      <div class="calcBox">
+      <div class="calcBox tapHighlight">
         <div class="calcTitle">
           Projection Overview
           <span>Insights</span>
@@ -1734,10 +2015,10 @@
         <div style="color:rgba(234,240,255,.72); font-weight:950; line-height:1.75; font-size:14px;">
           This calculator is built on your fixed plan projection rules:
           <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;">
-            <span class="pill">Silver: <b style="color:#eaf0ff;">$100 → $10,000 (7d)</b></span>
-            <span class="pill">Gold: <b style="color:#eaf0ff;">$100 → $15,000 (7d)</b></span>
-            <span class="pill">Diamond: <b style="color:#eaf0ff;">$100 → $18,000 (7d)</b></span>
-            <span class="pill">Platinum: <b style="color:#eaf0ff;">$100 → $20,000 (7d)</b></span>
+            <span class="pill tapHighlight">Silver: <b style="color:#eaf0ff;">$100 → $10,000 (7d)</b></span>
+            <span class="pill tapHighlight">Gold: <b style="color:#eaf0ff;">$100 → $15,000 (7d)</b></span>
+            <span class="pill tapHighlight">Diamond: <b style="color:#eaf0ff;">$100 → $18,000 (7d)</b></span>
+            <span class="pill tapHighlight">Platinum: <b style="color:#eaf0ff;">$100 → $20,000 (7d)</b></span>
           </div>
 
           <div style="margin-top:14px; color:rgba(234,240,255,.60); font-weight:900; font-size:12.5px;">
@@ -1749,6 +2030,7 @@
   </div>
 </section>
 
+<!-- ✅ Plans -->
 <section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
@@ -1758,10 +2040,16 @@
 
     <div class="planGrid">
 
-      <div class="planCard">
+      <div class="planCard tapHighlight" data-plan="silver">
+        <div class="planLogoTop">
+          <img src="assets/plan-silver.jpg" alt="Silver Plan Badge" />
+        </div>
         <div class="planHead">
-          <div class="planName">Silver</div>
-          <div class="planTag">Starter</div>
+          <div class="planName">
+            Silver
+            <span class="planBadge badgeStarter">Starter</span>
+          </div>
+          <div class="planTag">Basic</div>
         </div>
         <div class="planPrice">$500 <small>minimum</small></div>
         <ul class="planList">
@@ -1783,11 +2071,17 @@
         </div>
       </div>
 
-      <div class="planCard planFeatured">
+      <div class="planCard planFeatured tapHighlight" data-plan="gold">
         <div class="planGlow" aria-hidden="true"></div>
+        <div class="planLogoTop">
+          <img src="assets/plan-gold.jpg" alt="Gold Plan Badge" />
+        </div>
         <div class="planHead">
-          <div class="planName">Gold</div>
-          <div class="planTag">Popular</div>
+          <div class="planName">
+            Gold
+            <span class="planBadge badgePopular">Popular</span>
+          </div>
+          <div class="planTag">Top</div>
         </div>
         <div class="planPrice">$2,000 <small>minimum</small></div>
         <ul class="planList">
@@ -1809,9 +2103,15 @@
         </div>
       </div>
 
-      <div class="planCard">
+      <div class="planCard tapHighlight" data-plan="diamond">
+        <div class="planLogoTop">
+          <img src="assets/plan-diamond.jpg" alt="Diamond Plan Badge" />
+        </div>
         <div class="planHead">
-          <div class="planName">Diamond</div>
+          <div class="planName">
+            Diamond
+            <span class="planBadge badgePro">Pro</span>
+          </div>
           <div class="planTag">Advanced</div>
         </div>
         <div class="planPrice">$5,000 <small>minimum</small></div>
@@ -1834,10 +2134,16 @@
         </div>
       </div>
 
-      <div class="planCard">
+      <div class="planCard tapHighlight" data-plan="platinum">
+        <div class="planLogoTop">
+          <img src="assets/plan-platinum.jpg" alt="Platinum Plan Badge" />
+        </div>
         <div class="planHead">
-          <div class="planName">Platinum</div>
-          <div class="planTag">Elite</div>
+          <div class="planName">
+            Platinum
+            <span class="planBadge badgeElite">Elite</span>
+          </div>
+          <div class="planTag">VIP</div>
         </div>
         <div class="planPrice">$10,000 <small>minimum</small></div>
         <ul class="planList">
@@ -1863,6 +2169,7 @@
   </div>
 </section>
 
+<!-- ✅ Referral Commissions -->
 <section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
@@ -1871,22 +2178,22 @@
     </div>
 
     <div class="refGrid">
-      <div class="refCard">
+      <div class="refCard tapHighlight">
         <div class="refPct">5%</div>
         <div class="refLvl">Level 1</div>
         <div class="refNote">Earn commission on direct referrals.</div>
       </div>
-      <div class="refCard">
+      <div class="refCard tapHighlight">
         <div class="refPct">3%</div>
         <div class="refLvl">Level 2</div>
         <div class="refNote">Earn additional rewards from level 2 network.</div>
       </div>
-      <div class="refCard">
+      <div class="refCard tapHighlight">
         <div class="refPct">2%</div>
         <div class="refLvl">Level 3</div>
         <div class="refNote">Grow your team and increase earning power.</div>
       </div>
-      <div class="refCard">
+      <div class="refCard tapHighlight">
         <div class="refPct">1%</div>
         <div class="refLvl">Level 4</div>
         <div class="refNote">Final tier commission for extended referrals.</div>
@@ -1895,6 +2202,7 @@
   </div>
 </section>
 
+<!-- ✅ Trusted Partners -->
 <section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
@@ -1902,26 +2210,27 @@
       <p>We integrate modern tools and market providers to improve client experience.</p>
     </div>
 
-    <div class="partnerTrack" aria-label="Partner slider">
+    <div class="partnerTrack tapHighlight" aria-label="Partner slider">
       <div class="partnerRow" id="partnerRow">
-        <div class="partnerPill">TradingView</div>
-        <div class="partnerPill">CoinGecko</div>
-        <div class="partnerPill">MetaTrader</div>
-        <div class="partnerPill">FX Liquidity</div>
-        <div class="partnerPill">Market Analytics</div>
-        <div class="partnerPill">Cloud Security</div>
+        <div class="partnerPill tapHighlight">TradingView</div>
+        <div class="partnerPill tapHighlight">CoinGecko</div>
+        <div class="partnerPill tapHighlight">MetaTrader</div>
+        <div class="partnerPill tapHighlight">FX Liquidity</div>
+        <div class="partnerPill tapHighlight">Market Analytics</div>
+        <div class="partnerPill tapHighlight">Cloud Security</div>
 
-        <div class="partnerPill">TradingView</div>
-        <div class="partnerPill">CoinGecko</div>
-        <div class="partnerPill">MetaTrader</div>
-        <div class="partnerPill">FX Liquidity</div>
-        <div class="partnerPill">Market Analytics</div>
-        <div class="partnerPill">Cloud Security</div>
+        <div class="partnerPill tapHighlight">TradingView</div>
+        <div class="partnerPill tapHighlight">CoinGecko</div>
+        <div class="partnerPill tapHighlight">MetaTrader</div>
+        <div class="partnerPill tapHighlight">FX Liquidity</div>
+        <div class="partnerPill tapHighlight">Market Analytics</div>
+        <div class="partnerPill tapHighlight">Cloud Security</div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- ✅ Live Markets -->
 <section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
@@ -1930,13 +2239,14 @@
     </div>
 
     <div class="marketRowWrap">
-      <div id="marketScroller" class="marketScroller" aria-label="Live markets row">
+      <div id="marketScroller" class="marketScroller tapHighlight" aria-label="Live markets row">
         <div id="marketAuto" class="marketAuto"></div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- ✅ Testimonials -->
 <section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
@@ -1948,9 +2258,10 @@
   </div>
 </section>
 
+<!-- ✅ CTA -->
 <section class="ctaBand reveal touchHighlight">
   <div class="container">
-    <div class="ctaBox">
+    <div class="ctaBox tapHighlight">
       <div class="left">
         <h4>Ready to access your secure client portal?</h4>
         <p>Create an account and verify your email to unlock your client session and set up your secure PIN.</p>
@@ -1963,11 +2274,26 @@
   </div>
 </section>
 
+<!-- ✅ Footer -->
 <footer class="reveal touchHighlight">
   <div class="container">
     <div class="footInner">
-      © 2026 Veloci Global Markets. All rights reserved.
 
+      <!-- ✅ Footer Veloci Logo -->
+      <div class="footerLogoWrap">
+        <img class="footerLogo" src="assets/vgm-logo.png" alt="Veloci Global Markets Logo"
+             onerror="this.style.display='none';" />
+      </div>
+
+      <!-- ✅ Disclaimer -->
+      <div class="risk" style="margin-top:18px;">
+        This website may use automated translations for your convenience. However, the English version is the definitive version and will prevail in the event of any discrepancy.<br/><br/>
+        Trade responsibly: Trading CFDs is risky and may lead to permanent capital loss. Make sure you understand the risks before trading.<br/><br/>
+        Veloci Global Markets is a registered trademark utilised under an approved licensing agreement. All rights reserved.<br/><br/>
+        Veloci Global Markets does not offer Contracts for Difference to residents of certain jurisdictions including Yemen and Iran
+      </div>
+
+      <!-- ✅ Links directly under disclaimer (then copyright lower centered) -->
       <div class="footer-links">
         <a href="privacy.html">Privacy</a>
         <a href="terms.html">Terms</a>
@@ -1975,17 +2301,141 @@
         <a href="contact.html">Contact</a>
       </div>
 
-      <div class="risk">
-        Risk Warning: Trading and investments involve risk. Past performance does not guarantee future results.
-        This website is provided for informational purposes and client account access only.
+      <div class="footerBottom">
+        <div class="footerCopy">© 2026 Veloci Global Markets. All rights reserved</div>
       </div>
+
     </div>
   </div>
 </footer>
 
 <script>
 /* =========================================================
-   ✅ MENU BUTTON DROPDOWN (now next to Get Started)
+   ✅ FIX TOP LEFT SHADOW (Logo overflow overlay fix)
+========================================================= */
+(function fixTopLeftShadow(){
+  const brand = document.querySelector(".brand");
+  if(brand){
+    // Prevent scaled logo from visually overlaying large area
+    brand.style.overflow = "visible";
+    brand.style.isolation = "isolate";
+  }
+
+  const logo = document.querySelector(".brandLogoImg");
+  if(logo){
+    // Ensure no shadow creates a rectangle overlay
+    logo.style.background = "transparent";
+    logo.style.mixBlendMode = "normal";
+    logo.style.isolation = "isolate";
+  }
+})();
+
+/* =========================================================
+   ✅ PREMIUM SPARKLE / TWINKLING CANVAS BACKGROUND (RESTORED)
+========================================================= */
+(function sparkleBackground(){
+  const canvas = document.getElementById("bgCanvas");
+  if(!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  let w=0,h=0,dpr=1;
+  function resize(){
+    dpr = Math.max(1, window.devicePixelRatio || 1);
+    w = canvas.width = Math.floor(window.innerWidth * dpr);
+    h = canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  // Particles
+  const P = [];
+  const COUNT = Math.min(150, Math.floor((window.innerWidth * window.innerHeight) / 16000) + 60);
+
+  function rand(min,max){ return min + Math.random()*(max-min); }
+
+  for(let i=0;i<COUNT;i++){
+    P.push({
+      x: rand(0, window.innerWidth),
+      y: rand(0, window.innerHeight),
+      r: rand(0.6, 2.2),
+      a: rand(0.12, 0.85),
+      tw: rand(0.003, 0.012),
+      spx: rand(-0.06, 0.06),
+      spy: rand(-0.08, 0.06),
+      hue: Math.random() < 0.65 ? 210 : 235 // blue/purple range
+    });
+  }
+
+  let t=0;
+  function draw(){
+    t += 1;
+
+    ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+
+    // soft vignette
+    const grd = ctx.createRadialGradient(
+      window.innerWidth*0.5, window.innerHeight*0.4, 40,
+      window.innerWidth*0.5, window.innerHeight*0.4, Math.max(window.innerWidth, window.innerHeight)
+    );
+    grd.addColorStop(0, "rgba(10,18,40,0.0)");
+    grd.addColorStop(1, "rgba(0,0,0,0.22)");
+    ctx.fillStyle = grd;
+    ctx.fillRect(0,0,window.innerWidth, window.innerHeight);
+
+    for(const p of P){
+      p.x += p.spx;
+      p.y += p.spy;
+
+      if(p.x < -10) p.x = window.innerWidth + 10;
+      if(p.x > window.innerWidth + 10) p.x = -10;
+      if(p.y < -10) p.y = window.innerHeight + 10;
+      if(p.y > window.innerHeight + 10) p.y = -10;
+
+      // twinkle
+      const tw = 0.5 + 0.5*Math.sin((t*mentionSpeed(p.tw)) + p.x*0.01 + p.y*0.01);
+      const alpha = Math.max(0, Math.min(1, p.a * (0.55 + tw)));
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+
+      // glow
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = `hsla(${p.hue}, 90%, 70%, ${alpha})`;
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.fill();
+
+      // tiny flare
+      if(Math.random() < 0.002){
+        ctx.save();
+        ctx.globalAlpha = alpha*0.9;
+        ctx.strokeStyle = `hsla(${p.hue}, 95%, 70%, ${alpha})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(p.x - 6, p.y);
+        ctx.lineTo(p.x + 6, p.y);
+        ctx.moveTo(p.x, p.y - 6);
+        ctx.lineTo(p.x, p.y + 6);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  function mentionSpeed(v){
+    // keep performance stable and smooth
+    return v * 60;
+  }
+
+  requestAnimationFrame(draw);
+})();
+
+/* =========================================================
+   ✅ MENU BUTTON DROPDOWN
 ========================================================= */
 (function initMenu(){
   const btn = document.getElementById("menuBtn");
@@ -2013,7 +2463,7 @@
 })();
 
 /* =========================================================
-   ✅ TRANSLATOR (Google Translate engine — user selects language)
+   ✅ TRANSLATOR
 ========================================================= */
 function googleTranslateElementInit() {
   new google.translate.TranslateElement({pageLanguage: 'en', autoDisplay: false}, 'google_translate_element');
@@ -2050,7 +2500,7 @@ function setGoogleTranslateLang(lang){
 })();
 
 /* =========================================================
-   ✅ Scroll unfold + fade reveal
+   ✅ Scroll reveal
 ========================================================= */
 (function initReveal(){
   const items = document.querySelectorAll(".reveal");
@@ -2069,7 +2519,7 @@ function setGoogleTranslateLang(lang){
 })();
 
 /* =========================================================
-   ✅ Touch highlight per section
+   ✅ Touch highlight per SECTION
 ========================================================= */
 (function initTouchHighlight(){
   const blocks = document.querySelectorAll(".touchHighlight");
@@ -2088,336 +2538,53 @@ function setGoogleTranslateLang(lang){
 })();
 
 /* =========================================================
-   ✅ Twinkling Dots Background (astrofx-style)
+   ✅ INDIVIDUAL BOX highlight (tapHighlight)
 ========================================================= */
-(function initTwinklingBackground(){
-  const canvas = document.getElementById("bgCanvas");
-  const ctx = canvas.getContext("2d");
-  let w=0,h=0, dpr=1;
-  const particles=[];
-  const PCOUNT = 130;
+(function initTapHighlight(){
+  const nodes = document.querySelectorAll(".tapHighlight");
+  if(!nodes.length) return;
 
-  function resize(){
-    dpr = Math.max(1, window.devicePixelRatio || 1);
-    w = window.innerWidth;
-    h = window.innerHeight;
-    canvas.width = Math.floor(w*dpr);
-    canvas.height = Math.floor(h*dpr);
-    canvas.style.width = w+"px";
-    canvas.style.height = h+"px";
-    ctx.setTransform(dpr,0,0,dpr,0,0);
+  function removeAll(){
+    nodes.forEach(n=>{
+      n.classList.remove("tapActive","starterGlow","popularGlow","proGlow","eliteGlow");
+    });
   }
 
-  function rand(min,max){ return Math.random()*(max-min)+min; }
+  nodes.forEach(el=>{
+    el.addEventListener("click", ()=>{
+      removeAll();
+      el.classList.add("tapActive");
 
-  function spawn(){
-    particles.length = 0;
-    for(let i=0;i<PCOUNT;i++){
-      particles.push({
-        x: Math.random()*w,
-        y: Math.random()*h,
-        r: rand(0.8, 2.2),
-        a: rand(0.12, 0.85),
-        tw: rand(0.003, 0.012),
-        vx: rand(-0.08, 0.08),
-        vy: rand(-0.06, 0.06),
-        hue: (Math.random() < 0.55) ? 210 : 240
-      });
-    }
-  }
+      const plan = el.getAttribute("data-plan");
+      if(plan){
+        if(plan === "silver") el.classList.add("starterGlow");
+        if(plan === "gold") el.classList.add("popularGlow");
+        if(plan === "diamond") el.classList.add("proGlow");
+        if(plan === "platinum") el.classList.add("eliteGlow");
+      }
 
-  function draw(){
-    ctx.clearRect(0,0,w,h);
+      setTimeout(()=>{
+        el.classList.remove("tapActive","starterGlow","popularGlow","proGlow","eliteGlow");
+      }, 900);
+    });
 
-    const grd = ctx.createRadialGradient(w*0.2, h*0.2, 0, w*0.2, h*0.2, 650);
-    grd.addColorStop(0, "rgba(59,130,246,0.10)");
-    grd.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.fillStyle = grd;
-    ctx.fillRect(0,0,w,h);
+    el.addEventListener("touchstart", ()=>{
+      removeAll();
+      el.classList.add("tapActive");
 
-    for(const p of particles){
-      p.x += p.vx;
-      p.y += p.vy;
-      if(p.x < -50) p.x = w+50;
-      if(p.x > w+50) p.x = -50;
-      if(p.y < -50) p.y = h+50;
-      if(p.y > h+50) p.y = -50;
+      const plan = el.getAttribute("data-plan");
+      if(plan){
+        if(plan === "silver") el.classList.add("starterGlow");
+        if(plan === "gold") el.classList.add("popularGlow");
+        if(plan === "diamond") el.classList.add("proGlow");
+        if(plan === "platinum") el.classList.add("eliteGlow");
+      }
 
-      p.a += p.tw * (Math.random() > 0.5 ? 1 : -1);
-      p.a = Math.max(0.06, Math.min(0.95, p.a));
-
-      const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*12);
-      glow.addColorStop(0, `hsla(${p.hue}, 92%, 65%, ${p.a})`);
-      glow.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r*12, 0, Math.PI*2);
-      ctx.fill();
-
-      ctx.fillStyle = `rgba(255,255,255,${p.a})`;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      ctx.fill();
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  resize();
-  spawn();
-  draw();
-
-  window.addEventListener("resize", () => {
-    resize();
-    spawn();
+      setTimeout(()=>{
+        el.classList.remove("tapActive","starterGlow","popularGlow","proGlow","eliteGlow");
+      }, 900);
+    }, {passive:true});
   });
-})();
-
-/* =========================================================
-   ✅ 3D Realistic Trading Chart Animation
-========================================================= */
-(function initChart(){
-  const canvas = document.getElementById("chartCanvas");
-  const ctx = canvas.getContext("2d");
-
-  let w=0,h=0,dpr=1;
-  let t=0;
-  let series = [];
-
-  function resize(){
-    dpr = Math.max(1, window.devicePixelRatio || 1);
-    const rect = canvas.getBoundingClientRect();
-    w = Math.floor(rect.width);
-    h = Math.floor(rect.height);
-    canvas.width = Math.floor(w*dpr);
-    canvas.height = Math.floor(h*dpr);
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-  }
-
-  function rand(min,max){ return Math.random()*(max-min)+min; }
-
-  function initSeries(){
-    series = [];
-    let base = h*0.58;
-    for(let i=0;i<90;i++){
-      base += rand(-10,10);
-      base = Math.max(h*0.25, Math.min(h*0.78, base));
-      series.push(base);
-    }
-  }
-
-  function drawGrid(){
-    ctx.save();
-    ctx.globalAlpha = 0.9;
-
-    for(let i=1;i<=5;i++){
-      const y = (h/6)*i;
-      ctx.strokeStyle = "rgba(255,255,255,0.06)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
-    }
-
-    for(let i=1;i<=6;i++){
-      const x = (w/7)*i;
-      ctx.strokeStyle = "rgba(255,255,255,0.05)";
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, h);
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  function drawGlowLine(points){
-    ctx.save();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = "rgba(96,165,250,0.35)";
-    ctx.shadowColor = "rgba(96,165,250,0.55)";
-    ctx.shadowBlur = 16;
-    ctx.beginPath();
-    for(let i=0;i<points.length;i++){
-      const p=points[i];
-      if(i===0) ctx.moveTo(p.x,p.y);
-      else ctx.lineTo(p.x,p.y);
-    }
-    ctx.stroke();
-    ctx.restore();
-
-    ctx.save();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(234,240,255,0.85)";
-    ctx.beginPath();
-    for(let i=0;i<points.length;i++){
-      const p=points[i];
-      if(i===0) ctx.moveTo(p.x,p.y);
-      else ctx.lineTo(p.x,p.y);
-    }
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  function drawArea(points){
-    ctx.save();
-    const grd = ctx.createLinearGradient(0, 0, 0, h);
-    grd.addColorStop(0, "rgba(59,130,246,0.22)");
-    grd.addColorStop(1, "rgba(59,130,246,0)");
-    ctx.fillStyle = grd;
-
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, h);
-    for(const p of points) ctx.lineTo(p.x, p.y);
-    ctx.lineTo(points[points.length-1].x, h);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-  }
-
-  function draw(){
-    t += 0.015;
-    ctx.clearRect(0,0,w,h);
-
-    const bg = ctx.createLinearGradient(0,0,0,h);
-    bg.addColorStop(0, "rgba(2,6,23,0.00)");
-    bg.addColorStop(1, "rgba(2,6,23,0.35)");
-    ctx.fillStyle = bg;
-    ctx.fillRect(0,0,w,h);
-
-    drawGrid();
-
-    const last = series[series.length-1];
-    let next = last + Math.sin(t*2.3)*rand(-3.5,3.5) + rand(-6,6);
-    next = Math.max(h*0.22, Math.min(h*0.82, next));
-    series.push(next);
-    series.shift();
-
-    const points=[];
-    for(let i=0;i<series.length;i++){
-      const x = (w/(series.length-1))*i;
-      points.push({x, y: series[i]});
-    }
-
-    drawArea(points);
-    drawGlowLine(points);
-
-    const idx = Math.floor((Math.sin(t)*0.5 + 0.5) * (points.length-1));
-    const orb = points[idx];
-    if(orb){
-      ctx.save();
-      ctx.shadowColor="rgba(96,165,250,0.80)";
-      ctx.shadowBlur=22;
-      ctx.fillStyle="rgba(96,165,250,0.95)";
-      ctx.beginPath();
-      ctx.arc(orb.x, orb.y, 4.2, 0, Math.PI*2);
-      ctx.fill();
-
-      ctx.globalAlpha=0.35;
-      ctx.beginPath();
-      ctx.arc(orb.x, orb.y, 14, 0, Math.PI*2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  resize();
-  initSeries();
-  draw();
-
-  window.addEventListener("resize", () => {
-    resize();
-    initSeries();
-  });
-})();
-
-/* =========================================================
-   ✅ 3D Card Tilt
-========================================================= */
-(function initTilt(){
-  const card = document.getElementById("tiltCard");
-  if(!card) return;
-  let bounds = null;
-
-  function onMove(e){
-    if(!bounds) bounds = card.getBoundingClientRect();
-    const mx = (e.touches ? e.touches[0].clientX : e.clientX);
-    const my = (e.touches ? e.touches[0].clientY : e.clientY);
-    const px = (mx - bounds.left) / bounds.width;
-    const py = (my - bounds.top) / bounds.height;
-
-    const rotY = (px - 0.5) * 10;
-    const rotX = (0.5 - py) * 10;
-
-    card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(0)`;
-  }
-
-  function reset(){
-    bounds = null;
-    card.style.transform = "rotateX(0deg) rotateY(0deg) translateZ(0)";
-  }
-
-  card.addEventListener("mousemove", onMove);
-  card.addEventListener("mouseleave", reset);
-  card.addEventListener("touchmove", onMove, {passive:true});
-  card.addEventListener("touchend", reset);
-})();
-
-/* =========================================================
-   ✅ FIXED Profit Calculator Logic (as you requested)
-   - Silver: 100 => 10000 for 7 days
-   - Gold: 100 => 15000 for 7 days
-   - Diamond: 100 => 18000 for 7 days
-   - Platinum: 100 => 20000 for 7 days
-   - 14 days = x2, 30 days = x(30/7), 60 days = x(60/7)
-========================================================= */
-(function initCalculator(){
-  const amountEl = document.getElementById("calcAmount");
-  const planEl = document.getElementById("calcPlan");
-  const daysEl = document.getElementById("calcDays");
-  const profitEl = document.getElementById("calcProfit");
-  const totalEl  = document.getElementById("calcTotal");
-
-  // baseReturnPer100 = return amount at 7 days if user invests $100
-  const baseReturnPer100_7d = {
-    silver: 10000,
-    gold: 15000,
-    diamond: 18000,
-    platinum: 20000
-  };
-
-  function money(v){
-    return "$" + Number(v).toLocaleString(undefined, {maximumFractionDigits: 0});
-  }
-
-  function update(){
-    const amt = Math.max(0, Number(amountEl.value || 0));
-    const days = Math.max(7, Number(daysEl.value || 7));
-    const plan = planEl.value || "gold";
-
-    const base7 = baseReturnPer100_7d[plan] || 15000;
-
-    // return for 7 days for the entered amount
-    // amt = 100 => base7, amt = 200 => base7*2
-    const baseReturnForAmt_7d = (amt/100) * base7;
-
-    // scale to duration:
-    // 14 days => x2, 30 => x(30/7), 60 => x(60/7)
-    const multiplier = days / 7;
-    const totalReturn = baseReturnForAmt_7d * multiplier;
-
-    const profit = Math.max(0, totalReturn - amt);
-
-    totalEl.textContent = money(totalReturn);
-    profitEl.textContent = money(profit);
-  }
-
-  amountEl.addEventListener("input", update);
-  planEl.addEventListener("change", update);
-  daysEl.addEventListener("change", update);
-  update();
 })();
 
 /* =========================================================
@@ -2427,35 +2594,89 @@ function setGoogleTranslateLang(lang){
   const nums = document.querySelectorAll(".statNum");
   if(!nums.length) return;
 
+  function formatInt(n){
+    return Math.floor(n).toLocaleString();
+  }
+
+  function countUp(el, target, duration=1200, decimals=false){
+    const startTime = performance.now();
+    function step(now){
+      const t = Math.min(1, (now-startTime)/duration);
+      const eased = 1 - Math.pow(1-t, 3);
+      const val = target * eased;
+
+      if(decimals){
+        el.textContent = val.toFixed(1);
+      }else{
+        el.textContent = formatInt(val);
+      }
+
+      if(t < 1) requestAnimationFrame(step);
+      else{
+        el.textContent = decimals ? target.toFixed(1) : formatInt(target);
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function startContinuous(el, key, base, stepValue, stepMs){
+    const now = Date.now();
+
+    let startTs = Number(localStorage.getItem(key + "_startTs"));
+    if(!startTs){
+      startTs = now;
+      localStorage.setItem(key + "_startTs", String(startTs));
+    }
+
+    let baseSaved = Number(localStorage.getItem(key + "_base"));
+    if(!baseSaved){
+      baseSaved = base;
+      localStorage.setItem(key + "_base", String(baseSaved));
+    }
+
+    function computeValue(){
+      const start = Number(localStorage.getItem(key + "_startTs")) || startTs;
+      const baseB = Number(localStorage.getItem(key + "_base")) || baseSaved;
+      const elapsed = Math.max(0, Date.now() - start);
+      const steps = Math.floor(elapsed / stepMs);
+      return baseB + steps * stepValue;
+    }
+
+    el.textContent = formatInt(computeValue());
+    setInterval(()=>{ el.textContent = formatInt(computeValue()); }, 60000);
+  }
+
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        const el = entry.target;
-        const target = parseFloat(el.getAttribute("data-count") || "0");
-        const duration = 1200;
-        const startTime = performance.now();
+      if(!entry.isIntersecting) return;
+      const el = entry.target;
 
-        function step(now){
-          const t = Math.min(1, (now-startTime)/duration);
-          const eased = 1 - Math.pow(1-t, 3);
-          const val = target * eased;
+      if(el.id === "clientsServed"){
+        const base = Number(el.getAttribute("data-base") || "250000");
+        startContinuous(el, "vgm_clients_served", base, 1, 4 * 60 * 60 * 1000);
+        io.unobserve(el);
+        return;
+      }
 
-          if(String(target).includes(".")){
-            el.textContent = val.toFixed(1);
-          }else{
-            el.textContent = Math.floor(val).toLocaleString();
-          }
+      if(el.id === "processedVolume"){
+        const base = Number(el.getAttribute("data-base") || "12000000");
 
-          if(t < 1) requestAnimationFrame(step);
-          else{
-            if(String(target).includes(".")) el.textContent = target.toFixed(1);
-            else el.textContent = Math.floor(target).toLocaleString();
-          }
+        const stepKey = "vgm_processed_volume_step";
+        let stepVal = Number(localStorage.getItem(stepKey));
+        if(!stepVal){
+          stepVal = Math.floor(18000 + Math.random()*47000);
+          localStorage.setItem(stepKey, String(stepVal));
         }
 
-        requestAnimationFrame(step);
+        startContinuous(el, "vgm_processed_volume", base, stepVal, 4 * 60 * 60 * 1000);
         io.unobserve(el);
+        return;
       }
+
+      const target = parseFloat(el.getAttribute("data-count") || "0");
+      const isDecimal = String(target).includes(".");
+      countUp(el, target, 1200, isDecimal);
+      io.unobserve(el);
     });
   }, {threshold: 0.2});
 
@@ -2463,7 +2684,7 @@ function setGoogleTranslateLang(lang){
 })();
 
 /* =========================================================
-   ✅ Live Markets (auto-slide slow)
+   ✅ Live Markets (CoinGecko)
 ========================================================= */
 const coins = [
   "bitcoin","ethereum","tether","binancecoin","solana","ripple","cardano","dogecoin",
@@ -2478,7 +2699,7 @@ function fmtMoney(v){
 
 function createCoinCard(coin){
   const wrap = document.createElement("div");
-  wrap.className = "coinCard";
+  wrap.className = "coinCard tapHighlight";
   wrap.innerHTML = `
     <div class="coinCardInner">
       <div class="coinTop">
@@ -2566,7 +2787,7 @@ async function loadMarkets(){
   auto.innerHTML = "";
 
   coins.forEach(c=> auto.appendChild(createCoinCard(c)));
-  coins.forEach(c=> auto.appendChild(createCoinCard(c))); // duplicate for infinite loop
+  coins.forEach(c=> auto.appendChild(createCoinCard(c)));
 
   try{
     const res = await fetch(
@@ -2612,7 +2833,8 @@ async function loadMarkets(){
     }
 
     for(const item of data){
-      const allCards = auto.querySelectorAll(`.coinCard[data-coin="${item.id}"]`);
+      const selector = '.coinCard[data-coin="' + item.id + '"]';
+      const allCards = auto.querySelectorAll(selector);
       allCards.forEach(card => applyTo(card, item));
     }
 
@@ -2625,7 +2847,7 @@ loadMarkets();
 setInterval(loadMarkets, 45000);
 
 /* =========================================================
-   ✅ Testimonials (backend-ready later)
+   ✅ Testimonials
 ========================================================= */
 async function getTestimonials(){
   return [
@@ -2654,7 +2876,7 @@ function starIcons(n){
   const list = await getTestimonials();
 
   box.innerHTML = list.map(t => `
-    <div class="testCard">
+    <div class="testCard tapHighlight">
       <div class="stars">${starIcons(t.stars || 5)}</div>
       <div class="testText">“${t.text}”</div>
       <div class="testUser">
@@ -2666,6 +2888,40 @@ function starIcons(n){
       </div>
     </div>
   `).join("");
+
+  function startAutoSlide(){
+    const isMobile = window.matchMedia("(max-width: 560px)").matches;
+    if(!isMobile) return;
+
+    let timer = null;
+    let index = 0;
+
+    function step(){
+      const cards = box.querySelectorAll(".testCard");
+      if(!cards.length) return;
+
+      const max = cards.length;
+      index = (index + 1) % max;
+
+      const target = cards[index];
+      if(!target) return;
+
+      const left = target.offsetLeft - (box.clientWidth - target.clientWidth) / 2;
+      box.scrollTo({ left, behavior: "smooth" });
+    }
+
+    timer = setInterval(step, 6500);
+
+    let pause = null;
+    box.addEventListener("touchstart", ()=>{
+      if(timer) clearInterval(timer);
+      timer = null;
+      if(pause) clearTimeout(pause);
+      pause = setTimeout(()=> startAutoSlide(), 5000);
+    }, {passive:true});
+  }
+
+  startAutoSlide();
 })();
 
 /* =========================================================
