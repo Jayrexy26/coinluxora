@@ -314,7 +314,6 @@
       position:relative;
       z-index:2;
       scroll-margin-top: 110px;
-      overflow:hidden; /* ✅ FIX: prevents glow overflow shadow on left */
     }
 
     /* ✅ scroll unfold + fade */
@@ -342,7 +341,7 @@
       transform: translateY(-1px);
     }
 
-    /* ✅ individual cards highlight */
+    /* ✅ NEW: individual cards highlight */
     .tapHighlight{
       border-radius: 18px;
       transition: box-shadow .35s ease, transform .25s ease, border-color .25s ease;
@@ -403,23 +402,19 @@
     .badgePro{ background: rgba(168,85,247,.16); border-color: rgba(168,85,247,.26); }
     .badgeElite{ background: rgba(251,191,36,.14); border-color: rgba(251,191,36,.28); }
 
-    /* ✅ NEW: plan logo image (transparent, NOT boxed) */
-    .planLogoImg{
-      width:70px;
-      height:auto;
+    /* ✅ NEW: PLAN LOGO (transparent, no box, visible) */
+    .planLogo{
+      width:64px;
+      height:64px;
       object-fit:contain;
-      filter: drop-shadow(0 14px 40px rgba(0,0,0,.55));
+      filter:
+        drop-shadow(0 10px 26px rgba(0,0,0,.55))
+        drop-shadow(0 0 18px rgba(96,165,250,.18));
       opacity:.98;
+      margin:4px 0 2px;
+      display:block;
       pointer-events:none;
-    }
-
-    /* ✅ position plan logo inside plan card (outside badge) */
-    .planLogoWrap{
-      width:100%;
-      display:flex;
-      justify-content:flex-end;
-      margin-top:2px;
-      margin-bottom:4px;
+      user-select:none;
     }
 
     /* ✅ HERO */
@@ -434,7 +429,6 @@
       gap:30px;
       align-items:center;
     }
-
     .kicker{
       display:inline-flex;
       gap:10px;
@@ -755,562 +749,6 @@
       align-items:stretch;
       margin-top:18px;
     }
-    .calcBox{
-      border-radius:24px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      box-shadow: var(--shadow);
-      padding:18px 16px;
-      position:relative;
-      overflow:hidden;
-    }
-    .calcBox::before{
-      content:"";
-      position:absolute;
-      inset:-80px;
-      background: radial-gradient(circle at 30% 20%, rgba(96,165,250,.22), transparent 62%);
-      filter: blur(20px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .calcBox > *{position:relative; z-index:1;}
-    .calcTitle{
-      font-size:15px;
-      font-weight:1200;
-      color:rgba(234,240,255,.90);
-      margin:0 0 12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .calcTitle span{
-      font-size:12px;
-      font-weight:1100;
-      color:rgba(234,240,255,.65);
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.20);
-    }
-
-    .calcField{margin-top:12px;}
-    .calcLabel{
-      font-size:13px;
-      font-weight:1100;
-      color:rgba(234,240,255,.70);
-      margin-bottom:8px;
-    }
-    .calcInput, .calcSelect{
-      width:100%;
-      padding:14px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.30);
-      color: var(--text);
-      font-size:15px;
-      font-weight:900;
-      outline:none;
-      transition:.18s ease;
-    }
-    .calcInput:focus, .calcSelect:focus{
-      border-color: rgba(96,165,250,.60);
-      box-shadow: 0 0 0 4px rgba(59,130,246,.18);
-    }
-
-    .calcResult{
-      margin-top:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.26);
-      padding:14px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    .resCard{
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      padding:12px 12px;
-    }
-    .resCard small{
-      display:block;
-      color:rgba(234,240,255,.62);
-      font-weight:1100;
-      font-size:12px;
-      margin-bottom:6px;
-    }
-    .resCard strong{
-      font-size:18px;
-      font-weight:1200;
-      letter-spacing:-.3px;
-    }
-
-    /* ✅ Plans */
-    .planGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:16px;
-      margin-top:18px;
-    }
-    .planCard{
-      border-radius:24px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      box-shadow: var(--shadow2);
-      padding:18px 16px;
-      position:relative;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      min-height: 320px;
-    }
-    .planCard::before{
-      content:"";
-      position:absolute;
-      inset:-90px;
-      background: radial-gradient(circle at 30% 20%, rgba(96,165,250,.22), transparent 62%);
-      filter: blur(22px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .planCard > *{position:relative; z-index:1;}
-    .planHead{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .planName{
-      font-weight:1300;
-      font-size:18px;
-      letter-spacing:-.3px;
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      gap:6px;
-    }
-    .planTag{
-      font-size:12px;
-      font-weight:1200;
-      color:rgba(234,240,255,.70);
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.20);
-    }
-    .planPrice{
-      font-size:28px;
-      font-weight:1400;
-      letter-spacing:-.6px;
-      margin-top:4px;
-    }
-    .planPrice small{
-      font-size:12.5px;
-      font-weight:1100;
-      color:rgba(234,240,255,.62);
-    }
-    .planList{
-      margin:0;
-      padding:0;
-      list-style:none;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      color:rgba(234,240,255,.74);
-      font-size:13.5px;
-      font-weight:900;
-      line-height:1.45;
-    }
-    .planList li{
-      display:flex;
-      align-items:flex-start;
-      gap:8px;
-    }
-    .planList svg{width:18px;height:18px; margin-top:1px; opacity:.95;}
-    .planBtn{
-      margin-top:auto;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .planBtn a{
-      width:100%;
-      text-align:center;
-      justify-content:center;
-    }
-    .planFeatured{
-      border-color: rgba(96,165,250,.34);
-      background: linear-gradient(180deg, rgba(59,130,246,.16), rgba(255,255,255,.04));
-      transform: translateY(-4px);
-    }
-    .planGlow{
-      position:absolute;
-      inset:-60px;
-      background: radial-gradient(circle at 50% 20%, rgba(96,165,250,.28), transparent 62%);
-      filter: blur(22px);
-      opacity:0.95;
-      pointer-events:none;
-    }
-
-    /* ✅ Referral section */
-    .refGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:14px;
-      margin-top:18px;
-    }
-    .refCard{
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.30);
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      padding:16px 14px;
-      position:relative;
-      overflow:hidden;
-      text-align:center;
-    }
-    .refCard::before{
-      content:"";
-      position:absolute;
-      inset:-70px;
-      background: radial-gradient(circle at 30% 20%, rgba(59,130,246,.18), transparent 62%);
-      filter: blur(18px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .refCard > *{position:relative; z-index:1;}
-    .refPct{
-      font-size:32px;
-      font-weight:1400;
-      letter-spacing:-.7px;
-    }
-    .refLvl{
-      margin-top:8px;
-      font-size:12px;
-      font-weight:1200;
-      color:rgba(234,240,255,.62);
-      letter-spacing:.35px;
-      text-transform:uppercase;
-    }
-    .refNote{
-      margin-top:10px;
-      color:rgba(234,240,255,.72);
-      font-size:13px;
-      line-height:1.55;
-      font-weight:900;
-    }
-
-    /* ✅ Partner slider */
-    .partnerTrack{
-      border-radius:22px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      overflow:hidden;
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      position:relative;
-      margin-top:18px;
-    }
-    .partnerTrack::before{
-      content:"";
-      position:absolute;
-      inset:-60px;
-      background: radial-gradient(circle at 25% 20%, rgba(96,165,250,.18), transparent 62%);
-      filter: blur(18px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .partnerRow{
-      display:flex;
-      gap:18px;
-      padding:16px 10px;
-      align-items:center;
-      animation: slidePartners 26s linear infinite;
-      width:max-content;
-      position:relative;
-      z-index:1;
-    }
-    .partnerPill{
-      min-width: 160px;
-      padding:12px 14px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(2,6,23,.26);
-      text-align:center;
-      font-weight:1200;
-      color:rgba(234,240,255,.82);
-      letter-spacing:.25px;
-      white-space:nowrap;
-    }
-    @keyframes slidePartners{
-      from{ transform: translateX(0); }
-      to{ transform: translateX(-50%); }
-    }
-
-    /* ✅ Markets row */
-    .marketRowWrap{
-      max-width:1200px;
-      margin:0 auto;
-    }
-    .marketScroller{
-      display:flex;
-      gap:14px;
-      overflow:hidden;
-      padding: 6px 2px 10px;
-      position:relative;
-    }
-
-    .marketAuto{
-      display:flex;
-      gap:14px;
-      width:max-content;
-      animation: autoMarket 90s linear infinite;
-    }
-    .marketScroller:hover .marketAuto{
-      animation-play-state: paused;
-    }
-
-    @keyframes autoMarket{
-      from{ transform: translateX(0); }
-      to{ transform: translateX(-50%); }
-    }
-
-    .coinCard{
-      min-width: 360px;
-      max-width: 360px;
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.32);
-      box-shadow: 0 18px 70px rgba(0,0,0,.38);
-      position:relative;
-      overflow:hidden;
-      padding:16px 14px;
-    }
-    .coinCard::before{
-      content:"";
-      position:absolute;
-      inset:-60px;
-      background: radial-gradient(circle at 25% 20%, rgba(59,130,246,.18), transparent 64%);
-      filter: blur(18px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .coinCardInner{position:relative; z-index:1;}
-    .coinTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .coinLeft{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 0;
-    }
-    .coinLogo{
-      width:44px;height:44px;border-radius:16px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      display:grid;
-      place-items:center;
-      overflow:hidden;
-      box-shadow: 0 14px 46px rgba(0,0,0,.35);
-      flex:0 0 auto;
-    }
-    .coinLogo img{
-      width:26px;height:26px;
-      object-fit:contain;
-      filter: drop-shadow(0 10px 25px rgba(0,0,0,.55));
-    }
-    .coinMeta{
-      min-width: 0;
-      display:flex;
-      flex-direction:column;
-      line-height:1.1;
-    }
-    .coinName{
-      font-size:14px;
-      font-weight:1200;
-      letter-spacing:-.2px;
-      color:rgba(234,240,255,.92);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 200px;
-    }
-    .coinSym{
-      margin-top:4px;
-      font-size:12px;
-      font-weight:1100;
-      color:rgba(234,240,255,.62);
-      letter-spacing:.35px;
-      text-transform:uppercase;
-    }
-    .coinRight{text-align:right;}
-    .coinPrice{
-      font-size:20px;
-      font-weight:1300;
-      letter-spacing:-.4px;
-      color:#eaf0ff;
-      white-space:nowrap;
-    }
-    .coinChange{
-      margin-top:6px;
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      font-size:12px;
-      font-weight:1200;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      white-space:nowrap;
-    }
-    .chgUp{ color: rgba(34,197,94,.96); border-color: rgba(34,197,94,.20); background: rgba(34,197,94,.08);}
-    .chgDown{ color: rgba(248,113,113,.96); border-color: rgba(248,113,113,.22); background: rgba(248,113,113,.08);}
-
-    .coinBottom{
-      margin-top:12px;
-      border-top:1px solid rgba(255,255,255,.10);
-      padding-top:12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      color:rgba(234,240,255,.65);
-      font-size:12.5px;
-      font-weight:900;
-    }
-    .spark{
-      width:96px;
-      height:30px;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.22);
-      overflow:hidden;
-      position:relative;
-    }
-    .spark canvas{ width:100%; height:100%; display:block; }
-
-    /* ✅ Testimonials */
-    .testGrid{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:16px;
-      margin-top:18px;
-    }
-    .testCard{
-      border-radius:22px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      padding:18px 16px;
-      position:relative;
-      overflow:hidden;
-    }
-    .testCard::before{
-      content:"";
-      position:absolute;
-      inset:-70px;
-      background: radial-gradient(circle at 30% 20%, rgba(96,165,250,.20), transparent 62%);
-      filter: blur(18px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .testCard > *{position:relative; z-index:1;}
-    .stars{
-      display:flex;
-      gap:4px;
-      margin-bottom:10px;
-    }
-    .stars svg{width:16px;height:16px; opacity:.95;}
-    .testText{
-      color:rgba(234,240,255,.74);
-      font-size:14px;
-      line-height:1.65;
-      font-weight:900;
-    }
-    .testUser{
-      margin-top:14px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .avatar{
-      width:42px;height:42px;border-radius:16px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.30);
-      display:grid;
-      place-items:center;
-      font-weight:1200;
-      color:#eaf0ff;
-    }
-    .userMeta{
-      line-height:1.1;
-    }
-    .userMeta strong{
-      display:block;
-      font-weight:1200;
-      font-size:13.5px;
-    }
-    .userMeta span{
-      display:block;
-      font-weight:900;
-      font-size:12px;
-      color:rgba(234,240,255,.62);
-      margin-top:4px;
-    }
-
-    /* ✅ CTA band */
-    .ctaBand{padding:0;}
-    .ctaBox{
-      border-radius:28px;
-      border:1px solid rgba(255,255,255,.14);
-      background: linear-gradient(180deg, rgba(59,130,246,.18), rgba(2,6,23,.22));
-      box-shadow: 0 30px 130px rgba(0,0,0,.65);
-      padding:28px 20px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:18px;
-      overflow:hidden;
-      position:relative;
-    }
-    .ctaBox::before{
-      content:"";
-      position:absolute;
-      inset:-70px;
-      background: radial-gradient(circle at 20% 20%, rgba(96,165,250,.28), transparent 65%);
-      filter: blur(26px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .ctaBox .left{position:relative; z-index:1; max-width:760px;}
-    .ctaBox h4{
-      margin:0;
-      font-size:22px;
-      font-weight:1300;
-      letter-spacing:-.35px;
-      color:#eaf0ff;
-    }
-    .ctaBox p{
-      margin:8px 0 0;
-      color:rgba(234,240,255,.70);
-      line-height:1.65;
-      font-size:14px;
-    }
-    .ctaBox .right{
-      position:relative;
-      z-index:1;
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
 
     /* ✅ Footer */
     footer{
@@ -1323,30 +761,34 @@
       z-index:2;
     }
 
-    /* ✅ NEW footer layout with logo left */
-    .footGrid{
+    /* ✅ NEW: Footer layout with logo on top-left */
+    .footTop{
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       gap:18px;
       flex-wrap:wrap;
+      margin-bottom:14px;
     }
-    .footBrand{
+
+    /* ✅ Footer logo 3x (big but still responsive) */
+    .footerBrand{
       display:flex;
-      align-items:flex-start;
-      gap:14px;
-      min-width:260px;
+      align-items:center;
+      gap:12px;
+      text-decoration:none;
+      user-select:none;
+      max-width:320px;
     }
-    .footerLogoImg{
-      height:26px;
+    .footerBrand img{
+      height:32px;
       width:auto;
-      max-width:210px;
       object-fit:contain;
+      transform: scale(3);
+      transform-origin: left top;
       filter:
-        drop-shadow(0 10px 28px rgba(0,0,0,.55))
-        drop-shadow(0 0 20px rgba(59,130,246,.22));
-      transform: translateY(2px) scale(1.55);
-      transform-origin:left top;
+        drop-shadow(0 10px 30px rgba(0,0,0,.55))
+        drop-shadow(0 0 22px rgba(59,130,246,.22));
     }
 
     .footInner{
@@ -1354,10 +796,9 @@
       font-size:12px;
       color:rgba(234,240,255,.66);
       line-height:1.6;
-      flex:1;
-      min-width: 320px;
     }
 
+    /* ✅ Footer links */
     .footer-links{
       margin-top:12px;
       display:flex;
@@ -1397,6 +838,7 @@
       .refGrid{grid-template-columns: 1fr 1fr;}
       .testGrid{grid-template-columns: 1fr;}
     }
+
     @media(max-width: 560px){
       nav{display:none;}
 
@@ -1425,6 +867,11 @@
         transform-origin:left center;
       }
 
+      /* ✅ Mobile footer logo: still 3x but clamps so it doesn't overflow */
+      .footerBrand img{
+        transform: scale(2.2);
+      }
+
       .coinCard{min-width: 310px; max-width:310px;}
       .planGrid{grid-template-columns: 1fr;}
       .statsGrid{grid-template-columns: 1fr;}
@@ -1449,12 +896,6 @@
         background: rgba(255,255,255,.10);
         border-radius: 999px;
       }
-
-      /* ✅ Footer stack nicely */
-      .footGrid{flex-direction:column; align-items:center;}
-      .footBrand{justify-content:center;}
-      .footerLogoImg{transform: translateY(2px) scale(1.45);}
-      .footInner{text-align:center;}
     }
 
     /* ✅ Hide Google default translate banner */
@@ -1463,10 +904,10 @@
     #goog-gt-tt, .goog-te-balloon-frame { display:none !important; }
   </style>
 </head>
-
 <body>
 
 <canvas id="bgCanvas"></canvas>
+
 <!-- ✅ Top bar -->
 <div class="topbar">
   <div class="container">
@@ -1610,6 +1051,7 @@
 
       <div class="navCTA">
         <a class="btn btnOutline" href="login.html">Login</a>
+
         <a class="btn btnPrimary" href="signup.html">Get Started</a>
 
         <div class="menuWrap">
@@ -1756,7 +1198,7 @@
 
     <div class="statsGrid">
       <div class="statBox tapHighlight">
-        <div class="statNum" data-count="250000" data-live="clients">0</div>
+        <div class="statNum" data-count="250000">0</div>
         <div class="statLbl">Clients Served</div>
       </div>
       <div class="statBox tapHighlight">
@@ -1764,7 +1206,7 @@
         <div class="statLbl">Countries</div>
       </div>
       <div class="statBox tapHighlight">
-        <div class="statNum" data-count="12000000" data-live="volume">0</div>
+        <div class="statNum" data-count="12000000">0</div>
         <div class="statLbl">Processed Volume ($)</div>
       </div>
       <div class="statBox tapHighlight">
@@ -1844,12 +1286,12 @@
     </div>
   </div>
 </section>
+
 <!-- ✅ Profit Calculator -->
 <section class="reveal touchHighlight">
   <div class="container">
     <div class="sectionTitle">
       <h3>Profit Calculator</h3>
-      <!-- ✅ removed your projections text line -->
       <p>Estimate your projected return based on plan tier and duration.</p>
     </div>
 
@@ -1931,10 +1373,13 @@
 
     <div class="planGrid">
 
-      <!-- ✅ SILVER -->
+      <!-- ✅ Silver Plan -->
       <div class="planCard tapHighlight" data-plan="silver">
-        <!-- ✅ Plan logo (transparent, outside small box but inside plan card) -->
-        <img class="planLogoOutside" src="assets/plan-silver.png" alt="Silver Plan Badge" onerror="this.style.display='none';" />
+        <!-- ✅ Plan logo (transparent, NOT in small box, sits freely inside card) -->
+        <div style="position:absolute; top:16px; right:16px; z-index:2; opacity:.98; pointer-events:none;">
+          <img src="assets/plan-silver.png" alt="Silver Shield"
+               style="height:54px; width:auto; object-fit:contain; filter: drop-shadow(0 14px 30px rgba(0,0,0,.55));" />
+        </div>
 
         <div class="planHead">
           <div class="planName">
@@ -1943,41 +1388,35 @@
           </div>
           <div class="planTag">Basic</div>
         </div>
-
         <div class="planPrice">$500 <small>minimum</small></div>
-
         <ul class="planList">
           <li>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Premium client onboarding
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Secure portal session
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Live market visibility
           </li>
         </ul>
-
         <div class="planBtn">
           <a class="btn btnPrimary" href="signup.html">Get Started</a>
         </div>
       </div>
 
-      <!-- ✅ GOLD -->
+      <!-- ✅ Gold Plan -->
       <div class="planCard planFeatured tapHighlight" data-plan="gold">
         <div class="planGlow" aria-hidden="true"></div>
 
-        <!-- ✅ Plan logo (transparent, outside small box but inside plan card) -->
-        <img class="planLogoOutside" src="assets/plan-gold.png" alt="Gold Plan Badge" onerror="this.style.display='none';" />
+        <!-- ✅ Plan logo -->
+        <div style="position:absolute; top:16px; right:16px; z-index:2; opacity:.98; pointer-events:none;">
+          <img src="assets/plan-gold.png" alt="Gold Shield"
+               style="height:54px; width:auto; object-fit:contain; filter: drop-shadow(0 14px 30px rgba(0,0,0,.55));" />
+        </div>
 
         <div class="planHead">
           <div class="planName">
@@ -1986,39 +1425,33 @@
           </div>
           <div class="planTag">Top</div>
         </div>
-
         <div class="planPrice">$2,000 <small>minimum</small></div>
-
         <ul class="planList">
           <li>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Enhanced analytics
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Priority support
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Advanced tools suite
           </li>
         </ul>
-
         <div class="planBtn">
           <a class="btn btnPrimary" href="signup.html">Choose Gold</a>
         </div>
       </div>
 
-      <!-- ✅ DIAMOND -->
+      <!-- ✅ Diamond Plan -->
       <div class="planCard tapHighlight" data-plan="diamond">
         <!-- ✅ Plan logo -->
-        <img class="planLogoOutside" src="assets/plan-diamond.png" alt="Diamond Plan Badge" onerror="this.style.display='none';" />
+        <div style="position:absolute; top:16px; right:16px; z-index:2; opacity:.98; pointer-events:none;">
+          <img src="assets/plan-diamond.png" alt="Diamond Shield"
+               style="height:54px; width:auto; object-fit:contain; filter: drop-shadow(0 14px 30px rgba(0,0,0,.55));" />
+        </div>
 
         <div class="planHead">
           <div class="planName">
@@ -2027,39 +1460,33 @@
           </div>
           <div class="planTag">Advanced</div>
         </div>
-
         <div class="planPrice">$5,000 <small>minimum</small></div>
-
         <ul class="planList">
           <li>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Premium insights suite
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Dedicated assistance
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Higher performance tracking
           </li>
         </ul>
-
         <div class="planBtn">
           <a class="btn btnPrimary" href="signup.html">Choose Diamond</a>
         </div>
       </div>
 
-      <!-- ✅ PLATINUM -->
+      <!-- ✅ Platinum Plan -->
       <div class="planCard tapHighlight" data-plan="platinum">
         <!-- ✅ Plan logo -->
-        <img class="planLogoOutside" src="assets/plan-platinum.png" alt="Platinum Plan Badge" onerror="this.style.display='none';" />
+        <div style="position:absolute; top:16px; right:16px; z-index:2; opacity:.98; pointer-events:none;">
+          <img src="assets/plan-platinum.png" alt="Platinum Shield"
+               style="height:54px; width:auto; object-fit:contain; filter: drop-shadow(0 14px 30px rgba(0,0,0,.55));" />
+        </div>
 
         <div class="planHead">
           <div class="planName">
@@ -2068,30 +1495,21 @@
           </div>
           <div class="planTag">VIP</div>
         </div>
-
         <div class="planPrice">$10,000 <small>minimum</small></div>
-
         <ul class="planList">
           <li>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Elite analytics suite
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             VIP client support
           </li>
           <li>
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Highest tier access tools
           </li>
         </ul>
-
         <div class="planBtn">
           <a class="btn btnPrimary" href="signup.html">Choose Platinum</a>
         </div>
@@ -2100,7 +1518,6 @@
     </div>
   </div>
 </section>
-
 <!-- ✅ Referral Commissions -->
 <section class="reveal touchHighlight">
   <div class="container">
@@ -2205,46 +1622,70 @@
     </div>
   </div>
 </section>
+
 <!-- ✅ Footer -->
 <footer class="reveal touchHighlight">
   <div class="container">
 
-    <!-- ✅ footer top brand (logo left like sticky bar, but NOT sticky) -->
-    <div class="footerTopBrand">
-      <a class="footerBrand" href="index.html" aria-label="Veloci Global Markets footer logo">
-        <img class="footerLogoImg" src="assets/vgm-logo.png" alt="Veloci Global Markets"
+    <!-- ✅ Footer top row with logo on LEFT -->
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:18px; flex-wrap:wrap; margin-bottom:14px;">
+
+      <!-- ✅ Footer logo (3x bigger but responsive) -->
+      <div style="display:flex; align-items:center; gap:12px;">
+        <img src="assets/vgm-logo.png"
+             alt="Veloci Global Markets"
+             style="
+               height: 96px;               /* ✅ ~3x normal */
+               width:auto;
+               max-width: 320px;
+               object-fit:contain;
+               filter: drop-shadow(0 14px 40px rgba(0,0,0,.60)) drop-shadow(0 0 18px rgba(59,130,246,.18));
+             "
              onerror="this.style.display='none';" />
-      </a>
-    </div>
+      </div>
 
-    <div class="footInner">
-
-      <div class="footer-links">
+      <!-- ✅ Right side footer links -->
+      <div class="footer-links" style="justify-content:flex-end; margin-top:20px;">
         <a href="privacy.html">Privacy</a>
         <a href="terms.html">Terms</a>
         <a href="risk.html">Risk Disclosure</a>
         <a href="contact.html">Contact</a>
       </div>
+    </div>
 
-      <!-- ✅ NEW FOOTER DISCLAIMER (exact text you provided) -->
-      <div class="risk">
+    <!-- ✅ Footer legal & risk text -->
+    <div class="footInner" style="text-align:left;">
+      <div style="font-weight:1100; opacity:.9;">
+        © 2026 Veloci Global Markets. All rights reserved.
+      </div>
+
+      <div class="risk" style="margin-top:14px;">
         This website may use automated translations for your convenience. However, the English version is the definitive version and will prevail in the event of any discrepancy.
         <br/><br/>
         Trade responsibly: Trading CFDs is risky and may lead to permanent capital loss. Make sure you understand the risks before trading.
         <br/><br/>
         Veloci Global Markets is a registered trademark utilised under an approved licensing agreement. All rights reserved.
         <br/><br/>
-        Veloci Global Markets does not offer Contracts for Difference to residents of certain jurisdictions including the Yemen and Iran
+        Veloci Global Markets does not offer Contracts for Difference to residents of certain jurisdictions including the Yemen and Iran.
       </div>
-
-      <div style="margin-top:16px;">
-        © 2026 Veloci Global Markets. All rights reserved.
-      </div>
-
     </div>
+
   </div>
 </footer>
 
+<!-- ✅ Footer mobile fixes for logo size -->
+<style>
+  @media(max-width: 560px){
+    footer img[alt="Veloci Global Markets"]{
+      height: 68px !important;   /* ✅ still big but fits mobile */
+      max-width: 230px !important;
+    }
+    footer .footer-links{
+      justify-content:flex-start !important;
+      margin-top: 6px !important;
+    }
+  }
+</style>
 <script>
 /* =========================================================
    ✅ MENU BUTTON DROPDOWN
@@ -2486,8 +1927,7 @@ function setGoogleTranslateLang(lang){
     spawn();
   });
 })();
-</script>
-<script>
+
 /* =========================================================
    ✅ 3D Realistic Trading Chart Animation
 ========================================================= */
@@ -2725,7 +2165,7 @@ function setGoogleTranslateLang(lang){
 })();
 
 /* =========================================================
-   ✅ Stats Counter Animation (first-time smooth count up)
+   ✅ Stats Counter Animation (initial count-up)
 ========================================================= */
 (function initCounters(){
   const nums = document.querySelectorAll(".statNum");
@@ -2767,36 +2207,30 @@ function setGoogleTranslateLang(lang){
 })();
 
 /* =========================================================
-   ✅ NEW: Continuous Growth Forever
-   - Clients Served: +6/day => +1 every 4 hours
-   - Processed Volume: grows continuously (logic-based)
-   Uses localStorage to persist forever across refresh
+   ✅ FOREVER AUTO-INCREASE LOGIC (Clients + Volume)
+   - Clients: +6 per day (1 every 4 hours)
+   - Volume: smart gradual increase
 ========================================================= */
-(function initContinuousGrowthForever(){
-  const clientEl = document.querySelector('.statNum[data-count="250000"]');
-  const volumeEl = document.querySelector('.statNum[data-count="12000000"]');
-  if(!clientEl || !volumeEl) return;
+(function initForeverGrowth(){
+  const CLIENTS_BASE = 250000;
+  const VOLUME_BASE  = 12000000;
 
-  const KEY = "vgm_growth_state_v1";
+  // Unique persistent key
+  const STORE_KEY = "vgm_forever_growth_v1";
 
-  // base values from your UI
-  const baseClients = 250000;
-  const baseVolume  = 12000000;
+  // 1 increase every 4 hours = 6 per day
+  const CLIENTS_INTERVAL_MS = 4 * 60 * 60 * 1000;
 
-  // schedule
-  const clientStepEveryMs = 4 * 60 * 60 * 1000; // 4 hours
-  const clientStepValue   = 1;                  // +1 every 4 hours (= +6/day)
-
-  // processed volume growth (logic): scale with clients & time
-  // We do: per client-step, add between 35k and 85k volume (premium flow).
-  const volumeMinStep = 35000;
-  const volumeMaxStep = 85000;
+  // volume increase logic (smooth)
+  const VOLUME_INTERVAL_MS = 2 * 60 * 60 * 1000; // every 2 hours
+  const VOLUME_MIN_ADD = 14000;
+  const VOLUME_MAX_ADD = 65000;
 
   function now(){ return Date.now(); }
 
   function loadState(){
     try{
-      const raw = localStorage.getItem(KEY);
+      const raw = localStorage.getItem(STORE_KEY);
       if(!raw) return null;
       return JSON.parse(raw);
     }catch(e){
@@ -2804,68 +2238,89 @@ function setGoogleTranslateLang(lang){
     }
   }
 
-  function saveState(st){
+  function saveState(state){
     try{
-      localStorage.setItem(KEY, JSON.stringify(st));
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
     }catch(e){}
   }
 
-  function formatInt(n){
-    return Number(n).toLocaleString(undefined, {maximumFractionDigits:0});
-  }
-
-  function rand(min,max){
-    return Math.floor(Math.random()*(max-min+1))+min;
-  }
-
-  let st = loadState();
-
-  if(!st){
-    st = {
-      startedAt: now(),
-      lastTick: now(),
-      clients: baseClients,
-      volume: baseVolume
+  // Build initial state
+  let state = loadState();
+  if(!state || !state.createdAt){
+    state = {
+      createdAt: now(),
+      clients: CLIENTS_BASE,
+      volume: VOLUME_BASE,
+      lastClientsTick: now(),
+      lastVolumeTick: now()
     };
-    saveState(st);
+    saveState(state);
   }
 
-  // Catch up missed time
-  const elapsed = now() - st.lastTick;
-  if(elapsed > 0){
-    const steps = Math.floor(elapsed / clientStepEveryMs);
-    if(steps > 0){
-      st.clients += steps * clientStepValue;
-
-      // volume logic: increase per step with random premium variability
-      for(let i=0;i<steps;i++){
-        st.volume += rand(volumeMinStep, volumeMaxStep);
-      }
-
-      st.lastTick += steps * clientStepEveryMs;
-      saveState(st);
-    }
-  }
-
-  // apply immediately
-  clientEl.textContent = formatInt(st.clients);
-  volumeEl.textContent = formatInt(st.volume);
-
-  // live ticking (updates exactly every 4h boundary)
-  function tickLoop(){
+  // Calculate missed ticks (offline growth)
+  function applyOfflineGrowth(){
     const t = now();
-    if(t - st.lastTick >= clientStepEveryMs){
-      st.clients += clientStepValue;
-      st.volume += rand(volumeMinStep, volumeMaxStep);
-      st.lastTick += clientStepEveryMs;
-      saveState(st);
 
-      clientEl.textContent = formatInt(st.clients);
-      volumeEl.textContent = formatInt(st.volume);
+    // Clients missed ticks
+    const clientMissed = Math.floor((t - state.lastClientsTick) / CLIENTS_INTERVAL_MS);
+    if(clientMissed > 0){
+      state.clients += clientMissed * 1; // 1 client per tick
+      state.lastClientsTick += clientMissed * CLIENTS_INTERVAL_MS;
     }
-    requestAnimationFrame(tickLoop);
+
+    // Volume missed ticks
+    const volMissed = Math.floor((t - state.lastVolumeTick) / VOLUME_INTERVAL_MS);
+    if(volMissed > 0){
+      for(let i=0;i<volMissed;i++){
+        const add = Math.floor(VOLUME_MIN_ADD + Math.random() * (VOLUME_MAX_ADD - VOLUME_MIN_ADD));
+        state.volume += add;
+      }
+      state.lastVolumeTick += volMissed * VOLUME_INTERVAL_MS;
+    }
+
+    saveState(state);
   }
-  tickLoop();
+
+  applyOfflineGrowth();
+
+  function setStatValue(labelText, value){
+    const stats = document.querySelectorAll(".statBox");
+    let targetBox = null;
+
+    stats.forEach(box=>{
+      const lbl = box.querySelector(".statLbl");
+      if(lbl && lbl.textContent.trim().toLowerCase() === labelText.toLowerCase()){
+        targetBox = box;
+      }
+    });
+
+    if(!targetBox) return;
+    const num = targetBox.querySelector(".statNum");
+    if(!num) return;
+
+    num.textContent = Number(value).toLocaleString();
+  }
+
+  // Initial paint
+  setStatValue("Clients Served", state.clients);
+  setStatValue("Processed Volume ($)", state.volume);
+
+  // Forever ticking
+  setInterval(()=>{
+    state.clients += 1;
+    state.lastClientsTick = now();
+    saveState(state);
+    setStatValue("Clients Served", state.clients);
+  }, CLIENTS_INTERVAL_MS);
+
+  setInterval(()=>{
+    const add = Math.floor(VOLUME_MIN_ADD + Math.random() * (VOLUME_MAX_ADD - VOLUME_MIN_ADD));
+    state.volume += add;
+    state.lastVolumeTick = now();
+    saveState(state);
+    setStatValue("Processed Volume ($)", state.volume);
+  }, VOLUME_INTERVAL_MS);
+
 })();
 
 /* =========================================================
@@ -2970,7 +2425,6 @@ async function loadMarkets(){
   if(!auto) return;
 
   auto.innerHTML = "";
-
   coins.forEach(c=> auto.appendChild(createCoinCard(c)));
   coins.forEach(c=> auto.appendChild(createCoinCard(c)));
 
@@ -3074,7 +2528,7 @@ function starIcons(n){
     </div>
   `).join("");
 
-  /* ✅ Auto-slide VERY slowly on mobile only, without scrolling page */
+  /* ✅ Auto-slide VERY slowly on mobile only */
   function startAutoSlide(){
     const isMobile = window.matchMedia("(max-width: 560px)").matches;
     if(!isMobile) return;
