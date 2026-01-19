@@ -48,18 +48,100 @@
       z-index:2;
     }
 
-    /* ✅ Twinkling dots background canvas */
-    #bgCanvas{
-      position:fixed;
-      inset:0;
-      z-index:0;
-      pointer-events:none;
-      background:
-        radial-gradient(1200px 640px at 12% 12%, rgba(59,130,246,.20), transparent 58%),
-        radial-gradient(900px 560px at 86% 14%, rgba(99,102,241,.18), transparent 62%),
-        radial-gradient(720px 520px at 50% 90%, rgba(59,130,246,.10), transparent 60%),
-        var(--bg);
+    /* =========================================================
+   ✅ Smooth Floating Color Dots Background (Premium blobs)
+========================================================= */
+(function initSmoothDotsBackground(){
+  const canvas = document.getElementById("bgCanvas");
+  if(!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  let w=0, h=0, dpr=1;
+  const blobs = [];
+  const BCOUNT = 14; // number of smooth dots (premium look)
+
+  function resize(){
+    dpr = Math.max(1, window.devicePixelRatio || 1);
+    w = window.innerWidth;
+    h = window.innerHeight;
+    canvas.width = Math.floor(w*dpr);
+    canvas.height = Math.floor(h*dpr);
+    canvas.style.width = w+"px";
+    canvas.style.height = h+"px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function rand(min,max){ return Math.random()*(max-min)+min; }
+
+  function spawn(){
+    blobs.length = 0;
+    for(let i=0;i<BCOUNT;i++){
+      const hue = (Math.random() < 0.55) ? rand(205,225) : rand(230,255); // blue / purple
+      blobs.push({
+        x: rand(-w*0.2, w*1.2),
+        y: rand(-h*0.2, h*1.2),
+        r: rand(160, 380),     // blob radius
+        vx: rand(-0.12, 0.12), // slow drift
+        vy: rand(-0.10, 0.10),
+        a: rand(0.06, 0.14),   // opacity
+        hue,
+        pulse: rand(0.002, 0.006),
+        phase: rand(0, Math.PI*2)
+      });
     }
+  }
+
+  function draw(t){
+    ctx.clearRect(0,0,w,h);
+
+    // ✅ ultra soft base overlay (keeps premium depth)
+    const base = ctx.createRadialGradient(w*0.25, h*0.20, 0, w*0.25, h*0.20, Math.max(w,h));
+    base.addColorStop(0, "rgba(59,130,246,0.05)");
+    base.addColorStop(1, "rgba(5,10,24,0)");
+    ctx.fillStyle = base;
+    ctx.fillRect(0,0,w,h);
+
+    for(const b of blobs){
+      // movement
+      b.x += b.vx;
+      b.y += b.vy;
+
+      // wrap edges
+      if(b.x < -w*0.35) b.x = w*1.35;
+      if(b.x > w*1.35) b.x = -w*0.35;
+      if(b.y < -h*0.35) b.y = h*1.35;
+      if(b.y > h*1.35) b.y = -h*0.35;
+
+      // subtle pulsation
+      b.phase += b.pulse * 60;
+      const pulse = 1 + Math.sin(b.phase) * 0.08;
+
+      const rr = b.r * pulse;
+
+      // draw glow blob
+      const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, rr);
+      g.addColorStop(0, `hsla(${b.hue}, 95%, 65%, ${b.a})`);
+      g.addColorStop(0.55, `hsla(${b.hue}, 95%, 55%, ${b.a * 0.55})`);
+      g.addColorStop(1, "rgba(0,0,0,0)");
+
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, rr, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  spawn();
+  requestAnimationFrame(draw);
+
+  window.addEventListener("resize", ()=>{
+    resize();
+    spawn();
+  });
+})();
 
     /* ✅ Top bar */
     .topbar{
