@@ -27,7 +27,7 @@
       --shadow: 0 30px 120px rgba(0,0,0,.62);
       --shadow2: 0 16px 60px rgba(0,0,0,.55);
 
-      /* ✅ Plan badge colors */
+      /* Plan badge colors */
       --badgeStarter: rgba(59,130,246,.45);
       --badgePopular: rgba(34,197,94,.45);
       --badgePro: rgba(168,85,247,.45);
@@ -54,12 +54,13 @@
       z-index:2;
     }
 
-    /* ✅ Twinkling dots background canvas */
+    /* Twinkling dots background canvas */
     #bgCanvas{
       position:fixed;
       inset:0;
       z-index:0;
       pointer-events:none;
+      display:block;
       background:
         radial-gradient(1200px 640px at 12% 12%, rgba(59,130,246,.20), transparent 58%),
         radial-gradient(900px 560px at 86% 14%, rgba(99,102,241,.18), transparent 62%),
@@ -67,7 +68,7 @@
         var(--bg);
     }
 
-    /* ✅ Top bar */
+    /* Top bar */
     .topbar{
       position:relative;
       z-index:3;
@@ -97,7 +98,7 @@
       user-select:none;
     }
 
-    /* ✅ Translator selector */
+    /* Translator selector */
     .langSelect{
       cursor:pointer;
       appearance:none;
@@ -115,7 +116,7 @@
     .langSelect:hover{ background: rgba(255,255,255,.06); transform: translateY(-1px); }
     .langSelect option{ color:#0b0f19; }
 
-    /* ✅ Navbar */
+    /* Navbar */
     header{
       position:sticky;
       top:0;
@@ -142,10 +143,7 @@
       overflow:visible;
     }
 
-    /* ✅ REMOVE small logo box (no longer used) */
-    .logo{ display:none !important; }
-
-    /* ✅ BIG logo WITHOUT changing bar height */
+    /* Big logo WITHOUT changing bar height */
     .brandLogoImg{
       height:32px;
       width:auto;
@@ -220,7 +218,7 @@
       background: rgba(2,6,23,.12);
     }
 
-    /* ✅ MENU dropdown */
+    /* MENU dropdown */
     .menuWrap{ position:relative; }
     .menuBtn{
       display:inline-flex;
@@ -290,7 +288,7 @@
       font-weight:1000;
     }
 
-    /* ✅ TradingView Ticker Tape */
+    /* TradingView Ticker Tape */
     .tickerWrap{
       position:relative;
       z-index:3;
@@ -308,7 +306,7 @@
       box-shadow: 0 18px 70px rgba(0,0,0,.35);
     }
 
-    /* ✅ Sections */
+    /* Sections */
     section{
       padding:56px 0;
       position:relative;
@@ -316,7 +314,7 @@
       scroll-margin-top: 110px;
     }
 
-    /* ✅ scroll unfold + fade */
+    /* scroll unfold + fade */
     .reveal{
       opacity:0;
       transform: translateY(26px) scale(.985);
@@ -328,7 +326,7 @@
       transform: translateY(0) scale(1);
     }
 
-    /* ✅ section highlight on touch */
+    /* section highlight on touch */
     .touchHighlight{
       border-radius: 18px;
       transition: box-shadow .35s ease, transform .25s ease;
@@ -341,7 +339,7 @@
       transform: translateY(-1px);
     }
 
-    /* ✅ NEW: individual cards highlight */
+    /* individual cards highlight */
     .tapHighlight{
       border-radius: 18px;
       transition: box-shadow .35s ease, transform .25s ease, border-color .25s ease;
@@ -355,7 +353,7 @@
       transform: translateY(-1px);
     }
 
-    /* ✅ Plan highlight colors */
+    /* Plan highlight colors */
     .tapActive.starterGlow{
       box-shadow:
         0 0 0 1px rgba(59,130,246,.22),
@@ -381,7 +379,7 @@
         0 30px 130px rgba(0,0,0,.55);
     }
 
-    /* ✅ Plan badge */
+    /* Plan badge */
     .planBadge{
       display:inline-flex;
       align-items:center;
@@ -402,22 +400,7 @@
     .badgePro{ background: rgba(168,85,247,.16); border-color: rgba(168,85,247,.26); }
     .badgeElite{ background: rgba(251,191,36,.14); border-color: rgba(251,191,36,.28); }
 
-    /* ✅ NEW: PLAN LOGO (transparent, no box, visible) */
-    .planLogo{
-      width:64px;
-      height:64px;
-      object-fit:contain;
-      filter:
-        drop-shadow(0 10px 26px rgba(0,0,0,.55))
-        drop-shadow(0 0 18px rgba(96,165,250,.18));
-      opacity:.98;
-      margin:4px 0 2px;
-      display:block;
-      pointer-events:none;
-      user-select:none;
-    }
-
-    /* ✅ HERO */
+    /* HERO */
     .hero{
       padding:78px 0 18px;
       position:relative;
@@ -429,6 +412,7 @@
       gap:30px;
       align-items:center;
     }
+
     .kicker{
       display:inline-flex;
       gap:10px;
@@ -499,249 +483,7 @@
     }
     .badge svg{width:16px;height:16px;opacity:.95}
 
-    /* ✅ 3D chart card */
-    .chartCard{
-      border-radius:24px;
-      border:1px solid rgba(255,255,255,.14);
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      position:relative;
-      transform-style: preserve-3d;
-      perspective: 1100px;
-    }
-    .chartCard::before{
-      content:"";
-      position:absolute;
-      inset:-60px;
-      background: radial-gradient(circle at 50% 20%, rgba(96,165,250,.26), transparent 62%);
-      filter: blur(18px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .chartTop{
-      position:relative;
-      z-index:2;
-      padding:16px 16px 10px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-    }
-    .chartTop .title{
-      font-size:13px;
-      font-weight:1100;
-      color:rgba(234,240,255,.84);
-      letter-spacing:.2px;
-      padding:9px 12px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(2,6,23,.28);
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-    }
-    .livePulse{
-      width:8px;height:8px;border-radius:50%;
-      background: var(--ok);
-      box-shadow: 0 0 0 5px rgba(34,197,94,.12);
-    }
-    .chartTop .right{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-    .miniTag{
-      font-size:12px;
-      font-weight:1100;
-      color:rgba(234,240,255,.72);
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-    }
-
-    .chartArea{
-      position:relative;
-      z-index:2;
-      padding:0 14px 14px;
-    }
-
-    .chartFrame{
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.30);
-      overflow:hidden;
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      position:relative;
-      transform: translateZ(18px);
-    }
-    canvas#chartCanvas{
-      display:block;
-      width:100%;
-      height:330px;
-    }
-    .glowLine{
-      position:absolute;
-      inset:auto -30px 14px -30px;
-      height:1px;
-      background: linear-gradient(90deg, transparent, rgba(96,165,250,.75), transparent);
-      filter: blur(.2px);
-      opacity:.9;
-      z-index:3;
-    }
-
-    .chartFooter{
-      display:flex;
-      gap:10px;
-      padding:12px 14px 0;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-      color:rgba(234,240,255,.66);
-      font-size:12.5px;
-      font-weight:900;
-    }
-    .chipRow{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .chip{
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      color:rgba(234,240,255,.72);
-      font-weight:1100;
-      font-size:12px;
-    }
-
-    /* ✅ section title */
-    .sectionTitle{
-      text-align:center;
-      max-width:920px;
-      margin:0 auto 24px;
-    }
-    .sectionTitle h3{
-      margin:0;
-      font-size:32px;
-      font-weight:1100;
-      letter-spacing:-.7px;
-      background: linear-gradient(90deg, #eaf0ff, #a8c8ff);
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-    }
-    .sectionTitle p{
-      margin:10px 0 0;
-      color:rgba(234,240,255,.70);
-      line-height:1.7;
-      font-size:15px;
-    }
-
-    /* ✅ Stats counters */
-    .statsGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:14px;
-      margin-top:22px;
-    }
-    .statBox{
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      padding:18px 16px;
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      overflow:hidden;
-      position:relative;
-      text-align:center;
-    }
-    .statBox::before{
-      content:"";
-      position:absolute;
-      inset:-70px;
-      background: radial-gradient(circle at 30% 20%, rgba(96,165,250,.20), transparent 62%);
-      filter: blur(20px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .statBox > *{position:relative; z-index:1;}
-    .statNum{
-      font-size:30px;
-      font-weight:1200;
-      letter-spacing:-.6px;
-      color:#eaf0ff;
-    }
-    .statLbl{
-      margin-top:8px;
-      font-size:12.5px;
-      font-weight:1100;
-      color:rgba(234,240,255,.62);
-      letter-spacing:.35px;
-      text-transform:uppercase;
-    }
-
-    /* ✅ Steps */
-    .stepsGrid{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:16px;
-    }
-    .stepCard{
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(2,6,23,.28);
-      padding:18px 16px;
-      box-shadow: 0 18px 70px rgba(0,0,0,.35);
-      position:relative;
-      overflow:hidden;
-    }
-    .stepCard::before{
-      content:"";
-      position:absolute;
-      inset:-70px;
-      background: radial-gradient(circle at 25% 20%, rgba(59,130,246,.14), transparent 62%);
-      filter: blur(18px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .stepCard > *{position:relative; z-index:1;}
-    .stepTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:10px;
-    }
-    .stepIcon{
-      width:46px;height:46px;border-radius:16px;
-      display:grid;place-items:center;
-      background: rgba(59,130,246,.10);
-      border:1px solid rgba(96,165,250,.24);
-      box-shadow: 0 12px 38px rgba(0,0,0,.35);
-    }
-    .stepIcon svg{width:22px;height:22px}
-    .stepNum{
-      font-weight:1200;
-      color:rgba(234,240,255,.55);
-      letter-spacing:.4px;
-      font-size:12px;
-    }
-    .stepCard h4{
-      margin:0;
-      font-size:16px;
-      font-weight:1200;
-      letter-spacing:-.2px;
-    }
-    .stepCard p{
-      margin:8px 0 0;
-      color:rgba(234,240,255,.70);
-      font-size:14px;
-      line-height:1.65;
-    }
-
-    /* ✅ Profit Calculator */
+    /* Profit Calculator (THIS fixes your broken section) */
     .calcGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -749,10 +491,99 @@
       align-items:stretch;
       margin-top:18px;
     }
+    .calcBox{
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      box-shadow: var(--shadow);
+      padding:18px 16px;
+      position:relative;
+      overflow:hidden;
+    }
+    .calcBox::before{
+      content:"";
+      position:absolute;
+      inset:-80px;
+      background: radial-gradient(circle at 30% 20%, rgba(96,165,250,.22), transparent 62%);
+      filter: blur(20px);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .calcBox > *{position:relative; z-index:1;}
+    .calcTitle{
+      font-size:15px;
+      font-weight:1200;
+      color:rgba(234,240,255,.90);
+      margin:0 0 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .calcTitle span{
+      font-size:12px;
+      font-weight:1100;
+      color:rgba(234,240,255,.65);
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(2,6,23,.20);
+    }
+    .calcField{margin-top:12px;}
+    .calcLabel{
+      font-size:13px;
+      font-weight:1100;
+      color:rgba(234,240,255,.70);
+      margin-bottom:8px;
+    }
+    .calcInput, .calcSelect{
+      width:100%;
+      padding:14px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(2,6,23,.30);
+      color: var(--text);
+      font-size:15px;
+      font-weight:900;
+      outline:none;
+      transition:.18s ease;
+    }
+    .calcInput:focus, .calcSelect:focus{
+      border-color: rgba(96,165,250,.60);
+      box-shadow: 0 0 0 4px rgba(59,130,246,.18);
+    }
+    .calcResult{
+      margin-top:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(2,6,23,.26);
+      padding:14px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .resCard{
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      padding:12px 12px;
+    }
+    .resCard small{
+      display:block;
+      color:rgba(234,240,255,.62);
+      font-weight:1100;
+      font-size:12px;
+      margin-bottom:6px;
+    }
+    .resCard strong{
+      font-size:18px;
+      font-weight:1200;
+      letter-spacing:-.3px;
+    }
 
-    /* ✅ Footer */
+    /* Footer + final centered copyright */
     footer{
-      padding:26px 0 34px;
+      padding:26px 0 20px;
       border-top:1px solid rgba(255,255,255,.10);
       background: rgba(2,6,23,.26);
       backdrop-filter: blur(12px);
@@ -760,51 +591,40 @@
       position:relative;
       z-index:2;
     }
-
-    /* ✅ NEW: Footer layout with logo on top-left */
-    .footTop{
+    .footRow{
       display:flex;
+      gap:14px;
       align-items:flex-start;
       justify-content:space-between;
-      gap:18px;
       flex-wrap:wrap;
-      margin-bottom:14px;
     }
-
-    /* ✅ Footer logo 3x (big but still responsive) */
-    .footerBrand{
+    .footBrand{
       display:flex;
       align-items:center;
-      gap:12px;
-      text-decoration:none;
-      user-select:none;
-      max-width:320px;
+      gap:10px;
+      min-width:240px;
     }
-    .footerBrand img{
-      height:32px;
+    .footBrand img{
       width:auto;
-      object-fit:contain;
+      height:34px;
       transform: scale(3);
-      transform-origin: left top;
-      filter:
-        drop-shadow(0 10px 30px rgba(0,0,0,.55))
-        drop-shadow(0 0 22px rgba(59,130,246,.22));
+      transform-origin:left top;
+      filter: drop-shadow(0 10px 28px rgba(0,0,0,.55));
     }
-
     .footInner{
-      text-align:center;
+      text-align:right;
       font-size:12px;
       color:rgba(234,240,255,.66);
       line-height:1.6;
+      flex:1;
+      min-width:260px;
     }
-
-    /* ✅ Footer links */
     .footer-links{
       margin-top:12px;
       display:flex;
       flex-wrap:wrap;
       gap:10px;
-      justify-content:center;
+      justify-content:flex-end;
     }
     .footer-links a{
       color:#9cc7ff;
@@ -825,80 +645,44 @@
       color: rgba(234,240,255,.55);
       font-size:11.5px;
     }
+    .copyrightBottom{
+      margin-top:18px;
+      padding-top:14px;
+      border-top:1px solid rgba(255,255,255,.08);
+      text-align:center;
+      font-size:12px;
+      color: rgba(234,240,255,.72);
+      font-weight:1000;
+      letter-spacing:.2px;
+    }
 
-    /* ✅ Responsive */
+    /* Responsive */
     @media(max-width: 1100px){
       .heroGrid{grid-template-columns: 1fr; gap:18px;}
       .hero h2{font-size:44px;}
-      .chartCard{max-width:600px;}
-      .statsGrid{grid-template-columns: 1fr 1fr;}
-      .stepsGrid{grid-template-columns: 1fr 1fr;}
       .calcGrid{grid-template-columns: 1fr;}
-      .planGrid{grid-template-columns: 1fr 1fr;}
-      .refGrid{grid-template-columns: 1fr 1fr;}
-      .testGrid{grid-template-columns: 1fr;}
     }
-
     @media(max-width: 560px){
       nav{display:none;}
-
-      .topbarInner{
-        justify-content:space-between;
-      }
-
-      .hero{padding:56px 0 18px;}
-      .hero h2{font-size:36px;}
-
-      .brand{
-        min-width:auto;
-        max-width: 52%;
-      }
-
-      .navCTA{
-        min-width:auto;
-        gap:8px;
-      }
-
-      /* Logo smaller scaling so it doesn't hit buttons */
+      .brand{min-width:auto; max-width: 52%;}
+      .navCTA{min-width:auto; gap:8px;}
       .brandLogoImg{
         height:28px;
         max-width:200px;
         transform: translateY(1px) scale(2.15);
         transform-origin:left center;
       }
-
-      /* ✅ Mobile footer logo: still 3x but clamps so it doesn't overflow */
-      .footerBrand img{
-        transform: scale(2.2);
-      }
-
-      .coinCard{min-width: 310px; max-width:310px;}
-      .planGrid{grid-template-columns: 1fr;}
-      .statsGrid{grid-template-columns: 1fr;}
-      .stepsGrid{grid-template-columns: 1fr;}
-
-      /* ✅ Testimonials slider on mobile */
-      .testGrid{
-        display:flex !important;
-        overflow-x:auto;
-        gap:14px;
-        padding: 6px 2px 12px;
-        scroll-snap-type:x mandatory;
-        -webkit-overflow-scrolling:touch;
-        scroll-behavior:smooth;
-      }
-      .testCard{
-        min-width: 86%;
-        scroll-snap-align:center;
-      }
-      .testGrid::-webkit-scrollbar{ height: 8px; }
-      .testGrid::-webkit-scrollbar-thumb{
-        background: rgba(255,255,255,.10);
-        border-radius: 999px;
+      .footRow{flex-direction:column; gap:18px;}
+      .footInner{text-align:left;}
+      .footer-links{justify-content:flex-start;}
+      .footBrand img{
+        height:28px;
+        transform: scale(2.6);
+        transform-origin:left top;
       }
     }
 
-    /* ✅ Hide Google default translate banner */
+    /* Hide Google default translate banner */
     .goog-te-banner-frame.skiptranslate { display: none !important; }
     body { top: 0px !important; }
     #goog-gt-tt, .goog-te-balloon-frame { display:none !important; }
@@ -1051,7 +835,6 @@
 
       <div class="navCTA">
         <a class="btn btnOutline" href="login.html">Login</a>
-
         <a class="btn btnPrimary" href="signup.html">Get Started</a>
 
         <div class="menuWrap">
@@ -1155,6 +938,7 @@
         </div>
       </div>
 
+      <!-- Keep your 3D chart card area (JS in later part) -->
       <div class="chartCard tapHighlight" id="tiltCard" aria-label="3D Trading Chart">
         <div class="chartTop">
           <div class="title">
@@ -1191,9 +975,13 @@
 <!-- ✅ Platform Activity -->
 <section class="reveal touchHighlight">
   <div class="container">
-    <div class="sectionTitle">
-      <h3>Platform Activity</h3>
-      <p>Our infrastructure is designed for high-performance access and global clients.</p>
+    <div class="sectionTitle" style="text-align:center; max-width:920px; margin:0 auto 24px;">
+      <h3 style="margin:0; font-size:32px; font-weight:1100; letter-spacing:-.7px; background:linear-gradient(90deg,#eaf0ff,#a8c8ff); -webkit-background-clip:text; background-clip:text; color:transparent;">
+        Platform Activity
+      </h3>
+      <p style="margin:10px 0 0; color:rgba(234,240,255,.70); line-height:1.7; font-size:15px;">
+        Our infrastructure is designed for high-performance access and global clients.
+      </p>
     </div>
 
     <div class="statsGrid">
@@ -1220,9 +1008,13 @@
 <!-- ✅ Start in Minutes -->
 <section class="reveal touchHighlight">
   <div class="container">
-    <div class="sectionTitle">
-      <h3>Start in Minutes</h3>
-      <p>Get onboarded quickly with a premium and secure flow.</p>
+    <div class="sectionTitle" style="text-align:center; max-width:920px; margin:0 auto 24px;">
+      <h3 style="margin:0; font-size:32px; font-weight:1100; letter-spacing:-.7px; background:linear-gradient(90deg,#eaf0ff,#a8c8ff); -webkit-background-clip:text; background-clip:text; color:transparent;">
+        Start in Minutes
+      </h3>
+      <p style="margin:10px 0 0; color:rgba(234,240,255,.70); line-height:1.7; font-size:15px;">
+        Get onboarded quickly with a premium and secure flow.
+      </p>
     </div>
 
     <div class="stepsGrid">
@@ -1290,9 +1082,13 @@
 <!-- ✅ Profit Calculator -->
 <section class="reveal touchHighlight">
   <div class="container">
-    <div class="sectionTitle">
-      <h3>Profit Calculator</h3>
-      <p>Estimate your projected return based on plan tier and duration.</p>
+    <div class="sectionTitle" style="text-align:center; max-width:920px; margin:0 auto 24px;">
+      <h3 style="margin:0; font-size:32px; font-weight:1100; letter-spacing:-.7px; background:linear-gradient(90deg,#eaf0ff,#a8c8ff); -webkit-background-clip:text; background-clip:text; color:transparent;">
+        Profit Calculator
+      </h3>
+      <p style="margin:10px 0 0; color:rgba(234,240,255,.70); line-height:1.7; font-size:15px;">
+        Estimate your projected return based on plan tier and duration.
+      </p>
     </div>
 
     <div class="calcGrid">
@@ -1366,29 +1162,29 @@
 <!-- ✅ Plans -->
 <section class="reveal touchHighlight">
   <div class="container">
-    <div class="sectionTitle">
-      <h3>Plans</h3>
-      <p>Choose the plan tier that best fits your goals. Designed for premium clients.</p>
+    <div class="sectionTitle" style="text-align:center; max-width:920px; margin:0 auto 24px;">
+      <h3 style="margin:0; font-size:32px; font-weight:1100; letter-spacing:-.7px; background:linear-gradient(90deg,#eaf0ff,#a8c8ff); -webkit-background-clip:text; background-clip:text; color:transparent;">
+        Plans
+      </h3>
+      <p style="margin:10px 0 0; color:rgba(234,240,255,.70); line-height:1.7; font-size:15px;">
+        Choose the plan tier that best fits your goals. Designed for premium clients.
+      </p>
     </div>
 
+    <!-- ✅ Plan logos: transparent, outside small boxes but inside plan box -->
     <div class="planGrid">
 
-      <!-- ✅ Silver Plan -->
       <div class="planCard tapHighlight" data-plan="silver">
-        <!-- ✅ Plan logo (transparent, NOT in small box, sits freely inside card) -->
-        <div style="position:absolute; top:16px; right:16px; z-index:2; opacity:.98; pointer-events:none;">
-          <img src="assets/plan-silver.png" alt="Silver Shield"
-               style="height:54px; width:auto; object-fit:contain; filter: drop-shadow(0 14px 30px rgba(0,0,0,.55));" />
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+          <img src="assets/plan-silver.png" alt="Silver badge" style="width:54px;height:auto;filter:drop-shadow(0 10px 25px rgba(0,0,0,.55));" onerror="this.style.display='none';" />
+          <div class="planName" style="font-weight:1300;font-size:18px;letter-spacing:-.3px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+            Silver <span class="planBadge badgeStarter">Starter</span>
+          </div>
+          <div style="margin-left:auto;" class="planTag">Basic</div>
         </div>
 
-        <div class="planHead">
-          <div class="planName">
-            Silver
-            <span class="planBadge badgeStarter">Starter</span>
-          </div>
-          <div class="planTag">Basic</div>
-        </div>
         <div class="planPrice">$500 <small>minimum</small></div>
+
         <ul class="planList">
           <li>
             <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1403,29 +1199,25 @@
             Live market visibility
           </li>
         </ul>
+
         <div class="planBtn">
           <a class="btn btnPrimary" href="signup.html">Get Started</a>
         </div>
       </div>
 
-      <!-- ✅ Gold Plan -->
       <div class="planCard planFeatured tapHighlight" data-plan="gold">
         <div class="planGlow" aria-hidden="true"></div>
 
-        <!-- ✅ Plan logo -->
-        <div style="position:absolute; top:16px; right:16px; z-index:2; opacity:.98; pointer-events:none;">
-          <img src="assets/plan-gold.png" alt="Gold Shield"
-               style="height:54px; width:auto; object-fit:contain; filter: drop-shadow(0 14px 30px rgba(0,0,0,.55));" />
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+          <img src="assets/plan-gold.png" alt="Gold badge" style="width:54px;height:auto;filter:drop-shadow(0 10px 25px rgba(0,0,0,.55));" onerror="this.style.display='none';" />
+          <div class="planName" style="font-weight:1300;font-size:18px;letter-spacing:-.3px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+            Gold <span class="planBadge badgePopular">Popular</span>
+          </div>
+          <div style="margin-left:auto;" class="planTag">Top</div>
         </div>
 
-        <div class="planHead">
-          <div class="planName">
-            Gold
-            <span class="planBadge badgePopular">Popular</span>
-          </div>
-          <div class="planTag">Top</div>
-        </div>
         <div class="planPrice">$2,000 <small>minimum</small></div>
+
         <ul class="planList">
           <li>
             <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1440,27 +1232,23 @@
             Advanced tools suite
           </li>
         </ul>
+
         <div class="planBtn">
           <a class="btn btnPrimary" href="signup.html">Choose Gold</a>
         </div>
       </div>
 
-      <!-- ✅ Diamond Plan -->
       <div class="planCard tapHighlight" data-plan="diamond">
-        <!-- ✅ Plan logo -->
-        <div style="position:absolute; top:16px; right:16px; z-index:2; opacity:.98; pointer-events:none;">
-          <img src="assets/plan-diamond.png" alt="Diamond Shield"
-               style="height:54px; width:auto; object-fit:contain; filter: drop-shadow(0 14px 30px rgba(0,0,0,.55));" />
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+          <img src="assets/plan-diamond.png" alt="Diamond badge" style="width:54px;height:auto;filter:drop-shadow(0 10px 25px rgba(0,0,0,.55));" onerror="this.style.display='none';" />
+          <div class="planName" style="font-weight:1300;font-size:18px;letter-spacing:-.3px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+            Diamond <span class="planBadge badgePro">Pro</span>
+          </div>
+          <div style="margin-left:auto;" class="planTag">Advanced</div>
         </div>
 
-        <div class="planHead">
-          <div class="planName">
-            Diamond
-            <span class="planBadge badgePro">Pro</span>
-          </div>
-          <div class="planTag">Advanced</div>
-        </div>
         <div class="planPrice">$5,000 <small>minimum</small></div>
+
         <ul class="planList">
           <li>
             <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1475,27 +1263,23 @@
             Higher performance tracking
           </li>
         </ul>
+
         <div class="planBtn">
           <a class="btn btnPrimary" href="signup.html">Choose Diamond</a>
         </div>
       </div>
 
-      <!-- ✅ Platinum Plan -->
       <div class="planCard tapHighlight" data-plan="platinum">
-        <!-- ✅ Plan logo -->
-        <div style="position:absolute; top:16px; right:16px; z-index:2; opacity:.98; pointer-events:none;">
-          <img src="assets/plan-platinum.png" alt="Platinum Shield"
-               style="height:54px; width:auto; object-fit:contain; filter: drop-shadow(0 14px 30px rgba(0,0,0,.55));" />
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+          <img src="assets/plan-platinum.png" alt="Platinum badge" style="width:54px;height:auto;filter:drop-shadow(0 10px 25px rgba(0,0,0,.55));" onerror="this.style.display='none';" />
+          <div class="planName" style="font-weight:1300;font-size:18px;letter-spacing:-.3px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+            Platinum <span class="planBadge badgeElite">Elite</span>
+          </div>
+          <div style="margin-left:auto;" class="planTag">VIP</div>
         </div>
 
-        <div class="planHead">
-          <div class="planName">
-            Platinum
-            <span class="planBadge badgeElite">Elite</span>
-          </div>
-          <div class="planTag">VIP</div>
-        </div>
         <div class="planPrice">$10,000 <small>minimum</small></div>
+
         <ul class="planList">
           <li>
             <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22c55e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1510,6 +1294,7 @@
             Highest tier access tools
           </li>
         </ul>
+
         <div class="planBtn">
           <a class="btn btnPrimary" href="signup.html">Choose Platinum</a>
         </div>
@@ -1622,958 +1407,151 @@
     </div>
   </div>
 </section>
-
 <!-- ✅ Footer -->
-<footer class="reveal touchHighlight">
+<footer>
   <div class="container">
+    <div class="footRow">
 
-    <!-- ✅ Footer top row with logo on LEFT -->
-    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:18px; flex-wrap:wrap; margin-bottom:14px;">
-
-      <!-- ✅ Footer logo (3x bigger but responsive) -->
-      <div style="display:flex; align-items:center; gap:12px;">
-        <img src="assets/vgm-logo.png"
-             alt="Veloci Global Markets"
-             style="
-               height: 96px;               /* ✅ ~3x normal */
-               width:auto;
-               max-width: 320px;
-               object-fit:contain;
-               filter: drop-shadow(0 14px 40px rgba(0,0,0,.60)) drop-shadow(0 0 18px rgba(59,130,246,.18));
-             "
-             onerror="this.style.display='none';" />
+      <!-- Footer Brand -->
+      <div class="footBrand">
+        <img src="assets/veloci-logo.png" alt="Veloci Global Markets Logo">
       </div>
 
-      <!-- ✅ Right side footer links -->
-      <div class="footer-links" style="justify-content:flex-end; margin-top:20px;">
-        <a href="privacy.html">Privacy</a>
-        <a href="terms.html">Terms</a>
-        <a href="risk.html">Risk Disclosure</a>
-        <a href="contact.html">Contact</a>
-      </div>
-    </div>
+      <!-- Footer Text -->
+      <div class="footInner">
+        <p>
+          This website may use automated translations for your convenience.
+          However, the English version is the definitive version and will prevail
+          in the event of any discrepancy.
+        </p>
 
-    <!-- ✅ Footer legal & risk text -->
-    <div class="footInner" style="text-align:left;">
-      <div style="font-weight:1100; opacity:.9;">
-        © 2026 Veloci Global Markets. All rights reserved.
-      </div>
+        <p>
+          <strong>Trade responsibly:</strong> Trading CFDs is risky and may lead
+          to permanent capital loss. Make sure you understand the risks before trading.
+        </p>
 
-      <div class="risk" style="margin-top:14px;">
-        This website may use automated translations for your convenience. However, the English version is the definitive version and will prevail in the event of any discrepancy.
-        <br/><br/>
-        Trade responsibly: Trading CFDs is risky and may lead to permanent capital loss. Make sure you understand the risks before trading.
-        <br/><br/>
-        Veloci Global Markets is a registered trademark utilised under an approved licensing agreement. All rights reserved.
-        <br/><br/>
-        Veloci Global Markets does not offer Contracts for Difference to residents of certain jurisdictions including the Yemen and Iran.
+        <p>
+          Veloci Global Markets is a registered trademark utilised under an approved
+          licensing agreement. All rights reserved.
+        </p>
+
+        <p>
+          Veloci Global Markets does not offer Contracts for Difference to residents
+          of certain jurisdictions including the Yemen and Iran.
+        </p>
       </div>
     </div>
 
+    <!-- Bottom copyright -->
+    <div class="copyrightBottom">
+      © Veloci Global Markets. All rights reserved.
+    </div>
   </div>
 </footer>
-
-<!-- ✅ Footer mobile fixes for logo size -->
-<style>
-  @media(max-width: 560px){
-    footer img[alt="Veloci Global Markets"]{
-      height: 68px !important;   /* ✅ still big but fits mobile */
-      max-width: 230px !important;
-    }
-    footer .footer-links{
-      justify-content:flex-start !important;
-      margin-top: 6px !important;
-    }
-  }
-</style>
-<script>
 /* =========================================================
-   ✅ MENU BUTTON DROPDOWN
+   ✅ FIXED: Profit Calculator + Plans spacing + layouts
 ========================================================= */
-(function initMenu(){
-  const btn = document.getElementById("menuBtn");
-  const dd  = document.getElementById("menuDropdown");
-  if(!btn || !dd) return;
-
-  function close(){
-    dd.style.display = "none";
-    btn.setAttribute("aria-expanded","false");
-  }
-  function open(){
-    dd.style.display = "block";
-    btn.setAttribute("aria-expanded","true");
-  }
-
-  btn.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    const openNow = dd.style.display === "block";
-    if(openNow) close();
-    else open();
-  });
-
-  document.addEventListener("click", ()=> close());
-  dd.addEventListener("click", (e)=> e.stopPropagation());
-})();
-
-/* =========================================================
-   ✅ TRANSLATOR
-========================================================= */
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({pageLanguage: 'en', autoDisplay: false}, 'google_translate_element');
+.calcGrid{
+  margin-top:18px;
+}
+.calcBox{
+  min-height: 100%;
+}
+@media(max-width: 1100px){
+  .calcGrid{ grid-template-columns: 1fr; }
 }
 
-function setGoogleTranslateLang(lang){
-  const combo = document.querySelector("select.goog-te-combo");
-  if(combo){
-    combo.value = lang;
-    combo.dispatchEvent(new Event("change"));
-    return true;
-  }
-  return false;
+/* =========================================================
+   ✅ PLAN LOGOS (transparent + outside tiny box but inside plan card)
+========================================================= */
+.planLogoBadge{
+  position:absolute;
+  top:14px;
+  left:14px;
+  width:64px;
+  height:64px;
+  z-index:2;
+  pointer-events:none;
+  background:transparent !important;
+  border:none !important;
+  padding:0 !important;
+  opacity:.95;
+  filter:
+    drop-shadow(0 12px 26px rgba(0,0,0,.55))
+    drop-shadow(0 0 18px rgba(96,165,250,.18));
+}
+.planLogoBadge img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  background:transparent !important;
 }
 
-(function initTranslator(){
-  const select = document.getElementById("langSelect");
-  if(!select) return;
-
-  select.addEventListener("change", ()=>{
-    const lang = select.value;
-    if(!lang) return;
-
-    if(setGoogleTranslateLang(lang)) return;
-
-    let tries = 0;
-    const interval = setInterval(()=>{
-      tries++;
-      if(setGoogleTranslateLang(lang) || tries > 25){
-        clearInterval(interval);
-      }
-    }, 200);
-  });
-})();
-
-/* =========================================================
-   ✅ Scroll reveal
-========================================================= */
-(function initReveal(){
-  const items = document.querySelectorAll(".reveal");
-  if(!items.length) return;
-
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        entry.target.classList.add("show");
-        io.unobserve(entry.target);
-      }
-    });
-  }, {threshold: 0.12});
-
-  items.forEach(el => io.observe(el));
-})();
-
-/* =========================================================
-   ✅ Touch highlight per SECTION
-========================================================= */
-(function initTouchHighlight(){
-  const blocks = document.querySelectorAll(".touchHighlight");
-  if(!blocks.length) return;
-
-  function activate(el){
-    blocks.forEach(b => b.classList.remove("active"));
-    el.classList.add("active");
-    setTimeout(()=> el.classList.remove("active"), 700);
-  }
-
-  blocks.forEach(el=>{
-    el.addEventListener("touchstart", ()=> activate(el), {passive:true});
-    el.addEventListener("mousedown", ()=> activate(el));
-  });
-})();
-
-/* =========================================================
-   ✅ INDIVIDUAL BOX highlight (tapHighlight)
-========================================================= */
-(function initTapHighlight(){
-  const nodes = document.querySelectorAll(".tapHighlight");
-  if(!nodes.length) return;
-
-  function removeAll(){
-    nodes.forEach(n=>{
-      n.classList.remove("tapActive","starterGlow","popularGlow","proGlow","eliteGlow");
-    });
-  }
-
-  nodes.forEach(el=>{
-    el.addEventListener("click", ()=>{
-      removeAll();
-      el.classList.add("tapActive");
-
-      // If it's a plan card, apply matching glow
-      const plan = el.getAttribute("data-plan");
-      if(plan){
-        if(plan === "silver") el.classList.add("starterGlow");
-        if(plan === "gold") el.classList.add("popularGlow");
-        if(plan === "diamond") el.classList.add("proGlow");
-        if(plan === "platinum") el.classList.add("eliteGlow");
-      }
-
-      setTimeout(()=>{
-        el.classList.remove("tapActive","starterGlow","popularGlow","proGlow","eliteGlow");
-      }, 900);
-    });
-
-    el.addEventListener("touchstart", ()=>{
-      removeAll();
-      el.classList.add("tapActive");
-
-      const plan = el.getAttribute("data-plan");
-      if(plan){
-        if(plan === "silver") el.classList.add("starterGlow");
-        if(plan === "gold") el.classList.add("popularGlow");
-        if(plan === "diamond") el.classList.add("proGlow");
-        if(plan === "platinum") el.classList.add("eliteGlow");
-      }
-
-      setTimeout(()=>{
-        el.classList.remove("tapActive","starterGlow","popularGlow","proGlow","eliteGlow");
-      }, 900);
-    }, {passive:true});
-  });
-})();
-
-/* =========================================================
-   ✅ Twinkling Dots Background
-========================================================= */
-(function initTwinklingBackground(){
-  const canvas = document.getElementById("bgCanvas");
-  if(!canvas) return;
-  const ctx = canvas.getContext("2d");
-  let w=0,h=0, dpr=1;
-  const particles=[];
-  const PCOUNT = 130;
-
-  function resize(){
-    dpr = Math.max(1, window.devicePixelRatio || 1);
-    w = window.innerWidth;
-    h = window.innerHeight;
-    canvas.width = Math.floor(w*dpr);
-    canvas.height = Math.floor(h*dpr);
-    canvas.style.width = w+"px";
-    canvas.style.height = h+"px";
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-  }
-
-  function rand(min,max){ return Math.random()*(max-min)+min; }
-
-  function spawn(){
-    particles.length = 0;
-    for(let i=0;i<PCOUNT;i++){
-      particles.push({
-        x: Math.random()*w,
-        y: Math.random()*h,
-        r: rand(0.8, 2.2),
-        a: rand(0.12, 0.85),
-        tw: rand(0.003, 0.012),
-        vx: rand(-0.08, 0.08),
-        vy: rand(-0.06, 0.06),
-        hue: (Math.random() < 0.55) ? 210 : 240
-      });
-    }
-  }
-
-  function draw(){
-    ctx.clearRect(0,0,w,h);
-
-    const grd = ctx.createRadialGradient(w*0.2, h*0.2, 0, w*0.2, h*0.2, 650);
-    grd.addColorStop(0, "rgba(59,130,246,0.10)");
-    grd.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.fillStyle = grd;
-    ctx.fillRect(0,0,w,h);
-
-    for(const p of particles){
-      p.x += p.vx;
-      p.y += p.vy;
-      if(p.x < -50) p.x = w+50;
-      if(p.x > w+50) p.x = -50;
-      if(p.y < -50) p.y = h+50;
-      if(p.y > h+50) p.y = -50;
-
-      p.a += p.tw * (Math.random() > 0.5 ? 1 : -1);
-      p.a = Math.max(0.06, Math.min(0.95, p.a));
-
-      const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*12);
-      glow.addColorStop(0, `hsla(${p.hue}, 92%, 65%, ${p.a})`);
-      glow.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r*12, 0, Math.PI*2);
-      ctx.fill();
-
-      ctx.fillStyle = `rgba(255,255,255,${p.a})`;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      ctx.fill();
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  resize();
-  spawn();
-  draw();
-
-  window.addEventListener("resize", () => {
-    resize();
-    spawn();
-  });
-})();
-
-/* =========================================================
-   ✅ 3D Realistic Trading Chart Animation
-========================================================= */
-(function initChart(){
-  const canvas = document.getElementById("chartCanvas");
-  if(!canvas) return;
-  const ctx = canvas.getContext("2d");
-
-  let w=0,h=0,dpr=1;
-  let t=0;
-  let series = [];
-
-  function resize(){
-    dpr = Math.max(1, window.devicePixelRatio || 1);
-    const rect = canvas.getBoundingClientRect();
-    w = Math.floor(rect.width);
-    h = Math.floor(rect.height);
-    canvas.width = Math.floor(w*dpr);
-    canvas.height = Math.floor(h*dpr);
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-  }
-
-  function rand(min,max){ return Math.random()*(max-min)+min; }
-
-  function initSeries(){
-    series = [];
-    let base = h*0.58;
-    for(let i=0;i<90;i++){
-      base += rand(-10,10);
-      base = Math.max(h*0.25, Math.min(h*0.78, base));
-      series.push(base);
-    }
-  }
-
-  function drawGrid(){
-    ctx.save();
-    ctx.globalAlpha = 0.9;
-
-    for(let i=1;i<=5;i++){
-      const y = (h/6)*i;
-      ctx.strokeStyle = "rgba(255,255,255,0.06)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
-    }
-
-    for(let i=1;i<=6;i++){
-      const x = (w/7)*i;
-      ctx.strokeStyle = "rgba(255,255,255,0.05)";
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, h);
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  function drawGlowLine(points){
-    ctx.save();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = "rgba(96,165,250,0.35)";
-    ctx.shadowColor = "rgba(96,165,250,0.55)";
-    ctx.shadowBlur = 16;
-    ctx.beginPath();
-    for(let i=0;i<points.length;i++){
-      const p=points[i];
-      if(i===0) ctx.moveTo(p.x,p.y);
-      else ctx.lineTo(p.x,p.y);
-    }
-    ctx.stroke();
-    ctx.restore();
-
-    ctx.save();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(234,240,255,0.85)";
-    ctx.beginPath();
-    for(let i=0;i<points.length;i++){
-      const p=points[i];
-      if(i===0) ctx.moveTo(p.x,p.y);
-      else ctx.lineTo(p.x,p.y);
-    }
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  function drawArea(points){
-    ctx.save();
-    const grd = ctx.createLinearGradient(0, 0, 0, h);
-    grd.addColorStop(0, "rgba(59,130,246,0.22)");
-    grd.addColorStop(1, "rgba(59,130,246,0)");
-    ctx.fillStyle = grd;
-
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, h);
-    for(const p of points) ctx.lineTo(p.x, p.y);
-    ctx.lineTo(points[points.length-1].x, h);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-  }
-
-  function draw(){
-    t += 0.015;
-    ctx.clearRect(0,0,w,h);
-
-    const bg = ctx.createLinearGradient(0,0,0,h);
-    bg.addColorStop(0, "rgba(2,6,23,0.00)");
-    bg.addColorStop(1, "rgba(2,6,23,0.35)");
-    ctx.fillStyle = bg;
-    ctx.fillRect(0,0,w,h);
-
-    drawGrid();
-
-    const last = series[series.length-1];
-    let next = last + Math.sin(t*2.3)*rand(-3.5,3.5) + rand(-6,6);
-    next = Math.max(h*0.22, Math.min(h*0.82, next));
-    series.push(next);
-    series.shift();
-
-    const points=[];
-    for(let i=0;i<series.length;i++){
-      const x = (w/(series.length-1))*i;
-      points.push({x, y: series[i]});
-    }
-
-    drawArea(points);
-    drawGlowLine(points);
-
-    const idx = Math.floor((Math.sin(t)*0.5 + 0.5) * (points.length-1));
-    const orb = points[idx];
-    if(orb){
-      ctx.save();
-      ctx.shadowColor="rgba(96,165,250,0.80)";
-      ctx.shadowBlur=22;
-      ctx.fillStyle="rgba(96,165,250,0.95)";
-      ctx.beginPath();
-      ctx.arc(orb.x, orb.y, 4.2, 0, Math.PI*2);
-      ctx.fill();
-
-      ctx.globalAlpha=0.35;
-      ctx.beginPath();
-      ctx.arc(orb.x, orb.y, 14, 0, Math.PI*2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  resize();
-  initSeries();
-  draw();
-
-  window.addEventListener("resize", () => {
-    resize();
-    initSeries();
-  });
-})();
-
-/* =========================================================
-   ✅ 3D Card Tilt
-========================================================= */
-(function initTilt(){
-  const card = document.getElementById("tiltCard");
-  if(!card) return;
-  let bounds = null;
-
-  function onMove(e){
-    if(!bounds) bounds = card.getBoundingClientRect();
-    const mx = (e.touches ? e.touches[0].clientX : e.clientX);
-    const my = (e.touches ? e.touches[0].clientY : e.clientY);
-    const px = (mx - bounds.left) / bounds.width;
-    const py = (my - bounds.top) / bounds.height;
-
-    const rotY = (px - 0.5) * 10;
-    const rotX = (0.5 - py) * 10;
-
-    card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(0)`;
-  }
-
-  function reset(){
-    bounds = null;
-    card.style.transform = "rotateX(0deg) rotateY(0deg) translateZ(0)";
-  }
-
-  card.addEventListener("mousemove", onMove);
-  card.addEventListener("mouseleave", reset);
-  card.addEventListener("touchmove", onMove, {passive:true});
-  card.addEventListener("touchend", reset);
-})();
-
-/* =========================================================
-   ✅ Profit Calculator Logic
-========================================================= */
-(function initCalculator(){
-  const amountEl = document.getElementById("calcAmount");
-  const planEl = document.getElementById("calcPlan");
-  const daysEl = document.getElementById("calcDays");
-  const profitEl = document.getElementById("calcProfit");
-  const totalEl  = document.getElementById("calcTotal");
-  if(!amountEl || !planEl || !daysEl || !profitEl || !totalEl) return;
-
-  const baseReturnPer100_7d = {
-    silver: 10000,
-    gold: 15000,
-    diamond: 18000,
-    platinum: 20000
-  };
-
-  function money(v){
-    return "$" + Number(v).toLocaleString(undefined, {maximumFractionDigits: 0});
-  }
-
-  function update(){
-    const amt = Math.max(0, Number(amountEl.value || 0));
-    const days = Math.max(7, Number(daysEl.value || 7));
-    const plan = planEl.value || "gold";
-
-    const base7 = baseReturnPer100_7d[plan] || 15000;
-    const baseReturnForAmt_7d = (amt/100) * base7;
-    const multiplier = days / 7;
-    const totalReturn = baseReturnForAmt_7d * multiplier;
-    const profit = Math.max(0, totalReturn - amt);
-
-    totalEl.textContent = money(totalReturn);
-    profitEl.textContent = money(profit);
-  }
-
-  amountEl.addEventListener("input", update);
-  planEl.addEventListener("change", update);
-  daysEl.addEventListener("change", update);
-  update();
-})();
-
-/* =========================================================
-   ✅ Stats Counter Animation (initial count-up)
-========================================================= */
-(function initCounters(){
-  const nums = document.querySelectorAll(".statNum");
-  if(!nums.length) return;
-
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        const el = entry.target;
-        const target = parseFloat(el.getAttribute("data-count") || "0");
-        const duration = 1200;
-        const startTime = performance.now();
-
-        function step(now){
-          const t = Math.min(1, (now-startTime)/duration);
-          const eased = 1 - Math.pow(1-t, 3);
-          const val = target * eased;
-
-          if(String(target).includes(".")){
-            el.textContent = val.toFixed(1);
-          }else{
-            el.textContent = Math.floor(val).toLocaleString();
-          }
-
-          if(t < 1) requestAnimationFrame(step);
-          else{
-            if(String(target).includes(".")) el.textContent = target.toFixed(1);
-            else el.textContent = Math.floor(target).toLocaleString();
-          }
-        }
-
-        requestAnimationFrame(step);
-        io.unobserve(el);
-      }
-    });
-  }, {threshold: 0.2});
-
-  nums.forEach(n => io.observe(n));
-})();
-
-/* =========================================================
-   ✅ FOREVER AUTO-INCREASE LOGIC (Clients + Volume)
-   - Clients: +6 per day (1 every 4 hours)
-   - Volume: smart gradual increase
-========================================================= */
-(function initForeverGrowth(){
-  const CLIENTS_BASE = 250000;
-  const VOLUME_BASE  = 12000000;
-
-  // Unique persistent key
-  const STORE_KEY = "vgm_forever_growth_v1";
-
-  // 1 increase every 4 hours = 6 per day
-  const CLIENTS_INTERVAL_MS = 4 * 60 * 60 * 1000;
-
-  // volume increase logic (smooth)
-  const VOLUME_INTERVAL_MS = 2 * 60 * 60 * 1000; // every 2 hours
-  const VOLUME_MIN_ADD = 14000;
-  const VOLUME_MAX_ADD = 65000;
-
-  function now(){ return Date.now(); }
-
-  function loadState(){
-    try{
-      const raw = localStorage.getItem(STORE_KEY);
-      if(!raw) return null;
-      return JSON.parse(raw);
-    }catch(e){
-      return null;
-    }
-  }
-
-  function saveState(state){
-    try{
-      localStorage.setItem(STORE_KEY, JSON.stringify(state));
-    }catch(e){}
-  }
-
-  // Build initial state
-  let state = loadState();
-  if(!state || !state.createdAt){
-    state = {
-      createdAt: now(),
-      clients: CLIENTS_BASE,
-      volume: VOLUME_BASE,
-      lastClientsTick: now(),
-      lastVolumeTick: now()
-    };
-    saveState(state);
-  }
-
-  // Calculate missed ticks (offline growth)
-  function applyOfflineGrowth(){
-    const t = now();
-
-    // Clients missed ticks
-    const clientMissed = Math.floor((t - state.lastClientsTick) / CLIENTS_INTERVAL_MS);
-    if(clientMissed > 0){
-      state.clients += clientMissed * 1; // 1 client per tick
-      state.lastClientsTick += clientMissed * CLIENTS_INTERVAL_MS;
-    }
-
-    // Volume missed ticks
-    const volMissed = Math.floor((t - state.lastVolumeTick) / VOLUME_INTERVAL_MS);
-    if(volMissed > 0){
-      for(let i=0;i<volMissed;i++){
-        const add = Math.floor(VOLUME_MIN_ADD + Math.random() * (VOLUME_MAX_ADD - VOLUME_MIN_ADD));
-        state.volume += add;
-      }
-      state.lastVolumeTick += volMissed * VOLUME_INTERVAL_MS;
-    }
-
-    saveState(state);
-  }
-
-  applyOfflineGrowth();
-
-  function setStatValue(labelText, value){
-    const stats = document.querySelectorAll(".statBox");
-    let targetBox = null;
-
-    stats.forEach(box=>{
-      const lbl = box.querySelector(".statLbl");
-      if(lbl && lbl.textContent.trim().toLowerCase() === labelText.toLowerCase()){
-        targetBox = box;
-      }
-    });
-
-    if(!targetBox) return;
-    const num = targetBox.querySelector(".statNum");
-    if(!num) return;
-
-    num.textContent = Number(value).toLocaleString();
-  }
-
-  // Initial paint
-  setStatValue("Clients Served", state.clients);
-  setStatValue("Processed Volume ($)", state.volume);
-
-  // Forever ticking
-  setInterval(()=>{
-    state.clients += 1;
-    state.lastClientsTick = now();
-    saveState(state);
-    setStatValue("Clients Served", state.clients);
-  }, CLIENTS_INTERVAL_MS);
-
-  setInterval(()=>{
-    const add = Math.floor(VOLUME_MIN_ADD + Math.random() * (VOLUME_MAX_ADD - VOLUME_MIN_ADD));
-    state.volume += add;
-    state.lastVolumeTick = now();
-    saveState(state);
-    setStatValue("Processed Volume ($)", state.volume);
-  }, VOLUME_INTERVAL_MS);
-
-})();
-
-/* =========================================================
-   ✅ Live Markets (CoinGecko)
-========================================================= */
-const coins = [
-  "bitcoin","ethereum","tether","binancecoin","solana","ripple","cardano","dogecoin",
-  "tron","polkadot","chainlink","litecoin","polygon","avalanche-2","uniswap","shiba-inu"
-];
-
-function fmtMoney(v){
-  if(v >= 1000) return "$" + v.toLocaleString(undefined, {maximumFractionDigits: 0});
-  if(v >= 10) return "$" + v.toLocaleString(undefined, {maximumFractionDigits: 2});
-  return "$" + v.toLocaleString(undefined, {maximumFractionDigits: 4});
+/* Give the plan head room so logo doesn't overlap */
+.planCard{
+  padding-top:86px;
+}
+.planHead{
+  margin-top:2px;
 }
 
-function createCoinCard(coin){
-  const wrap = document.createElement("div");
-  wrap.className = "coinCard tapHighlight";
-  wrap.innerHTML = `
-    <div class="coinCardInner">
-      <div class="coinTop">
-        <div class="coinLeft">
-          <div class="coinLogo">
-            <img alt="" />
-          </div>
-          <div class="coinMeta">
-            <div class="coinName">Loading…</div>
-            <div class="coinSym">—</div>
-          </div>
-        </div>
-        <div class="coinRight">
-          <div class="coinPrice">$ --</div>
-          <div class="coinChange">—</div>
-        </div>
-      </div>
-
-      <div class="coinBottom">
-        <div style="display:flex; flex-direction:column; gap:4px;">
-          <div style="opacity:.95;">24h change</div>
-          <div style="opacity:.75; font-size:12px;">Live update</div>
-        </div>
-        <div class="spark"><canvas></canvas></div>
-      </div>
-    </div>
-  `;
-
-  wrap.dataset.coin = coin;
-  return wrap;
+/* =========================================================
+   ✅ REMOVE TOP LEFT "shadow box"
+   (it happens because some section is overflowing)
+========================================================= */
+section, .container{
+  overflow: visible !important;
 }
 
-function drawSparkline(canvas, values, up=true){
-  const ctx = canvas.getContext("2d");
-  const rect = canvas.getBoundingClientRect();
-  const w = Math.max(1, Math.floor(rect.width));
-  const h = Math.max(1, Math.floor(rect.height));
-  const dpr = Math.max(1, window.devicePixelRatio || 1);
-  canvas.width = Math.floor(w*dpr);
-  canvas.height = Math.floor(h*dpr);
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-
-  ctx.clearRect(0,0,w,h);
-
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = Math.max(0.0001, max-min);
-
-  const points = values.map((v,i)=>({
-    x: (w/(values.length-1))*i,
-    y: h - ((v-min)/range)*h
-  }));
-
-  ctx.save();
-  ctx.lineWidth = 2;
-  ctx.shadowBlur = 10;
-  ctx.shadowColor = up ? "rgba(34,197,94,0.55)" : "rgba(248,113,113,0.55)";
-  ctx.strokeStyle = up ? "rgba(34,197,94,0.65)" : "rgba(248,113,113,0.65)";
-  ctx.beginPath();
-  for(let i=0;i<points.length;i++){
-    const p = points[i];
-    if(i===0) ctx.moveTo(p.x,p.y);
-    else ctx.lineTo(p.x,p.y);
-  }
-  ctx.stroke();
-  ctx.restore();
-
-  ctx.save();
-  ctx.lineWidth = 1.5;
-  ctx.strokeStyle = up ? "rgba(34,197,94,0.95)" : "rgba(248,113,113,0.95)";
-  ctx.beginPath();
-  for(let i=0;i<points.length;i++){
-    const p = points[i];
-    if(i===0) ctx.moveTo(p.x,p.y);
-    else ctx.lineTo(p.x,p.y);
-  }
-  ctx.stroke();
-  ctx.restore();
+/* =========================================================
+   ✅ FOOTER with logo at top-left (not sticky)
+========================================================= */
+.footRow{
+  display:flex;
+  align-items:flex-start;
+  gap:18px;
+  flex-wrap:wrap;
+}
+.footBrand{
+  flex: 0 0 auto;
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-start;
+}
+.footBrand img{
+  height:80px; /* ✅ 3x look */
+  width:auto;
+  object-fit:contain;
+  filter:
+    drop-shadow(0 14px 40px rgba(0,0,0,.55))
+    drop-shadow(0 0 22px rgba(59,130,246,.20));
 }
 
-async function loadMarkets(){
-  const auto = document.getElementById("marketAuto");
-  if(!auto) return;
-
-  auto.innerHTML = "";
-  coins.forEach(c=> auto.appendChild(createCoinCard(c)));
-  coins.forEach(c=> auto.appendChild(createCoinCard(c)));
-
-  try{
-    const res = await fetch(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=" +
-      encodeURIComponent(coins.join(",")) +
-      "&order=market_cap_desc&per_page=250&page=1&sparkline=true&price_change_percentage=24h"
-    );
-    const data = await res.json();
-
-    function applyTo(card, item){
-      const logoImg = card.querySelector(".coinLogo img");
-      const nameEl = card.querySelector(".coinName");
-      const symEl  = card.querySelector(".coinSym");
-      const priceEl = card.querySelector(".coinPrice");
-      const chgEl = card.querySelector(".coinChange");
-      const sparkCanvas = card.querySelector(".spark canvas");
-
-      if(logoImg) logoImg.src = item.image || "";
-      if(nameEl) nameEl.textContent = item.name || item.id;
-      if(symEl) symEl.textContent = (item.symbol || "").toUpperCase();
-      if(priceEl) priceEl.textContent = fmtMoney(item.current_price || 0);
-
-      const chg = (item.price_change_percentage_24h ?? item.price_change_percentage_24h_in_currency);
-      const pct = (typeof chg === "number") ? chg : null;
-
-      if(chgEl){
-        if(pct === null){
-          chgEl.textContent = "—";
-          chgEl.className = "coinChange";
-        }else{
-          const up = pct >= 0;
-          chgEl.textContent = (up ? "▲ " : "▼ ") + Math.abs(pct).toFixed(2) + "%";
-          chgEl.className = "coinChange " + (up ? "chgUp" : "chgDown");
-        }
-      }
-
-      const spark = item.sparkline_in_7d?.price;
-      if(sparkCanvas && Array.isArray(spark) && spark.length > 10){
-        const sliced = spark.slice(-40);
-        const up = pct !== null ? (pct >= 0) : true;
-        drawSparkline(sparkCanvas, sliced, up);
-      }
-    }
-
-    for(const item of data){
-      var selector = '.coinCard[data-coin="' + item.id + '"]';
-      const allCards = auto.querySelectorAll(selector);
-      allCards.forEach(card => applyTo(card, item));
-    }
-
-  }catch(e){
-    console.log("Market feed unavailable:", e);
+/* Mobile safe */
+@media(max-width: 560px){
+  .footBrand img{
+    height:64px; /* still big but fits */
+  }
+  .footRow{
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+  .footBrand{
+    justify-content:center;
+    width:100%;
   }
 }
 
-loadMarkets();
-setInterval(loadMarkets, 45000);
-
 /* =========================================================
-   ✅ Testimonials (auto slide slow on mobile, swipeable)
+   ✅ COPYRIGHT AT VERY BOTTOM (centered always)
 ========================================================= */
-async function getTestimonials(){
-  return [
-    { name:"Daniel K.", role:"Client", text:"Veloci Global Markets feels premium. The portal is fast, clean and secure.", stars:5 },
-    { name:"Amina S.", role:"Investor", text:"The live markets and ticker give it a real terminal feel. Smooth experience.", stars:5 },
-    { name:"Michael R.", role:"Trader", text:"Verification and session PIN made me trust the security. Great UI and flow.", stars:5 }
-  ];
+.copyrightBottom{
+  margin-top:18px;
+  padding-top:14px;
+  border-top:1px solid rgba(255,255,255,.10);
+  text-align:center;
+  font-size:12px;
+  color:rgba(234,240,255,.62);
+  font-weight:1100;
 }
-
-function starIcons(n){
-  let s="";
-  for(let i=0;i<n;i++){
-    s += `
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M12 2l3 7 7 .6-5.3 4.4 1.7 7-6.4-3.9-6.4 3.9 1.7-7L2 9.6 9 9l3-7Z" stroke="#60a5fa" stroke-width="1.8" fill="rgba(96,165,250,0.18)"/>
-      </svg>
-    `;
-  }
-  return s;
-}
-
-(async function initTestimonials(){
-  const box = document.getElementById("testimonials");
-  if(!box) return;
-
-  const list = await getTestimonials();
-
-  box.innerHTML = list.map(t => `
-    <div class="testCard tapHighlight">
-      <div class="stars">${starIcons(t.stars || 5)}</div>
-      <div class="testText">“${t.text}”</div>
-      <div class="testUser">
-        <div class="avatar">${(t.name || "U").trim().slice(0,1).toUpperCase()}</div>
-        <div class="userMeta">
-          <strong>${t.name || "Client"}</strong>
-          <span>${t.role || "User"}</span>
-        </div>
-      </div>
-    </div>
-  `).join("");
-
-  /* ✅ Auto-slide VERY slowly on mobile only */
-  function startAutoSlide(){
-    const isMobile = window.matchMedia("(max-width: 560px)").matches;
-    if(!isMobile) return;
-
-    let timer = null;
-    let index = 0;
-
-    function step(){
-      const cards = box.querySelectorAll(".testCard");
-      if(!cards.length) return;
-
-      const max = cards.length;
-      index = (index + 1) % max;
-
-      const target = cards[index];
-      if(!target) return;
-
-      const left = target.offsetLeft - (box.clientWidth - target.clientWidth) / 2;
-      box.scrollTo({ left, behavior: "smooth" });
-    }
-
-    timer = setInterval(step, 6500);
-
-    let pause = null;
-    box.addEventListener("touchstart", ()=>{
-      if(timer) clearInterval(timer);
-      timer = null;
-      if(pause) clearTimeout(pause);
-      pause = setTimeout(()=> startAutoSlide(), 5000);
-    }, {passive:true});
-  }
-
-  startAutoSlide();
-})();
-
-/* =========================================================
-   ✅ Google Translate loader script
-========================================================= */
-(function loadGoogleTranslate(){
-  const s = document.createElement("script");
-  s.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-  s.async = true;
-  document.head.appendChild(s);
-})();
-</script>
-
-</body>
-</html>
