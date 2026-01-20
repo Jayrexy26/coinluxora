@@ -464,11 +464,13 @@
       align-items:flex-start;
       justify-content:space-between;
       gap:12px;
+      min-width:0; /* ✅ allow flex children to shrink */
     }
     .mLeft{
       display:flex;
       gap:12px;
-      min-width:0;
+      min-width:0; /* ✅ needed for wrapping inside flex */
+      flex:1 1 auto; /* ✅ takes available space */
     }
     .mIcon{
       width:42px;height:42px;border-radius:16px;
@@ -481,7 +483,8 @@
     }
     .mIcon svg{width:20px;height:20px;opacity:.95;}
     .mText{
-      min-width:0;
+      min-width:0; /* ✅ wraps long descriptions */
+      flex:1 1 auto;
     }
     .mText strong{
       display:block;
@@ -497,18 +500,28 @@
       font-weight:1000;
       color:rgba(234,240,255,.62);
       line-height:1.6;
+      white-space:normal;              /* ✅ allow wrapping */
+      overflow-wrap:anywhere;          /* ✅ force long text to wrap */
+      word-break:break-word;           /* ✅ mobile safe */
     }
+
     .mValue{
       font-weight:1200;
       color:#9cc7ff;
       text-decoration:none;
-      white-space:nowrap;
       border-radius:999px;
       padding:8px 10px;
       border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.04);
       transition:.12s ease;
       align-self:flex-start;
+
+      /* ✅ FIX: allow phone/email to fit inside on mobile */
+      white-space:normal;
+      max-width: 52%;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      text-align:right;
     }
     .mValue:hover{ background: rgba(255,255,255,.06); transform: translateY(-1px); }
 
@@ -721,6 +734,17 @@
       .heroTitle{ font-size:34px; }
       .footerLogo{ height:30px; transform: scale(2.45); }
       .formRow{ grid-template-columns: 1fr; }
+
+      /* ✅ NEW MOBILE FIX: stack contact value under text when tight */
+      .method{
+        flex-direction:column;
+        align-items:stretch;
+      }
+      .mValue{
+        max-width:100%;
+        text-align:left;
+        align-self:flex-start;
+      }
     }
 
     /* ✅ Hide Google default translate banner */
@@ -1125,8 +1149,7 @@ function setGoogleTranslateLang(lang){
    ✅ BACKEND-EDITABLE CONTACT SETTINGS
    You will replace CONTACT_CONFIG_ENDPOINT with your backend later.
 ========================================================= */
-const CONTACT_CONFIG_ENDPOINT = "/api/public/contact"; 
-// example later: https://yourdomain.com/api/public/contact
+const CONTACT_CONFIG_ENDPOINT = "/api/public/contact";
 
 const DEFAULT_CONTACT = {
   email: "support@veloci-global-markets.online",
@@ -1136,7 +1159,6 @@ const DEFAULT_CONTACT = {
 };
 
 function normalizePhoneForTel(phone){
-  // Keep digits + plus only
   const p = String(phone || "").trim();
   const cleaned = p.replace(/[^0-9+]/g, "");
   return cleaned || "";
@@ -1163,7 +1185,6 @@ function setContactUI(cfg){
     phoneLink.href = tel ? ("tel:" + tel) : "tel:+10000000000";
   }
 
-  // Optional address
   const addressRow = document.getElementById("addressRow");
   const addressText = document.getElementById("addressText");
   if(cfg.address && String(cfg.address).trim()){
@@ -1173,7 +1194,6 @@ function setContactUI(cfg){
     if(addressRow) addressRow.style.display = "none";
   }
 
-  // Optional WhatsApp
   const waRow = document.getElementById("whatsappRow");
   const waLink = document.getElementById("whatsappLink");
   const wa = String(cfg.whatsapp || "").trim();
@@ -1202,7 +1222,6 @@ async function loadContactConfig(){
       status.textContent = "Contact information loaded from backend configuration.";
     }
   }catch(e){
-    // fallback to default
     setContactUI(DEFAULT_CONTACT);
     if(status){
       status.className = "status";
@@ -1215,7 +1234,6 @@ loadContactConfig();
 
 /* =========================================================
    ✅ CONTACT FORM (backend-ready)
-   Replace FORM_ENDPOINT later with your real handler.
 ========================================================= */
 const FORM_ENDPOINT = "/api/public/contact-message";
 
@@ -1245,7 +1263,6 @@ document.getElementById("contactForm").addEventListener("submit", async (e)=>{
     createdAt: new Date().toISOString()
   };
 
-  // frontend validation
   if(!payload.name || !payload.email || !payload.message){
     setFormStatus("err", "Please complete all required fields.");
     return;
@@ -1263,7 +1280,6 @@ document.getElementById("contactForm").addEventListener("submit", async (e)=>{
     setFormStatus("ok", "Message sent successfully. Support will respond as soon as possible.");
     e.target.reset();
   }catch(err){
-    // In case no backend exists yet
     setFormStatus("err", "Form endpoint not connected yet. Please email support directly using the email above.");
   }
 });
